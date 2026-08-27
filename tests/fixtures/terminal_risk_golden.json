@@ -1,0 +1,680 @@
+{
+  "meta": {
+    "accounts": [
+      {
+        "id": "other_test_a",
+        "label": "Other (TEST-A)"
+      },
+      {
+        "id": "other_test_b",
+        "label": "Other (TEST-B)"
+      },
+      {
+        "id": "other_test_c",
+        "label": "Other (TEST-C)"
+      }
+    ],
+    "classes": [
+      {
+        "id": "cash",
+        "label": "Cash & sweep"
+      },
+      {
+        "id": "equity_etf",
+        "label": "ETFs"
+      },
+      {
+        "id": "equity_stock",
+        "label": "Individual Stocks"
+      },
+      {
+        "id": "fixed_income",
+        "label": "Fixed Income"
+      },
+      {
+        "id": "option_put",
+        "label": "Options (puts)"
+      }
+    ],
+    "brokers": [
+      {
+        "id": "fidelity",
+        "label": "fidelity"
+      },
+      {
+        "id": "jpm",
+        "label": "jpm"
+      }
+    ],
+    "filter": {
+      "account": "all",
+      "asset_class": "all",
+      "broker": "all"
+    },
+    "account_filter_active": false,
+    "class_filter_active": false,
+    "synthetic": true,
+    "risk_latest_label": "Apr 30, 2026"
+  },
+  "caption": "Module 3 \u2014 drawdown, risk-adjusted return, concentration, vol/VaR, beta. Monthly TWR resolution (Pass 1). Daily metrics (60d vol, VaR, beta) need daily prices. Per-position risk contribution lives on its own tab.",
+  "conc_caption": "Latest MTM snapshot. Same ticker across multiple accounts is consolidated. Cash and options excluded \u2014 concentration risk is about non-cash single-name exposure. TLH sleeve mapped to SPY; treasury ladder mapped to SGOV (economic exposure, not legal positions).",
+  "state": {
+    "available": true,
+    "unavailable": null,
+    "unavailable_message": null
+  },
+  "filter_note": null,
+  "coverage_gaps": null,
+  "daily_available": true,
+  "daily_unavailable_message": null,
+  "risk_adjusted": {
+    "tiles": [
+      {
+        "label": "Sharpe (1Y)",
+        "value": "2.07",
+        "spy": "19.12",
+        "dir": "down",
+        "sub": "RF = 4.0% avg (DGS3MO)"
+      },
+      {
+        "label": "Sharpe (3Y)",
+        "value": "1.31",
+        "spy": "18.25",
+        "dir": "down",
+        "sub": "36 months"
+      },
+      {
+        "label": "Sortino (1Y)",
+        "value": "9.16",
+        "spy": "\u2014",
+        "dir": "flat",
+        "sub": "Downside vol only"
+      },
+      {
+        "label": "Sortino (3Y)",
+        "value": "2.91",
+        "spy": "\u2014",
+        "dir": "flat",
+        "sub": "Downside vol only"
+      },
+      {
+        "label": "Calmar (3Y)",
+        "value": "2.02",
+        "spy": "\u2014",
+        "dir": "flat",
+        "sub": "CAGR / |Max DD|"
+      }
+    ],
+    "rolling_sharpe": {
+      "available": false,
+      "series": [],
+      "message": "Rolling 1Y Sharpe chart needs \u22651 year of daily history (have 22 days for portfolio, 22 for SPY)."
+    }
+  },
+  "drawdown": {
+    "tiles": [
+      {
+        "label": "Current DD",
+        "value": "At peak",
+        "spy": "0.00%",
+        "dir": "flat",
+        "sub": "Wealth index at all-time high"
+      },
+      {
+        "label": "Max DD (1Y)",
+        "value": "-1.9%",
+        "spy": "0.0%",
+        "dir": "down",
+        "sub": "Last 12 months"
+      },
+      {
+        "label": "Max DD (3Y)",
+        "value": "-7.4%",
+        "spy": "0.0%",
+        "dir": "down",
+        "sub": "Calmar denominator"
+      },
+      {
+        "label": "Max DD (ITD)",
+        "value": "-7.4%",
+        "spy": "0.0%",
+        "dir": "down",
+        "sub": "Jun 2023"
+      },
+      {
+        "label": "Annualized vol (3Y)",
+        "value": "8.4%",
+        "spy": "0.1%",
+        "dir": "down",
+        "sub": "Monthly std \u00d7 \u221a12"
+      }
+    ],
+    "episodes": {
+      "available": true,
+      "rows": [
+        {
+          "peak": "Apr 2023",
+          "trough": "Jun 2023",
+          "recovery": "Dec 2023",
+          "port_decline": "-7.4%",
+          "port_decline_cls": "",
+          "spy_decline": "\u2014",
+          "spy_decline_cls": "",
+          "port_uw": "8",
+          "port_uw_cls": "",
+          "spy_uw": "ongoing",
+          "spy_uw_cls": ""
+        },
+        {
+          "peak": "Jan 2023",
+          "trough": "Feb 2023",
+          "recovery": "Mar 2023",
+          "port_decline": "-2.0%",
+          "port_decline_cls": "",
+          "spy_decline": "\u2014",
+          "spy_decline_cls": "",
+          "port_uw": "2",
+          "port_uw_cls": "",
+          "spy_uw": "ongoing",
+          "spy_uw_cls": ""
+        }
+      ],
+      "message": null
+    },
+    "underwater": {
+      "available": true,
+      "markers": [
+        "2023-04-30",
+        "2023-01-31"
+      ],
+      "series": [
+        {
+          "name": "Portfolio",
+          "color": "#FB6F63",
+          "dash": false,
+          "width": 2.0,
+          "points": [
+            {
+              "x": "2023-01-31",
+              "v": 0.0
+            },
+            {
+              "x": "2023-02-28",
+              "v": -2.0199999999999996
+            },
+            {
+              "x": "2023-03-31",
+              "v": 0.0
+            },
+            {
+              "x": "2023-04-30",
+              "v": 0.0
+            },
+            {
+              "x": "2023-05-31",
+              "v": -4.749999999999998
+            },
+            {
+              "x": "2023-06-30",
+              "v": -7.426525000000006
+            },
+            {
+              "x": "2023-07-31",
+              "v": -6.056437570000018
+            },
+            {
+              "x": "2023-08-31",
+              "v": -5.915522226355008
+            },
+            {
+              "x": "2023-09-30",
+              "v": -4.927635209731751
+            },
+            {
+              "x": "2023-10-31",
+              "v": -6.31569173566967
+            },
+            {
+              "x": "2023-11-30",
+              "v": -2.811898606583707
+            },
+            {
+              "x": "2023-12-31",
+              "v": 0.0
+            },
+            {
+              "x": "2024-01-31",
+              "v": 0.0
+            },
+            {
+              "x": "2024-02-29",
+              "v": 0.0
+            },
+            {
+              "x": "2024-03-31",
+              "v": 0.0
+            },
+            {
+              "x": "2024-04-30",
+              "v": -1.4800000000000035
+            },
+            {
+              "x": "2024-05-31",
+              "v": 0.0
+            },
+            {
+              "x": "2024-06-30",
+              "v": -1.7800000000000038
+            },
+            {
+              "x": "2024-07-31",
+              "v": 0.0
+            },
+            {
+              "x": "2024-08-31",
+              "v": 0.0
+            },
+            {
+              "x": "2024-09-30",
+              "v": 0.0
+            },
+            {
+              "x": "2024-10-31",
+              "v": -0.9399999999999853
+            },
+            {
+              "x": "2024-11-30",
+              "v": 0.0
+            },
+            {
+              "x": "2024-12-31",
+              "v": 0.0
+            },
+            {
+              "x": "2025-01-31",
+              "v": -0.18000000000000238
+            },
+            {
+              "x": "2025-02-28",
+              "v": -0.1400720000000133
+            },
+            {
+              "x": "2025-03-31",
+              "v": 0.0
+            },
+            {
+              "x": "2025-04-30",
+              "v": 0.0
+            },
+            {
+              "x": "2025-05-31",
+              "v": 0.0
+            },
+            {
+              "x": "2025-06-30",
+              "v": 0.0
+            },
+            {
+              "x": "2025-07-31",
+              "v": 0.0
+            },
+            {
+              "x": "2025-08-31",
+              "v": -0.11999999999999789
+            },
+            {
+              "x": "2025-09-30",
+              "v": -0.5594720000000053
+            },
+            {
+              "x": "2025-10-31",
+              "v": -1.891975075200003
+            },
+            {
+              "x": "2025-11-30",
+              "v": 0.0
+            },
+            {
+              "x": "2025-12-31",
+              "v": 0.0
+            },
+            {
+              "x": "2026-01-31",
+              "v": 0.0
+            },
+            {
+              "x": "2026-02-28",
+              "v": -1.419999999999999
+            },
+            {
+              "x": "2026-03-31",
+              "v": 0.0
+            },
+            {
+              "x": "2026-04-30",
+              "v": 0.0
+            }
+          ]
+        },
+        {
+          "name": "SPY",
+          "color": "#A4B0C0",
+          "dash": true,
+          "width": 1.4,
+          "points": [
+            {
+              "x": "2023-01-31",
+              "v": null
+            },
+            {
+              "x": "2023-02-28",
+              "v": null
+            },
+            {
+              "x": "2023-03-31",
+              "v": null
+            },
+            {
+              "x": "2023-04-30",
+              "v": null
+            },
+            {
+              "x": "2023-05-31",
+              "v": null
+            },
+            {
+              "x": "2023-06-30",
+              "v": null
+            },
+            {
+              "x": "2023-07-31",
+              "v": null
+            },
+            {
+              "x": "2023-08-31",
+              "v": null
+            },
+            {
+              "x": "2023-09-30",
+              "v": null
+            },
+            {
+              "x": "2023-10-31",
+              "v": null
+            },
+            {
+              "x": "2023-11-30",
+              "v": null
+            },
+            {
+              "x": "2023-12-31",
+              "v": null
+            },
+            {
+              "x": "2024-01-31",
+              "v": null
+            },
+            {
+              "x": "2024-02-29",
+              "v": 0.0
+            },
+            {
+              "x": "2024-03-31",
+              "v": 0.0
+            },
+            {
+              "x": "2024-04-30",
+              "v": 0.0
+            },
+            {
+              "x": "2024-05-31",
+              "v": 0.0
+            },
+            {
+              "x": "2024-06-30",
+              "v": 0.0
+            },
+            {
+              "x": "2024-07-31",
+              "v": 0.0
+            },
+            {
+              "x": "2024-08-31",
+              "v": 0.0
+            },
+            {
+              "x": "2024-09-30",
+              "v": 0.0
+            },
+            {
+              "x": "2024-10-31",
+              "v": 0.0
+            },
+            {
+              "x": "2024-11-30",
+              "v": 0.0
+            },
+            {
+              "x": "2024-12-31",
+              "v": 0.0
+            },
+            {
+              "x": "2025-01-31",
+              "v": 0.0
+            },
+            {
+              "x": "2025-02-28",
+              "v": 0.0
+            },
+            {
+              "x": "2025-03-31",
+              "v": 0.0
+            },
+            {
+              "x": "2025-04-30",
+              "v": 0.0
+            },
+            {
+              "x": "2025-05-31",
+              "v": 0.0
+            },
+            {
+              "x": "2025-06-30",
+              "v": 0.0
+            },
+            {
+              "x": "2025-07-31",
+              "v": 0.0
+            },
+            {
+              "x": "2025-08-31",
+              "v": 0.0
+            },
+            {
+              "x": "2025-09-30",
+              "v": 0.0
+            },
+            {
+              "x": "2025-10-31",
+              "v": 0.0
+            },
+            {
+              "x": "2025-11-30",
+              "v": 0.0
+            },
+            {
+              "x": "2025-12-31",
+              "v": 0.0
+            },
+            {
+              "x": "2026-01-31",
+              "v": 0.0
+            },
+            {
+              "x": "2026-02-28",
+              "v": 0.0
+            },
+            {
+              "x": "2026-03-31",
+              "v": 0.0
+            },
+            {
+              "x": "2026-04-30",
+              "v": 0.0
+            }
+          ]
+        }
+      ]
+    }
+  },
+  "concentration": {
+    "available": true,
+    "tiles": [
+      {
+        "label": "Effective N",
+        "value": "1.9",
+        "sub": "1 / \u03a3 w\u1d62\u00b2 \u2014 lower = more concentrated"
+      },
+      {
+        "label": "Max weight",
+        "value": "70.1%",
+        "sub": ""
+      },
+      {
+        "label": "Top-5 weight",
+        "value": "100.0%",
+        "sub": ""
+      }
+    ],
+    "donut": {
+      "slices": [
+        {
+          "label": "SPY",
+          "pct": 70.05325686194183,
+          "value": "$86K",
+          "color": "#4DA3F5"
+        },
+        {
+          "label": "AAA",
+          "pct": 16.714461286358052,
+          "value": "$20K",
+          "color": "#2DD4BF"
+        },
+        {
+          "label": "BBB",
+          "pct": 12.41294551413355,
+          "value": "$15K",
+          "color": "#818CF8"
+        },
+        {
+          "label": "Other",
+          "pct": 0.8193363375665711,
+          "value": "$1K",
+          "color": "#7C8A9C"
+        }
+      ],
+      "total_label": "$0.12M",
+      "n_names": 4,
+      "head": "Positions by weight (4 names \u00b7 total $122K \u00b7 1 positions < 2% rolled into Other)"
+    }
+  },
+  "daily": {
+    "available": true,
+    "tiles": [
+      {
+        "label": "Vol 60d",
+        "value": "0.0%",
+        "spy": "0.0%",
+        "dir": "down",
+        "sub": "Annualized, daily std \u00d7 \u221a252"
+      },
+      {
+        "label": "Vol 252d",
+        "value": "0.0%",
+        "spy": "0.0%",
+        "dir": "down",
+        "sub": "Trailing 1Y"
+      },
+      {
+        "label": "VaR 95% (1d)",
+        "value": "0.02%",
+        "spy": "0.02%",
+        "dir": "flat",
+        "sub": "Historical, overlapping daily window"
+      },
+      {
+        "label": "CVaR 95% (1d)",
+        "value": "0.02%",
+        "spy": "0.02%",
+        "dir": "flat",
+        "sub": "Avg loss in the 5% tail"
+      },
+      {
+        "label": "Worst day",
+        "value": "0.02%",
+        "spy": "0.02%",
+        "dir": "flat",
+        "sub": "Port: Apr 29, 2026 \u00b7 SPY: Apr 30, 2026"
+      }
+    ],
+    "distribution": {
+      "available": false
+    },
+    "rolling_vol": {
+      "available": false,
+      "series": []
+    }
+  },
+  "beta": {
+    "available": true,
+    "tiles": [
+      {
+        "label": "\u03b2 to SPY (60d)",
+        "value": "2.56",
+        "spy": null,
+        "dir": "flat",
+        "sub": "Recent regime"
+      },
+      {
+        "label": "\u03b2 to SPY (252d)",
+        "value": "2.56",
+        "spy": null,
+        "dir": "flat",
+        "sub": "Trailing 1Y"
+      },
+      {
+        "label": "Up-\u03b2 (SPY > 0)",
+        "value": "2.56",
+        "spy": null,
+        "dir": "flat",
+        "sub": "Up-days only, 1Y"
+      },
+      {
+        "label": "Down-\u03b2 (SPY < 0)",
+        "value": "\u2014",
+        "spy": null,
+        "dir": "flat",
+        "sub": "Hedge truth-teller, down days only, 1Y"
+      },
+      {
+        "label": "\u03b1 (OLS intercept vs SPY)",
+        "value": "-8.52%",
+        "spy": null,
+        "dir": "flat",
+        "sub": "Annualized, 1Y \u00b7 raw returns (not CAPM)"
+      }
+    ],
+    "scatter": {
+      "available": false
+    },
+    "rolling_beta": {
+      "available": false,
+      "series": []
+    },
+    "rolling_alpha": {
+      "available": false,
+      "series": []
+    }
+  },
+  "quadrant_html": "<p><b>Reading \u03b1 and \u03b2 together.</b> The green quadrant (\u03b2 &lt; 1, \u03b1 &gt; 0) is the regime you want \u2014 de-risked and still outperforming a \u03b2-scaled passive; the red quadrant (\u03b2 &gt; 1, \u03b1 &lt; 0) is the one to fix \u2014 amplified market exposure that also underperforms its own benchmark.</p><table class='quadrant'><thead><tr><th></th><th>\u03b1 &gt; 0</th><th>\u03b1 &lt; 0</th></tr></thead><tbody><tr><th>\u03b2 &gt; 1</th><td class='q-neut'>Leveraged market exposure <em>and</em> outperforming what that leverage would predict. Acceptable if you wanted the risk.</td><td class='q-bad'><strong>Worst case.</strong> Amplified market exposure that <em>also</em> underperforms its own benchmark \u2014 two drags stacking.</td></tr><tr><th>\u03b2 &lt; 1</th><td class='q-good'><strong>Best case.</strong> De-risked <em>and</em> still outperforming a \u03b2-scaled passive. Best risk-adjusted quadrant.</td><td class='q-neut'>De-risked but lagging even the lower benchmark \u2014 a small drag (\u2248100-150 bps/yr) is often just cash + fees; larger gaps are real underperformance.</td></tr></tbody></table>"
+}

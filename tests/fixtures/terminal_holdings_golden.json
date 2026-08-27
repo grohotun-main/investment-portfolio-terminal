@@ -1,0 +1,391 @@
+{
+  "meta": {
+    "as_of": "2026-04-30",
+    "as_of_label": "Apr 30, 2026",
+    "available_dates": [
+      "2026-04-30",
+      "2026-03-31"
+    ],
+    "accounts": [
+      {
+        "id": "other_test_a",
+        "label": "Other (TEST-A)"
+      },
+      {
+        "id": "other_test_b",
+        "label": "Other (TEST-B)"
+      },
+      {
+        "id": "other_test_c",
+        "label": "Other (TEST-C)"
+      }
+    ],
+    "classes": [
+      {
+        "id": "cash",
+        "label": "Cash & sweep"
+      },
+      {
+        "id": "equity_etf",
+        "label": "ETFs"
+      },
+      {
+        "id": "equity_stock",
+        "label": "Individual Stocks"
+      },
+      {
+        "id": "fixed_income",
+        "label": "Fixed Income"
+      },
+      {
+        "id": "option_put",
+        "label": "Options (puts)"
+      }
+    ],
+    "brokers": [
+      {
+        "id": "fidelity",
+        "label": "fidelity"
+      },
+      {
+        "id": "jpm",
+        "label": "jpm"
+      }
+    ],
+    "filter": {
+      "account": "all",
+      "asset_class": "all",
+      "broker": "all"
+    },
+    "synthetic": true
+  },
+  "tape": [
+    {
+      "key": "portfolio_value",
+      "label": "Portfolio value",
+      "value": "$134,550",
+      "color": null,
+      "sub": "marked to live",
+      "chip": {
+        "text": "+3.5%",
+        "dir": "up"
+      }
+    },
+    {
+      "key": "cum_twr",
+      "label": "Cumulative TWR",
+      "value": "+63.3%",
+      "color": "gain",
+      "sub": "since 2023-01"
+    },
+    {
+      "key": "annualized",
+      "label": "Annualized TWR",
+      "value": "+15.9%",
+      "color": null,
+      "sub": "40 months"
+    },
+    {
+      "key": "irr",
+      "label": "IRR",
+      "value": "—",
+      "color": null,
+      "sub": "money-weighted · whole-book only"
+    },
+    {
+      "key": "vol",
+      "label": "Vol · 252d",
+      "value": "0.0%",
+      "color": null,
+      "sub": "β 2.56"
+    },
+    {
+      "key": "max_dd",
+      "label": "Max drawdown",
+      "value": "-7.4%",
+      "color": "loss",
+      "sub": "2023-06"
+    }
+  ],
+  "health": {
+    "level": "warning",
+    "text": "⚠ 1 account(s) carried forward — TEST-C last verified Mar 2026."
+  },
+  "carried_forward": [
+    {
+      "account": "TEST-C",
+      "as_of": "Mar 31, 2026"
+    }
+  ],
+  "snapshot": {
+    "portfolio_value": "$134,550",
+    "portfolio_value_sub": "marked to live prices",
+    "vs_prior": {
+      "pct": "3.5%",
+      "dir": "up",
+      "abs": "+$4,550",
+      "prior_label": "vs Mar 31, 2026"
+    },
+    "ytd": {
+      "pct": "-",
+      "dir": "flat",
+      "abs": "",
+      "prior_label": "No prior year-end snapshot"
+    },
+    "accounts": {
+      "value": 3,
+      "sub": "on this date · 2 brokers"
+    },
+    "holdings": {
+      "symbols": 6,
+      "rows": 7
+    }
+  },
+  "alloc_class": {
+    "total_label": "$0.13M",
+    "n": 5,
+    "slices": [
+      {
+        "label": "ETFs",
+        "class": "equity_etf",
+        "color": "#4DA3F5",
+        "pct": 63.54515050167224,
+        "value": "$85,500"
+      },
+      {
+        "label": "Individual Stocks",
+        "class": "equity_stock",
+        "color": "#2DD4BF",
+        "pct": 15.904868078781123,
+        "value": "$21,400"
+      },
+      {
+        "label": "Fixed Income",
+        "class": "fixed_income",
+        "color": "#8B7CF6",
+        "pct": 11.259754738015609,
+        "value": "$15,150"
+      },
+      {
+        "label": "Cash & sweep",
+        "class": "cash",
+        "color": "#9AA6B6",
+        "pct": 7.432181345224824,
+        "value": "$10,000"
+      },
+      {
+        "label": "Options (puts)",
+        "class": "option_put",
+        "color": "#FB7185",
+        "pct": 1.858045336306206,
+        "value": "$2,500"
+      }
+    ]
+  },
+  "alloc_account": {
+    "n": 3,
+    "rows": [
+      {
+        "label": "Other (TEST-A)",
+        "broker": "fidelity",
+        "color": "#4DA3F5",
+        "pct": 66.81531029357116,
+        "bar": 100.0
+      },
+      {
+        "label": "Other (TEST-B)",
+        "broker": "jpm",
+        "color": "#2DD4BF",
+        "pct": 32.441471571906355,
+        "bar": 48.5539488320356
+      },
+      {
+        "label": "Other (TEST-C)",
+        "broker": "fidelity",
+        "color": "#4DA3F5",
+        "pct": 0.7432181345224823,
+        "bar": 1.1123470522803114
+      }
+    ]
+  },
+  "top_holdings": {
+    "top_n": 15,
+    "rows": [
+      {
+        "symbol": "SPY",
+        "class": "equity_etf",
+        "color": "#4DA3F5",
+        "pct": 63.54515050167224,
+        "bar": 100.0
+      },
+      {
+        "symbol": "AAA",
+        "class": "equity_stock",
+        "color": "#2DD4BF",
+        "pct": 15.16164994425864,
+        "bar": 23.859649122807017
+      },
+      {
+        "symbol": "BBB",
+        "class": "fixed_income",
+        "color": "#8B7CF6",
+        "pct": 11.259754738015609,
+        "bar": 17.719298245614038
+      },
+      {
+        "symbol": "CASHX",
+        "class": "cash",
+        "color": "#9AA6B6",
+        "pct": 7.432181345224824,
+        "bar": 11.695906432748538
+      },
+      {
+        "symbol": "SPY260918P00500000",
+        "class": "option_put",
+        "color": "#FB7185",
+        "pct": 1.858045336306206,
+        "bar": 2.9239766081871346
+      },
+      {
+        "symbol": "CCC",
+        "class": "equity_stock",
+        "color": "#2DD4BF",
+        "pct": 0.7432181345224823,
+        "bar": 1.1695906432748537
+      }
+    ]
+  },
+  "positions": {
+    "shown": 7,
+    "total_underlying": 7,
+    "footnote": "Showing 7 rows of 7 underlying positions on Apr 30, 2026 — Tax Loss Harvesting and Treasury Ladder aggregated. 2 row(s) using statement-date price (no live mark).",
+    "rows": [
+      {
+        "symbol": "SPY",
+        "description": "SPDR S&P 500 ETF",
+        "account": "Other (TEST-A)",
+        "asset_class": "equity_etf",
+        "class_label": "ETFs",
+        "qty": "100.0000",
+        "price": "$570.00",
+        "price_asof": "Apr 30, 2026",
+        "price_stmt": false,
+        "market_value": "$57,000",
+        "cost_basis": "$50,000",
+        "ugl": "+$7,000",
+        "ugl_dir": "up",
+        "ugl_pct": "14.0%",
+        "ugl_pct_dir": "up",
+        "weight_pct": 42.36343366778149
+      },
+      {
+        "symbol": "SPY",
+        "description": "SPDR S&P 500 ETF",
+        "account": "Other (TEST-B)",
+        "asset_class": "equity_etf",
+        "class_label": "ETFs",
+        "qty": "50.0000",
+        "price": "$570.00",
+        "price_asof": "Apr 30, 2026",
+        "price_stmt": false,
+        "market_value": "$28,500",
+        "cost_basis": "$26,000",
+        "ugl": "+$2,500",
+        "ugl_dir": "up",
+        "ugl_pct": "9.6%",
+        "ugl_pct_dir": "up",
+        "weight_pct": 21.181716833890746
+      },
+      {
+        "symbol": "AAA",
+        "description": "Synthetic Equity A",
+        "account": "Other (TEST-A)",
+        "asset_class": "equity_stock",
+        "class_label": "Individual Stocks",
+        "qty": "200.0000",
+        "price": "$102.00",
+        "price_asof": "Apr 30, 2026",
+        "price_stmt": false,
+        "market_value": "$20,400",
+        "cost_basis": "$18,000",
+        "ugl": "+$2,400",
+        "ugl_dir": "up",
+        "ugl_pct": "13.3%",
+        "ugl_pct_dir": "up",
+        "weight_pct": 15.16164994425864
+      },
+      {
+        "symbol": "BBB",
+        "description": "Synthetic Bond Fund",
+        "account": "Other (TEST-B)",
+        "asset_class": "fixed_income",
+        "class_label": "Fixed Income",
+        "qty": "300.0000",
+        "price": "$50.50",
+        "price_asof": "Apr 30, 2026",
+        "price_stmt": false,
+        "market_value": "$15,150",
+        "cost_basis": "$15,000",
+        "ugl": "+$150",
+        "ugl_dir": "up",
+        "ugl_pct": "1.0%",
+        "ugl_pct_dir": "up",
+        "weight_pct": 11.259754738015609
+      },
+      {
+        "symbol": "CASHX",
+        "description": "Cash Sweep",
+        "account": "Other (TEST-A)",
+        "asset_class": "cash",
+        "class_label": "Cash & sweep",
+        "qty": "10,000.0000",
+        "price": "$1.00",
+        "price_asof": "Apr 30, 2026",
+        "price_stmt": false,
+        "market_value": "$10,000",
+        "cost_basis": "$10,000",
+        "ugl": "+$0",
+        "ugl_dir": "flat",
+        "ugl_pct": "0.0%",
+        "ugl_pct_dir": "flat",
+        "weight_pct": 7.432181345224824
+      },
+      {
+        "symbol": "SPY260918P00500000",
+        "description": "PUT SPY 09/18/26 500 SPDR S&P 500 ETF",
+        "account": "Other (TEST-A)",
+        "asset_class": "option_put",
+        "class_label": "Options (puts)",
+        "qty": "2.0000",
+        "price": "$12.50",
+        "price_asof": "Apr 30, 2026  (stmt)",
+        "price_stmt": true,
+        "market_value": "$2,500",
+        "cost_basis": "$3,000",
+        "ugl": "−$500",
+        "ugl_dir": "down",
+        "ugl_pct": "-16.7%",
+        "ugl_pct_dir": "down",
+        "weight_pct": 1.858045336306206
+      },
+      {
+        "symbol": "CCC",
+        "description": "Synthetic Equity C",
+        "account": "Other (TEST-C)",
+        "asset_class": "equity_stock",
+        "class_label": "Individual Stocks",
+        "qty": "40.0000",
+        "price": "$25.00",
+        "price_asof": "Mar 31, 2026  (stmt)",
+        "price_stmt": true,
+        "market_value": "$1,000",
+        "cost_basis": "$800",
+        "ugl": "+$200",
+        "ugl_dir": "up",
+        "ugl_pct": "25.0%",
+        "ugl_pct_dir": "up",
+        "weight_pct": 0.7432181345224823
+      }
+    ]
+  }
+}

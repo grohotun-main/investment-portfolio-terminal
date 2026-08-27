@@ -1,0 +1,45 @@
+{
+  "built_at": "2026-06-28T12:00:00Z",
+  "open_lots": 7,
+  "gate": {
+    "passed": true,
+    "accuracy_pct": 99.5,
+    "accuracy_threshold_pct": 99.0,
+    "coverage_pct": 70.0,
+    "coverage_threshold_pct": 60.0
+  },
+  "joined_bands": {
+    "ok": 5,
+    "watch": 1
+  },
+  "exit_band_health": 2,
+  "inputs": {
+    "transactions_rows": 11,
+    "positions_max_month": "2026-04"
+  },
+  "realized_ytd": {
+    "year": 2026,
+    "by_account": {
+      "TEST-C": {
+        "long": {"gains": 0.00, "losses": -95.10, "net": -95.10, "closes": 1},
+        "options_long": {"gains": 45.80, "losses": 0.00, "net": 45.80, "closes": 1, "uncovered": 2}
+      },
+      "TEST-A": {
+        "short": {"gains": 850.00, "losses": -320.50, "net": 529.50, "closes": 3},
+        "options_short": {"gains": 75.25, "losses": 0.00, "net": 75.25, "closes": 1, "uncovered": 1}
+      },
+      "TEST-B": {
+        "long": {"gains": 1200.00, "losses": -150.75, "net": 1049.25, "closes": 2},
+        "unknown": {"gains": 60.40, "losses": 0.00, "net": 60.40, "closes": 1}
+      },
+      "TEST-X": {
+        "short": {"gains": 444.00, "losses": 0.00, "net": 444.00, "closes": 1}
+      }
+    },
+    "notes": {
+      "excludes_fidelity_options": true,
+      "options_source": "jpm_printed_confirms",
+      "broker_unresolved": 0
+    }
+  }
+}

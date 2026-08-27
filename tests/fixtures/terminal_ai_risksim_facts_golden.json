@@ -1,0 +1,88 @@
+{
+  "vol_pct": {
+    "before": 0.4578,
+    "after": 0.4507,
+    "delta": -0.007
+  },
+  "sharpe": {
+    "before": 4.4694,
+    "after": 4.4094,
+    "delta": -0.0599
+  },
+  "sortino": {
+    "before": null,
+    "after": null,
+    "delta": null
+  },
+  "max_dd_pct": {
+    "before": 0.0,
+    "after": 0.0,
+    "delta": 0.0
+  },
+  "var95_pct": {
+    "before": 0.0171,
+    "after": 0.017,
+    "delta": -0.0001
+  },
+  "cvar95_pct": {
+    "before": 0.0168,
+    "after": 0.0167,
+    "delta": -0.0002
+  },
+  "dr": {
+    "before": 1.0646,
+    "after": 1.0687,
+    "delta": 0.0041
+  },
+  "down_beta": {
+    "before": null,
+    "after": null,
+    "delta": null
+  },
+  "stressed_corr_avg": {
+    "before": null,
+    "after": null,
+    "delta": null
+  },
+  "stressed_dr": {
+    "before": null,
+    "after": null,
+    "delta": null
+  },
+  "effective_n": {
+    "before": 1.8721,
+    "after": 2.128,
+    "delta": 0.2559
+  },
+  "top5_pct": {
+    "before": 100.0,
+    "after": 100.0,
+    "delta": 0.0
+  },
+  "max_pct": {
+    "before": 70.0533,
+    "after": 65.0533,
+    "delta": -5.0
+  },
+  "weight_moves": [
+    {
+      "ticker": "SGOV",
+      "before_pct": 0.82,
+      "after_pct": 5.82,
+      "delta_pp": 5.0
+    },
+    {
+      "ticker": "SPY",
+      "before_pct": 70.05,
+      "after_pct": 65.05,
+      "delta_pp": -5.0
+    }
+  ],
+  "candidates": [],
+  "section": "risksim",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "available": true
+}

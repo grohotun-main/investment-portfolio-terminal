@@ -1,0 +1,5336 @@
+{
+  "meta": {
+    "accounts": [
+      {
+        "id": "other_test_a",
+        "label": "Other (TEST-A)"
+      },
+      {
+        "id": "other_test_b",
+        "label": "Other (TEST-B)"
+      },
+      {
+        "id": "other_test_c",
+        "label": "Other (TEST-C)"
+      }
+    ],
+    "classes": [
+      {
+        "id": "cash",
+        "label": "Cash & sweep"
+      },
+      {
+        "id": "equity_etf",
+        "label": "ETFs"
+      },
+      {
+        "id": "equity_stock",
+        "label": "Individual Stocks"
+      },
+      {
+        "id": "fixed_income",
+        "label": "Fixed Income"
+      },
+      {
+        "id": "option_put",
+        "label": "Options (puts)"
+      }
+    ],
+    "brokers": [
+      {
+        "id": "fidelity",
+        "label": "fidelity"
+      },
+      {
+        "id": "jpm",
+        "label": "jpm"
+      }
+    ],
+    "filter": {
+      "account": "all",
+      "asset_class": "all",
+      "broker": "all"
+    },
+    "account_filter_active": false,
+    "class_filter_active": false,
+    "synthetic": true,
+    "risk_latest_label": "Apr 30, 2026"
+  },
+  "info_html": "<b>This page is a regime monitor, not a crash forecaster.</b> It tells you which positions drive risk <i>in the current regime</i> — based on the trailing 252 trading days. Expected Shortfall values here are <i>average-bad-day</i> losses for this window, not tail-event predictions.",
+  "caption_html": "Breaks down portfolio risk by position, asking three different questions: which positions contribute most to (1) <b>overall volatility</b>, (2) <b>losses on bad days</b>, and (3) <b>losses in the worst tail</b>. Uses the same weight universe as the Risk Overview tab — TLH sleeve folds to SPY, treasury rungs map to duration-matched Treasury ETFs (uncovered → SGOV; see the per-rung mix below), cash and options excluded. Inherits the Account / Asset-class filter.",
+  "filter_note": null,
+  "treasury_ladder": {
+    "present": false,
+    "caption": null
+  },
+  "controls": {
+    "estimators": [
+      {
+        "id": "ewma_lw",
+        "label": "EWMA + Ledoit-Wolf (default)"
+      },
+      {
+        "id": "ewma",
+        "label": "EWMA (no shrinkage)"
+      },
+      {
+        "id": "rolling",
+        "label": "Rolling 252d (legacy)"
+      }
+    ],
+    "es_levels": [
+      {
+        "id": "0.05",
+        "label": "95% (α=5%)",
+        "caption": "Looks at the worst 5.0% of the trailing 252 trading days — about 13 tail-day(s) — and averages the losses there."
+      },
+      {
+        "id": "0.025",
+        "label": "97.5% (α=2.5%)",
+        "caption": "Looks at the worst 2.5% of the trailing 252 trading days — about 6 tail-day(s) — and averages the losses there."
+      },
+      {
+        "id": "0.01",
+        "label": "99% (α=1%)",
+        "caption": "Looks at the worst 1.0% of the trailing 252 trading days — about 3 tail-day(s) — and averages the losses there."
+      }
+    ],
+    "thresholds": [
+      {
+        "id": "0.0",
+        "label": "0% (Sortino MAR)",
+        "caption": "Days where the portfolio returned less than +0.0% count as 'stress days'. The trailing-252-day window has 0 stress day(s) out of 22."
+      },
+      {
+        "id": "-0.005",
+        "label": "−0.5% (mild stress)",
+        "caption": "Days where the portfolio returned less than -0.5% count as 'stress days'. The trailing-252-day window has 0 stress day(s) out of 22."
+      },
+      {
+        "id": "-0.01",
+        "label": "−1% (sharp stress)",
+        "caption": "Days where the portfolio returned less than -1.0% count as 'stress days'. The trailing-252-day window has 0 stress day(s) out of 22."
+      }
+    ],
+    "benchmarks": [
+      {
+        "id": "SPY",
+        "label": "SPY (S&P 500 TR)"
+      },
+      {
+        "id": "AAA",
+        "label": "AAA"
+      },
+      {
+        "id": "BBB",
+        "label": "BBB"
+      }
+    ]
+  },
+  "combos": {
+    "ewma_lw|0.05|0.0": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA + Ledoit-Wolf · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>shrinkage intensity α</b> = 0.01 (0 = no shrinkage, 1 = full pull toward the target) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below 0% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004577551804360097,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 13 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma_lw"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.11608193919315,
+          7.931487796881568,
+          0.9524302639253033
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.12%",
+            "risk_delta": {
+              "text": "+20.48",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.93%",
+            "risk_delta": {
+              "text": "-8.92",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.56",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma_lw); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma_lw|0.05|-0.005": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA + Ledoit-Wolf · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>shrinkage intensity α</b> = 0.01 (0 = no shrinkage, 1 = full pull toward the target) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −0.5% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004577551804360097,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 13 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma_lw"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.11608193919315,
+          7.931487796881568,
+          0.9524302639253033
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.12%",
+            "risk_delta": {
+              "text": "+20.48",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.93%",
+            "risk_delta": {
+              "text": "-8.92",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.56",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma_lw); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma_lw|0.05|-0.01": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA + Ledoit-Wolf · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>shrinkage intensity α</b> = 0.01 (0 = no shrinkage, 1 = full pull toward the target) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −1% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004577551804360097,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 13 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma_lw"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.11608193919315,
+          7.931487796881568,
+          0.9524302639253033
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.12%",
+            "risk_delta": {
+              "text": "+20.48",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.93%",
+            "risk_delta": {
+              "text": "-8.92",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.56",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma_lw); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma_lw|0.025|0.0": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA + Ledoit-Wolf · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>shrinkage intensity α</b> = 0.01 (0 = no shrinkage, 1 = full pull toward the target) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below 0% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004577551804360097,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 7 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma_lw"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.11608193919315,
+          7.931487796881568,
+          0.9524302639253033
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.12%",
+            "risk_delta": {
+              "text": "+20.48",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.93%",
+            "risk_delta": {
+              "text": "-8.92",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.56",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma_lw); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma_lw|0.025|-0.005": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA + Ledoit-Wolf · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>shrinkage intensity α</b> = 0.01 (0 = no shrinkage, 1 = full pull toward the target) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −0.5% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004577551804360097,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 7 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma_lw"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.11608193919315,
+          7.931487796881568,
+          0.9524302639253033
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.12%",
+            "risk_delta": {
+              "text": "+20.48",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.93%",
+            "risk_delta": {
+              "text": "-8.92",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.56",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma_lw); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma_lw|0.025|-0.01": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA + Ledoit-Wolf · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>shrinkage intensity α</b> = 0.01 (0 = no shrinkage, 1 = full pull toward the target) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −1% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004577551804360097,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 7 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma_lw"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.11608193919315,
+          7.931487796881568,
+          0.9524302639253033
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.12%",
+            "risk_delta": {
+              "text": "+20.48",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.93%",
+            "risk_delta": {
+              "text": "-8.92",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.56",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma_lw); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma_lw|0.01|0.0": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA + Ledoit-Wolf · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>shrinkage intensity α</b> = 0.01 (0 = no shrinkage, 1 = full pull toward the target) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below 0% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        },
+        {
+          "kind": "es",
+          "message": "Expected Shortfall: only 3 tail day(s) at 99% confidence — too thin to trust. ES columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004577551804360097,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 3 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma_lw"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.11608193919315,
+          7.931487796881568,
+          0.9524302639253033
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.12%",
+            "risk_delta": {
+              "text": "+20.48",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.93%",
+            "risk_delta": {
+              "text": "-8.92",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.56",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma_lw); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma_lw|0.01|-0.005": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA + Ledoit-Wolf · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>shrinkage intensity α</b> = 0.01 (0 = no shrinkage, 1 = full pull toward the target) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −0.5% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        },
+        {
+          "kind": "es",
+          "message": "Expected Shortfall: only 3 tail day(s) at 99% confidence — too thin to trust. ES columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004577551804360097,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 3 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma_lw"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.11608193919315,
+          7.931487796881568,
+          0.9524302639253033
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.12%",
+            "risk_delta": {
+              "text": "+20.48",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.93%",
+            "risk_delta": {
+              "text": "-8.92",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.56",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma_lw); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma_lw|0.01|-0.01": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA + Ledoit-Wolf · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>shrinkage intensity α</b> = 0.01 (0 = no shrinkage, 1 = full pull toward the target) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −1% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        },
+        {
+          "kind": "es",
+          "message": "Expected Shortfall: only 3 tail day(s) at 99% confidence — too thin to trust. ES columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004577551804360097,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 3 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma_lw"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.11608193919315,
+          7.931487796881568,
+          0.9524302639253033
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.12%",
+            "risk_delta": {
+              "text": "+20.48",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.93%",
+            "risk_delta": {
+              "text": "-8.92",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.56",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma_lw); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma|0.05|0.0": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below 0% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004578331527793687,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 13 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.10217701396355,
+          7.9519874931278185,
+          0.9458354929086303
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.10%",
+            "risk_delta": {
+              "text": "+20.47",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.95%",
+            "risk_delta": {
+              "text": "-8.90",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.57",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma|0.05|-0.005": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −0.5% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004578331527793687,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 13 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.10217701396355,
+          7.9519874931278185,
+          0.9458354929086303
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.10%",
+            "risk_delta": {
+              "text": "+20.47",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.95%",
+            "risk_delta": {
+              "text": "-8.90",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.57",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma|0.05|-0.01": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −1% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004578331527793687,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 13 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.10217701396355,
+          7.9519874931278185,
+          0.9458354929086303
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.10%",
+            "risk_delta": {
+              "text": "+20.47",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.95%",
+            "risk_delta": {
+              "text": "-8.90",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.57",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma|0.025|0.0": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below 0% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004578331527793687,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 7 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.10217701396355,
+          7.9519874931278185,
+          0.9458354929086303
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.10%",
+            "risk_delta": {
+              "text": "+20.47",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.95%",
+            "risk_delta": {
+              "text": "-8.90",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.57",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma|0.025|-0.005": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −0.5% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004578331527793687,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 7 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.10217701396355,
+          7.9519874931278185,
+          0.9458354929086303
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.10%",
+            "risk_delta": {
+              "text": "+20.47",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.95%",
+            "risk_delta": {
+              "text": "-8.90",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.57",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma|0.025|-0.01": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −1% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004578331527793687,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 7 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.10217701396355,
+          7.9519874931278185,
+          0.9458354929086303
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.10%",
+            "risk_delta": {
+              "text": "+20.47",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.95%",
+            "risk_delta": {
+              "text": "-8.90",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.57",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma|0.01|0.0": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below 0% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        },
+        {
+          "kind": "es",
+          "message": "Expected Shortfall: only 3 tail day(s) at 99% confidence — too thin to trust. ES columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004578331527793687,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 3 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.10217701396355,
+          7.9519874931278185,
+          0.9458354929086303
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.10%",
+            "risk_delta": {
+              "text": "+20.47",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.95%",
+            "risk_delta": {
+              "text": "-8.90",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.57",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma|0.01|-0.005": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −0.5% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        },
+        {
+          "kind": "es",
+          "message": "Expected Shortfall: only 3 tail day(s) at 99% confidence — too thin to trust. ES columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004578331527793687,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 3 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.10217701396355,
+          7.9519874931278185,
+          0.9458354929086303
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.10%",
+            "risk_delta": {
+              "text": "+20.47",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.95%",
+            "risk_delta": {
+              "text": "-8.90",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.57",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "ewma|0.01|-0.01": {
+      "estimator_strip": "<b>Covariance estimator:</b> EWMA · <b>decay λ</b> = 0.94 (higher = slower decay, more memory) · <b>input</b> = 504 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −1% on the 504-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        },
+        {
+          "kind": "es",
+          "message": "Expected Shortfall: only 3 tail day(s) at 99% confidence — too thin to trust. ES columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.46%",
+          "raw": 0.004578331527793687,
+          "caption": "How wide swings are on average. Based on 504-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 3 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "91.1% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.06×",
+          "sub": "0.5% weighted-avg standalone vol → 0.5% port vol · estimator: ewma"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "AAA",
+          "BBB"
+        ],
+        "weight": [
+          70.63197026022304,
+          16.852540272614622,
+          12.515489467162327
+        ],
+        "pctr": [
+          91.10217701396355,
+          7.9519874931278185,
+          0.9458354929086303
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "91.10%",
+            "risk_delta": {
+              "text": "+20.47",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "7.95%",
+            "risk_delta": {
+              "text": "-8.90",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.3%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.95%",
+            "risk_delta": {
+              "text": "-11.57",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>504</b> trading days for PCTR (ewma); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "rolling|0.05|0.0": {
+      "estimator_strip": "<b>Covariance estimator:</b> Rolling 252d (sample covariance) · <b>input</b> = 252 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below 0% on the 252-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.40%",
+          "raw": 0.003997340211230565,
+          "caption": "How wide swings are on average. Based on 252-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 13 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "99.7% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.04×",
+          "sub": "0.4% weighted-avg standalone vol → 0.4% port vol · estimator: rolling"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "BBB",
+          "AAA"
+        ],
+        "weight": [
+          70.63197026022304,
+          12.515489467162327,
+          16.852540272614622
+        ],
+        "pctr": [
+          99.7274704462906,
+          0.2394030277569069,
+          0.03312652595247952
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "99.73%",
+            "risk_delta": {
+              "text": "+29.10",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.24%",
+            "risk_delta": {
+              "text": "-12.28",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "0.03%",
+            "risk_delta": {
+              "text": "-16.82",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.0%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>252</b> trading days for PCTR (rolling); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "rolling|0.05|-0.005": {
+      "estimator_strip": "<b>Covariance estimator:</b> Rolling 252d (sample covariance) · <b>input</b> = 252 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −0.5% on the 252-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.40%",
+          "raw": 0.003997340211230565,
+          "caption": "How wide swings are on average. Based on 252-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 13 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "99.7% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.04×",
+          "sub": "0.4% weighted-avg standalone vol → 0.4% port vol · estimator: rolling"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "BBB",
+          "AAA"
+        ],
+        "weight": [
+          70.63197026022304,
+          12.515489467162327,
+          16.852540272614622
+        ],
+        "pctr": [
+          99.7274704462906,
+          0.2394030277569069,
+          0.03312652595247952
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "99.73%",
+            "risk_delta": {
+              "text": "+29.10",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.24%",
+            "risk_delta": {
+              "text": "-12.28",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "0.03%",
+            "risk_delta": {
+              "text": "-16.82",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.0%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>252</b> trading days for PCTR (rolling); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "rolling|0.05|-0.01": {
+      "estimator_strip": "<b>Covariance estimator:</b> Rolling 252d (sample covariance) · <b>input</b> = 252 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −1% on the 252-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.40%",
+          "raw": 0.003997340211230565,
+          "caption": "How wide swings are on average. Based on 252-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 13 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "99.7% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.04×",
+          "sub": "0.4% weighted-avg standalone vol → 0.4% port vol · estimator: rolling"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "BBB",
+          "AAA"
+        ],
+        "weight": [
+          70.63197026022304,
+          12.515489467162327,
+          16.852540272614622
+        ],
+        "pctr": [
+          99.7274704462906,
+          0.2394030277569069,
+          0.03312652595247952
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "99.73%",
+            "risk_delta": {
+              "text": "+29.10",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.24%",
+            "risk_delta": {
+              "text": "-12.28",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "0.03%",
+            "risk_delta": {
+              "text": "-16.82",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.0%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>252</b> trading days for PCTR (rolling); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "rolling|0.025|0.0": {
+      "estimator_strip": "<b>Covariance estimator:</b> Rolling 252d (sample covariance) · <b>input</b> = 252 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below 0% on the 252-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.40%",
+          "raw": 0.003997340211230565,
+          "caption": "How wide swings are on average. Based on 252-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 7 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "99.7% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.04×",
+          "sub": "0.4% weighted-avg standalone vol → 0.4% port vol · estimator: rolling"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "BBB",
+          "AAA"
+        ],
+        "weight": [
+          70.63197026022304,
+          12.515489467162327,
+          16.852540272614622
+        ],
+        "pctr": [
+          99.7274704462906,
+          0.2394030277569069,
+          0.03312652595247952
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "99.73%",
+            "risk_delta": {
+              "text": "+29.10",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.24%",
+            "risk_delta": {
+              "text": "-12.28",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "0.03%",
+            "risk_delta": {
+              "text": "-16.82",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.0%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>252</b> trading days for PCTR (rolling); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "rolling|0.025|-0.005": {
+      "estimator_strip": "<b>Covariance estimator:</b> Rolling 252d (sample covariance) · <b>input</b> = 252 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −0.5% on the 252-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.40%",
+          "raw": 0.003997340211230565,
+          "caption": "How wide swings are on average. Based on 252-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 7 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "99.7% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.04×",
+          "sub": "0.4% weighted-avg standalone vol → 0.4% port vol · estimator: rolling"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "BBB",
+          "AAA"
+        ],
+        "weight": [
+          70.63197026022304,
+          12.515489467162327,
+          16.852540272614622
+        ],
+        "pctr": [
+          99.7274704462906,
+          0.2394030277569069,
+          0.03312652595247952
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "99.73%",
+            "risk_delta": {
+              "text": "+29.10",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.24%",
+            "risk_delta": {
+              "text": "-12.28",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "0.03%",
+            "risk_delta": {
+              "text": "-16.82",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.0%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>252</b> trading days for PCTR (rolling); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "rolling|0.025|-0.01": {
+      "estimator_strip": "<b>Covariance estimator:</b> Rolling 252d (sample covariance) · <b>input</b> = 252 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −1% on the 252-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.40%",
+          "raw": 0.003997340211230565,
+          "caption": "How wide swings are on average. Based on 252-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 7 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "99.7% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.04×",
+          "sub": "0.4% weighted-avg standalone vol → 0.4% port vol · estimator: rolling"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "BBB",
+          "AAA"
+        ],
+        "weight": [
+          70.63197026022304,
+          12.515489467162327,
+          16.852540272614622
+        ],
+        "pctr": [
+          99.7274704462906,
+          0.2394030277569069,
+          0.03312652595247952
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "99.73%",
+            "risk_delta": {
+              "text": "+29.10",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.24%",
+            "risk_delta": {
+              "text": "-12.28",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "0.03%",
+            "risk_delta": {
+              "text": "-16.82",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.0%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>252</b> trading days for PCTR (rolling); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "rolling|0.01|0.0": {
+      "estimator_strip": "<b>Covariance estimator:</b> Rolling 252d (sample covariance) · <b>input</b> = 252 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below 0% on the 252-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        },
+        {
+          "kind": "es",
+          "message": "Expected Shortfall: only 3 tail day(s) at 99% confidence — too thin to trust. ES columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.40%",
+          "raw": 0.003997340211230565,
+          "caption": "How wide swings are on average. Based on 252-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 3 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "99.7% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.04×",
+          "sub": "0.4% weighted-avg standalone vol → 0.4% port vol · estimator: rolling"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "BBB",
+          "AAA"
+        ],
+        "weight": [
+          70.63197026022304,
+          12.515489467162327,
+          16.852540272614622
+        ],
+        "pctr": [
+          99.7274704462906,
+          0.2394030277569069,
+          0.03312652595247952
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "99.73%",
+            "risk_delta": {
+              "text": "+29.10",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.24%",
+            "risk_delta": {
+              "text": "-12.28",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "0.03%",
+            "risk_delta": {
+              "text": "-16.82",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.0%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>252</b> trading days for PCTR (rolling); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "rolling|0.01|-0.005": {
+      "estimator_strip": "<b>Covariance estimator:</b> Rolling 252d (sample covariance) · <b>input</b> = 252 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −0.5% on the 252-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        },
+        {
+          "kind": "es",
+          "message": "Expected Shortfall: only 3 tail day(s) at 99% confidence — too thin to trust. ES columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.40%",
+          "raw": 0.003997340211230565,
+          "caption": "How wide swings are on average. Based on 252-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 3 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "99.7% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.04×",
+          "sub": "0.4% weighted-avg standalone vol → 0.4% port vol · estimator: rolling"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "BBB",
+          "AAA"
+        ],
+        "weight": [
+          70.63197026022304,
+          12.515489467162327,
+          16.852540272614622
+        ],
+        "pctr": [
+          99.7274704462906,
+          0.2394030277569069,
+          0.03312652595247952
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "99.73%",
+            "risk_delta": {
+              "text": "+29.10",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.24%",
+            "risk_delta": {
+              "text": "-12.28",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "0.03%",
+            "risk_delta": {
+              "text": "-16.82",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.0%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>252</b> trading days for PCTR (rolling); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    },
+    "rolling|0.01|-0.01": {
+      "estimator_strip": "<b>Covariance estimator:</b> Rolling 252d (sample covariance) · <b>input</b> = 252 trading day(s)",
+      "sample_warnings": [
+        {
+          "kind": "downside",
+          "message": "Downside covariance: only 0 day(s) below −1% on the 252-day window — need at least 20 for a stable estimate. Downside columns will show '—'."
+        },
+        {
+          "kind": "es",
+          "message": "Expected Shortfall: only 3 tail day(s) at 99% confidence — too thin to trust. ES columns will show '—'."
+        }
+      ],
+      "portfolio": {
+        "vol": {
+          "value": "0.40%",
+          "raw": 0.003997340211230565,
+          "caption": "How wide swings are on average. Based on 252-day covariance."
+        },
+        "es": {
+          "value": "—",
+          "raw": null,
+          "caption": "Average loss on the 3 worst day(s) in the window. Value at Risk (VaR) at the same confidence: 0.02%."
+        }
+      },
+      "top_tiles": [
+        {
+          "label": "Top risk contributor",
+          "value": "SPY",
+          "sub": "99.7% of risk · 70.6% of weight"
+        },
+        {
+          "label": "Top 3 — risk share",
+          "value": "100.0%",
+          "sub": "Share of total portfolio vol in top 3 names"
+        },
+        {
+          "label": "Top 5 — risk / weight",
+          "value": "100.0% / 100.0%",
+          "sub": "PCTR / dollar weight — gap = how much of the risk budget lives in fewer names than the $ budget"
+        },
+        {
+          "label": "Diversification ratio",
+          "value": "1.04×",
+          "sub": "0.4% weighted-avg standalone vol → 0.4% port vol · estimator: rolling"
+        }
+      ],
+      "weight_vs_pctr": {
+        "symbols": [
+          "SPY",
+          "BBB",
+          "AAA"
+        ],
+        "weight": [
+          70.63197026022304,
+          12.515489467162327,
+          16.852540272614622
+        ],
+        "pctr": [
+          99.7274704462906,
+          0.2394030277569069,
+          0.03312652595247952
+        ]
+      },
+      "table": {
+        "rows": [
+          {
+            "symbol": "SPY",
+            "weight": "70.63%",
+            "pctr": "99.73%",
+            "risk_delta": {
+              "text": "+29.10",
+              "cls": "loss-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.6%"
+          },
+          {
+            "symbol": "BBB",
+            "weight": "12.52%",
+            "pctr": "0.24%",
+            "risk_delta": {
+              "text": "-12.28",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.1%"
+          },
+          {
+            "symbol": "AAA",
+            "weight": "16.85%",
+            "pctr": "0.03%",
+            "risk_delta": {
+              "text": "-16.82",
+              "cls": "gain-strong"
+            },
+            "downside_pctr": "—",
+            "delta_down": {
+              "text": "—",
+              "cls": ""
+            },
+            "es_pctr": {
+              "text": "—",
+              "cls": "",
+              "bold": false
+            },
+            "es_delta": {
+              "text": "—",
+              "cls": ""
+            },
+            "standalone_vol": "0.0%"
+          }
+        ],
+        "row_cue_caption": "<b>Row cues</b> — 🔴 orange = risk driver / stress amplifier (positive Δ ≥ 5pp = strong, ≥ 2pp = mild) · 🟢 green = diversifier (negative Δ ≤ −5pp = strong, ≤ −2pp = mild). <b>Bold ES PCTR</b> = hidden tail risk (ES contribution ≥ 5pp above total PCTR).",
+        "window_caption": "<i>Windows: <b>252</b> trading days for PCTR (rolling); <b>252</b> trading days for ES PCTR (sample-historical).  Universe: <b>3</b> symbols · PCTR sums to 100% by construction.</i>"
+      }
+    }
+  },
+  "benchmarks": {
+    "SPY": {
+      "label": "SPY (S&P 500 TR)",
+      "vol": {
+        "ewma_lw": {
+          "value": "0.32%",
+          "delta": "+0.14 pp",
+          "dir": "down"
+        },
+        "ewma": {
+          "value": "0.32%",
+          "delta": "+0.14 pp",
+          "dir": "down"
+        },
+        "rolling": {
+          "value": "0.00%",
+          "delta": "+0.40 pp",
+          "dir": "down"
+        }
+      },
+      "es": {
+        "ewma_lw": {
+          "0.05": {
+            "value": "-0.02%",
+            "delta": "+0.00 pp",
+            "dir": "flat"
+          },
+          "0.025": {
+            "value": "-0.02%",
+            "delta": "+0.00 pp",
+            "dir": "flat"
+          },
+          "0.01": {
+            "value": "-0.02%",
+            "delta": "+0.00 pp",
+            "dir": "flat"
+          }
+        },
+        "ewma": {
+          "0.05": {
+            "value": "-0.02%",
+            "delta": "+0.00 pp",
+            "dir": "flat"
+          },
+          "0.025": {
+            "value": "-0.02%",
+            "delta": "+0.00 pp",
+            "dir": "flat"
+          },
+          "0.01": {
+            "value": "-0.02%",
+            "delta": "+0.00 pp",
+            "dir": "flat"
+          }
+        },
+        "rolling": {
+          "0.05": {
+            "value": "-0.02%",
+            "delta": "+0.00 pp",
+            "dir": "flat"
+          },
+          "0.025": {
+            "value": "-0.02%",
+            "delta": "+0.00 pp",
+            "dir": "flat"
+          },
+          "0.01": {
+            "value": "-0.02%",
+            "delta": "+0.00 pp",
+            "dir": "flat"
+          }
+        }
+      }
+    },
+    "AAA": {
+      "label": "AAA",
+      "vol": {
+        "ewma_lw": {
+          "value": "0.31%",
+          "delta": "+0.15 pp",
+          "dir": "down"
+        },
+        "ewma": {
+          "value": "0.31%",
+          "delta": "+0.15 pp",
+          "dir": "down"
+        },
+        "rolling": {
+          "value": "0.02%",
+          "delta": "+0.37 pp",
+          "dir": "down"
+        }
+      },
+      "es": {
+        "ewma_lw": {
+          "0.05": {
+            "value": "-0.02%",
+            "delta": "-0.00 pp",
+            "dir": "flat"
+          },
+          "0.025": {
+            "value": "-0.01%",
+            "delta": "-0.01 pp",
+            "dir": "flat"
+          },
+          "0.01": {
+            "value": "-0.01%",
+            "delta": "-0.01 pp",
+            "dir": "flat"
+          }
+        },
+        "ewma": {
+          "0.05": {
+            "value": "-0.02%",
+            "delta": "-0.00 pp",
+            "dir": "flat"
+          },
+          "0.025": {
+            "value": "-0.01%",
+            "delta": "-0.01 pp",
+            "dir": "flat"
+          },
+          "0.01": {
+            "value": "-0.01%",
+            "delta": "-0.01 pp",
+            "dir": "flat"
+          }
+        },
+        "rolling": {
+          "0.05": {
+            "value": "-0.02%",
+            "delta": "-0.00 pp",
+            "dir": "flat"
+          },
+          "0.025": {
+            "value": "-0.01%",
+            "delta": "-0.01 pp",
+            "dir": "flat"
+          },
+          "0.01": {
+            "value": "-0.01%",
+            "delta": "-0.01 pp",
+            "dir": "flat"
+          }
+        }
+      }
+    },
+    "BBB": {
+      "label": "BBB",
+      "vol": {
+        "ewma_lw": {
+          "value": "0.12%",
+          "delta": "+0.33 pp",
+          "dir": "down"
+        },
+        "ewma": {
+          "value": "0.12%",
+          "delta": "+0.33 pp",
+          "dir": "down"
+        },
+        "rolling": {
+          "value": "0.12%",
+          "delta": "+0.28 pp",
+          "dir": "down"
+        }
+      },
+      "es": {
+        "ewma_lw": {
+          "0.05": {
+            "value": "-0.00%",
+            "delta": "-0.02 pp",
+            "dir": "flat"
+          },
+          "0.025": {
+            "value": "-0.00%",
+            "delta": "-0.02 pp",
+            "dir": "flat"
+          },
+          "0.01": {
+            "value": "-0.00%",
+            "delta": "-0.02 pp",
+            "dir": "flat"
+          }
+        },
+        "ewma": {
+          "0.05": {
+            "value": "-0.00%",
+            "delta": "-0.02 pp",
+            "dir": "flat"
+          },
+          "0.025": {
+            "value": "-0.00%",
+            "delta": "-0.02 pp",
+            "dir": "flat"
+          },
+          "0.01": {
+            "value": "-0.00%",
+            "delta": "-0.02 pp",
+            "dir": "flat"
+          }
+        },
+        "rolling": {
+          "0.05": {
+            "value": "-0.00%",
+            "delta": "-0.02 pp",
+            "dir": "flat"
+          },
+          "0.025": {
+            "value": "-0.00%",
+            "delta": "-0.02 pp",
+            "dir": "flat"
+          },
+          "0.01": {
+            "value": "-0.00%",
+            "delta": "-0.02 pp",
+            "dir": "flat"
+          }
+        }
+      }
+    }
+  },
+  "dr_in_context": {
+    "available": true,
+    "message": null,
+    "lede_html": "Rolling diversification ratio on short (21d) / medium (63d) / long (252d) windows — the regime signal is the <b>short/long ratio</b>.",
+    "caption_html": "DR across short (21d), medium (63d), and long (252d) windows on today's weights, computed with <b>rolling sample std</b> (not the tile's active estimator). The regime signal is the <b>short/long DR ratio</b> — when correlations cluster, short drops faster than long and the ratio falls. The ceiling is the unconstrained Choueifaty-Coignard maximum on a rolling 252d correlation matrix (allows negative weights — long-only ceiling is materially lower). <b>It is a true upper bound only for DR 252d</b>; short/medium DR are computed on different correlation matrices and can legitimately sit above this line. Right edge of DR 252d may differ from the Diversification ratio tile above when the tile's estimator isn't <code>rolling</code>.",
+    "howto_html": "<p><b>Diversification ratio</b> (DR = Σ wᵢσᵢ / σ_p) measures how much the portfolio's actual vol is reduced by imperfect cross-asset correlations. DR ≥ 1 always (Cauchy-Schwarz); = 1 when assets are perfectly correlated; higher means more diversification benefit.</p><p><b>Windows</b> — short (≈1 month) captures the current regime; long (≈1 year) is the baseline. The medium window (~quarter) is the intermediate signal.</p><p><b>The dial above</b> plots the <b>short/long DR ratio</b> — the current regime expressed as a single number.</p><ul><li>🔴 <b>left zone</b> — short DR is well below the long-run DR, meaning correlations are clustering and diversification is eroding faster than usual.</li><li>⚪ <b>middle zone</b> — normal regime; short and long DR are roughly in line.</li><li>🟢 <b>right zone</b> — short DR is well above long-run DR; names are decorrelating and idiosyncratic moves dominate.</li></ul><p><b>Threshold methods</b> (controls where the colored zones start)</p><ul><li><b>Fixed</b> — round-number defaults 0.90 / 1.10. Same regime cuts across portfolios; easy to compare.</li><li><b>Percentile</b> — 20th / 80th percentile of the <i>observed</i> ratio history. Self-calibrating; \"Stress\" literally means \"ratio is in the worst 20% of recent observations.\" Best when this portfolio's operational range differs from the round-number defaults.</li><li><b>Z-score</b> — mean ± 1σ of the ratio's distribution. Adapts to the ratio's own variability; useful when the ratio is unusually stable (tight band) or unusually noisy (wide band).</li></ul><p><i>In-sample caveat</i> — Percentile and Z-score thresholds are fit on the same ratio series they classify: percentile mode mechanically labels ~20% of observations Stress and ~20% Calm by construction. Use those modes for \"where does today sit in this portfolio's operating range,\" not for objective regime calls; Fixed is the out-of-sample yardstick.</p><p><b>Trailing-1Y mean reference</b> — the dotted line on the main DR chart is the trailing 1-year mean of DR_long, anchoring \"normal for this portfolio.\"</p><p><b>Max DR (theoretical)</b> = √(1ᵀ R⁻¹ 1) — the unconstrained Choueifaty-Coignard ceiling on the current asset universe. <i>Allows negative weights</i> — the long-only ceiling is materially lower (would need a QP solver). Use the gap as a structural diversification signal, not a target.</p>",
+    "tiles": [
+      {
+        "label": "DR 21d (short)",
+        "value": "1.52×",
+        "sub": "Recent regime"
+      },
+      {
+        "label": "DR 63d (medium)",
+        "value": "1.04×",
+        "sub": "Trailing quarter"
+      },
+      {
+        "label": "DR 252d (long)",
+        "value": "1.04×",
+        "sub": "Trailing year — baseline"
+      },
+      {
+        "label": "Max DR (theoretical)",
+        "value": "1.70×",
+        "sub": "Closed-form ceiling · 3 symbols · unconstrained"
+      }
+    ],
+    "dr_chart": {
+      "series": [
+        {
+          "name": "DR 21d (short)",
+          "color": "#A4B0C0",
+          "dash": false,
+          "width": 1.5,
+          "points": [
+            {
+              "x": "2026-04-01",
+              "v": 1.0319058891505077
+            },
+            {
+              "x": "2026-04-02",
+              "v": 1.0318978161286374
+            },
+            {
+              "x": "2026-04-03",
+              "v": 1.0318901413231507
+            },
+            {
+              "x": "2026-04-06",
+              "v": 1.0288909604773875
+            },
+            {
+              "x": "2026-04-07",
+              "v": 1.0288835913320489
+            },
+            {
+              "x": "2026-04-08",
+              "v": 1.0288758182131577
+            },
+            {
+              "x": "2026-04-09",
+              "v": 1.0317811707111653
+            },
+            {
+              "x": "2026-04-10",
+              "v": 1.0317958494070505
+            },
+            {
+              "x": "2026-04-13",
+              "v": 1.0317654406704717
+            },
+            {
+              "x": "2026-04-14",
+              "v": 1.0287854968730656
+            },
+            {
+              "x": "2026-04-15",
+              "v": 1.0287602536879201
+            },
+            {
+              "x": "2026-04-16",
+              "v": 1.0287529059218838
+            },
+            {
+              "x": "2026-04-17",
+              "v": 1.0317344651130715
+            },
+            {
+              "x": "2026-04-20",
+              "v": 1.70356840061467
+            },
+            {
+              "x": "2026-04-21",
+              "v": 1.7013373870653663
+            },
+            {
+              "x": "2026-04-22",
+              "v": 1.8888692881699993
+            },
+            {
+              "x": "2026-04-23",
+              "v": 1.8854192832278551
+            },
+            {
+              "x": "2026-04-24",
+              "v": 1.8846446922730027
+            },
+            {
+              "x": "2026-04-27",
+              "v": 1.9389364814203693
+            },
+            {
+              "x": "2026-04-28",
+              "v": 1.9373537407729378
+            },
+            {
+              "x": "2026-04-29",
+              "v": 1.9332734864500674
+            },
+            {
+              "x": "2026-04-30",
+              "v": 1.518045602008111
+            }
+          ]
+        },
+        {
+          "name": "DR 63d (medium)",
+          "color": "#4DA3F5",
+          "dash": true,
+          "width": 1.6,
+          "points": [
+            {
+              "x": "2026-04-01",
+              "v": 1.0489762859064036
+            },
+            {
+              "x": "2026-04-02",
+              "v": 1.048948627831382
+            },
+            {
+              "x": "2026-04-03",
+              "v": 1.0489545892229506
+            },
+            {
+              "x": "2026-04-06",
+              "v": 1.0474642932045453
+            },
+            {
+              "x": "2026-04-07",
+              "v": 1.0474691050218152
+            },
+            {
+              "x": "2026-04-08",
+              "v": 1.0474431382069407
+            },
+            {
+              "x": "2026-04-09",
+              "v": 1.0489191959848978
+            },
+            {
+              "x": "2026-04-10",
+              "v": 1.0489090304317266
+            },
+            {
+              "x": "2026-04-13",
+              "v": 1.0488814381948752
+            },
+            {
+              "x": "2026-04-14",
+              "v": 1.0473461017101076
+            },
+            {
+              "x": "2026-04-15",
+              "v": 1.047320201029989
+            },
+            {
+              "x": "2026-04-16",
+              "v": 1.0473249899614299
+            },
+            {
+              "x": "2026-04-17",
+              "v": 1.0488449155227162
+            },
+            {
+              "x": "2026-04-20",
+              "v": 1.0488508600499544
+            },
+            {
+              "x": "2026-04-21",
+              "v": 1.0488233243846747
+            },
+            {
+              "x": "2026-04-22",
+              "v": 1.0472884937562406
+            },
+            {
+              "x": "2026-04-23",
+              "v": 1.0472626464188517
+            },
+            {
+              "x": "2026-04-24",
+              "v": 1.0472674276803653
+            },
+            {
+              "x": "2026-04-27",
+              "v": 1.0487868591242884
+            },
+            {
+              "x": "2026-04-28",
+              "v": 1.0458008954108167
+            },
+            {
+              "x": "2026-04-29",
+              "v": 1.0457741130524751
+            },
+            {
+              "x": "2026-04-30",
+              "v": 1.044240089147279
+            }
+          ]
+        },
+        {
+          "name": "DR 252d (long)",
+          "color": "#4DA3F5",
+          "dash": false,
+          "width": 2.2,
+          "points": [
+            {
+              "x": "2026-04-01",
+              "v": 1.045194076699715
+            },
+            {
+              "x": "2026-04-02",
+              "v": 1.0451824863994679
+            },
+            {
+              "x": "2026-04-03",
+              "v": 1.0451723835520266
+            },
+            {
+              "x": "2026-04-06",
+              "v": 1.0447640625110473
+            },
+            {
+              "x": "2026-04-07",
+              "v": 1.0447540382583018
+            },
+            {
+              "x": "2026-04-08",
+              "v": 1.0447425366791072
+            },
+            {
+              "x": "2026-04-09",
+              "v": 1.045116441978349
+            },
+            {
+              "x": "2026-04-10",
+              "v": 1.0451098015479436
+            },
+            {
+              "x": "2026-04-13",
+              "v": 1.0450947950256713
+            },
+            {
+              "x": "2026-04-14",
+              "v": 1.044709393564118
+            },
+            {
+              "x": "2026-04-15",
+              "v": 1.0446979153032048
+            },
+            {
+              "x": "2026-04-16",
+              "v": 1.04468791627174
+            },
+            {
+              "x": "2026-04-17",
+              "v": 1.0450802698254442
+            },
+            {
+              "x": "2026-04-20",
+              "v": 1.0450702070377988
+            },
+            {
+              "x": "2026-04-21",
+              "v": 1.0450586781083728
+            },
+            {
+              "x": "2026-04-22",
+              "v": 1.0450486225892803
+            },
+            {
+              "x": "2026-04-23",
+              "v": 1.0446406128324397
+            },
+            {
+              "x": "2026-04-24",
+              "v": 1.0446306353816048
+            },
+            {
+              "x": "2026-04-27",
+              "v": 1.0450228559919281
+            },
+            {
+              "x": "2026-04-28",
+              "v": 1.0450128149586666
+            },
+            {
+              "x": "2026-04-29",
+              "v": 1.0450013141651224
+            },
+            {
+              "x": "2026-04-30",
+              "v": 1.0449912803650017
+            }
+          ]
+        },
+        {
+          "name": "Max DR (252d, rolling ceiling)",
+          "color": "#2FD79A",
+          "dash": true,
+          "width": 1.4,
+          "points": [
+            {
+              "x": "2026-04-01",
+              "v": 1.7074249974600637
+            },
+            {
+              "x": "2026-04-02",
+              "v": 1.7065434580202585
+            },
+            {
+              "x": "2026-04-03",
+              "v": 1.7057335919705665
+            },
+            {
+              "x": "2026-04-06",
+              "v": 1.7067813871779463
+            },
+            {
+              "x": "2026-04-07",
+              "v": 1.7059797323943628
+            },
+            {
+              "x": "2026-04-08",
+              "v": 1.705109117303365
+            },
+            {
+              "x": "2026-04-09",
+              "v": 1.7061321879781906
+            },
+            {
+              "x": "2026-04-10",
+              "v": 1.7053167711629313
+            },
+            {
+              "x": "2026-04-13",
+              "v": 1.7044428931130835
+            },
+            {
+              "x": "2026-04-14",
+              "v": 1.705865027555059
+            },
+            {
+              "x": "2026-04-15",
+              "v": 1.7049940667728654
+            },
+            {
+              "x": "2026-04-16",
+              "v": 1.7041942977980773
+            },
+            {
+              "x": "2026-04-17",
+              "v": 1.705430137900013
+            },
+            {
+              "x": "2026-04-20",
+              "v": 1.7046204355073065
+            },
+            {
+              "x": "2026-04-21",
+              "v": 1.7037422883101276
+            },
+            {
+              "x": "2026-04-22",
+              "v": 1.7029350816425468
+            },
+            {
+              "x": "2026-04-23",
+              "v": 1.70397462618478
+            },
+            {
+              "x": "2026-04-24",
+              "v": 1.703175591152892
+            },
+            {
+              "x": "2026-04-27",
+              "v": 1.7044083073462144
+            },
+            {
+              "x": "2026-04-28",
+              "v": 1.7035993557416804
+            },
+            {
+              "x": "2026-04-29",
+              "v": 1.7027222701099096
+            },
+            {
+              "x": "2026-04-30",
+              "v": 1.7019158096566998
+            }
+          ]
+        }
+      ],
+      "baseline": 1.0449446881384703,
+      "title": "DR across windows (short / medium / long) + 1Y mean + rolling 252d ceiling"
+    },
+    "ratio_series": [
+      {
+        "x": "2026-04-01",
+        "v": 0.987286392216108
+      },
+      {
+        "x": "2026-04-02",
+        "v": 0.9872896164605718
+      },
+      {
+        "x": "2026-04-03",
+        "v": 0.9872918167013406
+      },
+      {
+        "x": "2026-04-06",
+        "v": 0.9848069984379924
+      },
+      {
+        "x": "2026-04-07",
+        "v": 0.9848093940343027
+      },
+      {
+        "x": "2026-04-08",
+        "v": 0.9848127955846571
+      },
+      {
+        "x": "2026-04-09",
+        "v": 0.9872403966375836
+      },
+      {
+        "x": "2026-04-10",
+        "v": 0.9872607144998798
+      },
+      {
+        "x": "2026-04-13",
+        "v": 0.9872457939522394
+      },
+      {
+        "x": "2026-04-14",
+        "v": 0.9847575825496058
+      },
+      {
+        "x": "2026-04-15",
+        "v": 0.9847442390935958
+      },
+      {
+        "x": "2026-04-16",
+        "v": 0.9847466309300057
+      },
+      {
+        "x": "2026-04-17",
+        "v": 0.9872298759265623
+      },
+      {
+        "x": "2026-04-20",
+        "v": 1.6300994795778865
+      },
+      {
+        "x": "2026-04-21",
+        "v": 1.6279826412665197
+      },
+      {
+        "x": "2026-04-22",
+        "v": 1.8074463210046765
+      },
+      {
+        "x": "2026-04-23",
+        "v": 1.8048496871241941
+      },
+      {
+        "x": "2026-04-24",
+        "v": 1.8041254281084143
+      },
+      {
+        "x": "2026-04-27",
+        "v": 1.8554010281238729
+      },
+      {
+        "x": "2026-04-28",
+        "v": 1.8539042900153966
+      },
+      {
+        "x": "2026-04-29",
+        "v": 1.8500201485340788
+      },
+      {
+        "x": "2026-04-30",
+        "v": 1.452687338671264
+      }
+    ],
+    "control": {
+      "label": "Regime thresholds",
+      "default": "fixed",
+      "help": "Fixed = round-number cuts, comparable across portfolios; Percentile / Z-score = fit on this portfolio's own ratio history (in-sample). Details under “How this works.”",
+      "options": [
+        {
+          "id": "fixed",
+          "label": "Fixed (0.90 / 1.10)"
+        },
+        {
+          "id": "percentile",
+          "label": "Percentile (20th / 80th)"
+        },
+        {
+          "id": "zscore",
+          "label": "Z-score (mean ± 1σ)"
+        }
+      ]
+    },
+    "thresholds": {
+      "fixed": {
+        "method_label": "fixed",
+        "stress_thr": 0.9,
+        "calm_thr": 1.1,
+        "fallback": null,
+        "regime": {
+          "label": "Calm",
+          "dot": "🟢",
+          "ratio": 1.452687338671264
+        },
+        "gauge": {
+          "lo": 0.6,
+          "hi": 1.905401028123873,
+          "value": 1.452687338671264,
+          "stress_thr": 0.9,
+          "calm_thr": 1.1,
+          "title_html": "<b>🟢 Calm</b> · Short (21d) / Long (252d) DR ratio",
+          "caption_html": "Dial reads <b>1.45</b> · 🔴 below 0.90 = correlations clustering (diversification eroding faster than the trailing-year baseline) · ⚪ 0.90 – 1.10 = normal · 🟢 above 1.10 = names decorrelating (idiosyncratic moves dominate). Thresholds set by <i>fixed</i> method."
+        },
+        "bands": {
+          "y_lo": 0.85,
+          "y_hi": 1.885401028123873,
+          "stress_thr": 0.9,
+          "calm_thr": 1.1,
+          "title": "Short / Long DR ratio with fixed regime bands"
+        }
+      },
+      "percentile": {
+        "method_label": "percentile",
+        "stress_thr": 0.9848100743443735,
+        "calm_thr": 1.8047048353210382,
+        "fallback": null,
+        "regime": {
+          "label": "Normal",
+          "dot": "⚪",
+          "ratio": 1.452687338671264
+        },
+        "gauge": {
+          "lo": 0.6,
+          "hi": 1.905401028123873,
+          "value": 1.452687338671264,
+          "stress_thr": 0.9848100743443735,
+          "calm_thr": 1.8047048353210382,
+          "title_html": "<b>⚪ Normal</b> · Short (21d) / Long (252d) DR ratio",
+          "caption_html": "Dial reads <b>1.45</b> · 🔴 below 0.98 = correlations clustering (diversification eroding faster than the trailing-year baseline) · ⚪ 0.98 – 1.80 = normal · 🟢 above 1.80 = names decorrelating (idiosyncratic moves dominate). Thresholds set by <i>percentile</i> method."
+        },
+        "bands": {
+          "y_lo": 0.9348100743443735,
+          "y_hi": 1.885401028123873,
+          "stress_thr": 0.9848100743443735,
+          "calm_thr": 1.8047048353210382,
+          "title": "Short / Long DR ratio with percentile regime bands"
+        }
+      },
+      "zscore": {
+        "method_label": "zscore",
+        "stress_thr": 0.9050896009104757,
+        "calm_thr": 1.6863684544941373,
+        "fallback": null,
+        "regime": {
+          "label": "Normal",
+          "dot": "⚪",
+          "ratio": 1.452687338671264
+        },
+        "gauge": {
+          "lo": 0.6,
+          "hi": 1.905401028123873,
+          "value": 1.452687338671264,
+          "stress_thr": 0.9050896009104757,
+          "calm_thr": 1.6863684544941373,
+          "title_html": "<b>⚪ Normal</b> · Short (21d) / Long (252d) DR ratio",
+          "caption_html": "Dial reads <b>1.45</b> · 🔴 below 0.91 = correlations clustering (diversification eroding faster than the trailing-year baseline) · ⚪ 0.91 – 1.69 = normal · 🟢 above 1.69 = names decorrelating (idiosyncratic moves dominate). Thresholds set by <i>zscore</i> method."
+        },
+        "bands": {
+          "y_lo": 0.8550896009104757,
+          "y_hi": 1.885401028123873,
+          "stress_thr": 0.9050896009104757,
+          "calm_thr": 1.6863684544941373,
+          "title": "Short / Long DR ratio with zscore regime bands"
+        }
+      }
+    }
+  },
+  "dr_regime": {
+    "available": false,
+    "reason": "no_inputs",
+    "message": "Need data/vix_history.csv (run `py parsers/fetch_vix.py --write`) and SPY in either long_history_prices.csv or daily_prices.csv for regime conditioning.",
+    "caption_html": "DR conditioned on market state. <b>Does diversification hold when stress hits?</b> The bottom-right cell is the test.",
+    "howto_html": "<p>Higher DR (greener) = more diversification in that regime. <b>Diagnostic is the tail cell's delta vs the portfolio's own baseline, not the absolute number.</b> Baseline is the trailing-1Y mean of the headline window — anchors <i>what's normal for this portfolio</i> rather than a theoretical ceiling.</p><p><b>Characters</b> (auto-classified from the (stress × high-vol) cell's delta vs baseline)</p><ul><li><b>Holds</b> — tail cell ≥ baseline</li><li><b>Erodes</b> — 0.0 to −0.2 below</li><li><b>Weakens</b> — −0.2 to −0.4 below</li><li><b>Breaks</b> — more than −0.4 below</li></ul><p><b>Regime axes</b></p><ul><li><b>SPY drawdown</b> (trailing 21d): calm &lt; 3%, correction 3–10%, stress &gt; 10%. Captures sustained equity pain, not single bad days.</li><li><b>VIX z-score</b> (CBOE spot ^VIX against trailing 252d mean/std): low z ≤ −0.5, normal between, high z &gt; +0.5. Spot index, not VIXY — no contango distortion.</li></ul><p><b>Sparsity note</b> — if the tail cell has N&lt;20, it's likely one episode rather than a regime. Extend the window (deeper daily_prices.csv fetch) before drawing conclusions. This is a diagnostic, not a signal generator.</p>",
+    "window_caption_html": null,
+    "character": null,
+    "heatmap": null,
+    "tiles": [],
+    "detail": null
+  },
+  "correlations": {
+    "major": {
+      "caption_html": "How co-aligned the portfolio's biggest pieces are. Two views: the Big-3 (SPY / SGOV / GLD) on the longest available history — BIL (T-Bill ETF, launched 2007) stands in for SGOV's pre-2020 stretch — and the Top-15 weighted positions on the trailing 3y window. Cell colors use a stretched fixed scale (anchors −0.6 / 0 / 0.4 / 1.0) so differences in the crowded high-ρ band stay visible; values beyond the ends saturate.",
+      "big3": {
+        "available": false,
+        "fallback": true,
+        "reason": "no_long_history",
+        "message": "Long-history file missing — run `py parsers/fetch_long_history.py --write` to enable extended Big-3 correlations. Falling back to the 3y daily-prices window.",
+        "caption_html": null,
+        "heatmap": null,
+        "rolling": null
+      },
+      "top15": {
+        "ewma_lw": {
+          "available": true,
+          "reason": null,
+          "message": null,
+          "caption_html": "Ordered by Total PCTR. 3 of 15 in the daily-prices universe — TLH/treasury folds to SPY/SGOV already applied, options excluded. Window: trailing <b>504</b> trading days.",
+          "heatmap": {
+            "rows": [
+              "SPY",
+              "AAA",
+              "BBB"
+            ],
+            "cols": [
+              "SPY",
+              "AAA",
+              "BBB"
+            ],
+            "cells": [
+              [
+                {
+                  "present": true,
+                  "color": "#FB6F63",
+                  "text_html": "1.00"
+                },
+                {
+                  "present": true,
+                  "color": "#7ACFA0",
+                  "text_html": "-0.00"
+                },
+                {
+                  "present": true,
+                  "color": "#7FCFA0",
+                  "text_html": "0.02"
+                }
+              ],
+              [
+                {
+                  "present": true,
+                  "color": "#7ACFA0",
+                  "text_html": "-0.00"
+                },
+                {
+                  "present": true,
+                  "color": "#FB6F63",
+                  "text_html": "1.00"
+                },
+                {
+                  "present": true,
+                  "color": "#83D09F",
+                  "text_html": "0.04"
+                }
+              ],
+              [
+                {
+                  "present": true,
+                  "color": "#7FCFA0",
+                  "text_html": "0.02"
+                },
+                {
+                  "present": true,
+                  "color": "#83D09F",
+                  "text_html": "0.04"
+                },
+                {
+                  "present": true,
+                  "color": "#FB6F63",
+                  "text_html": "1.00"
+                }
+              ]
+            ],
+            "legend": {
+              "title": "ρ",
+              "lo": -0.6,
+              "hi": 1.0,
+              "gradient": "linear-gradient(to right, #2FD79A 0%, #59D39D 25%, #7BCFA0 38%, #D1D48D 62%, #E7B251 81%, #FB6F63 100%)"
+            }
+          },
+          "legend_caption_html": "<b>Color legend</b> — green = pair moves nearly independently (ρ ≈ 0, a genuine diversifier and the uncommon-good case in a real portfolio); yellow → orange = increasingly correlated; deep red = ρ ≈ 1 (diagonal and tight clusters). Scale anchored at ρ = −0.3 (anything more negative clips); negative pairwise correlation among holdings is rare in practice.",
+          "avg_roll": {
+            "title": "Rolling 90-day average pairwise correlation — Top 15",
+            "y_label": "ρ (rolling 90d, avg)",
+            "baseline": 0,
+            "series": [
+              {
+                "name": "Avg pairwise ρ",
+                "color": "#818CF8",
+                "points": [
+                  {
+                    "t": "2026-04-01",
+                    "v": 0.024988226807637706
+                  },
+                  {
+                    "t": "2026-04-02",
+                    "v": 0.025436650429881334
+                  },
+                  {
+                    "t": "2026-04-03",
+                    "v": 0.02585592259505659
+                  },
+                  {
+                    "t": "2026-04-06",
+                    "v": 0.008082417674774958
+                  },
+                  {
+                    "t": "2026-04-07",
+                    "v": 0.008563189257239007
+                  },
+                  {
+                    "t": "2026-04-08",
+                    "v": 0.007678466879430672
+                  },
+                  {
+                    "t": "2026-04-09",
+                    "v": 0.007121033282125618
+                  },
+                  {
+                    "t": "2026-04-10",
+                    "v": 0.007625747682663035
+                  },
+                  {
+                    "t": "2026-04-13",
+                    "v": 0.008166420456162024
+                  },
+                  {
+                    "t": "2026-04-14",
+                    "v": 0.00867152664076288
+                  },
+                  {
+                    "t": "2026-04-15",
+                    "v": 0.009212576036529354
+                  },
+                  {
+                    "t": "2026-04-16",
+                    "v": 0.008265719763026499
+                  },
+                  {
+                    "t": "2026-04-17",
+                    "v": 0.007362119258649315
+                  },
+                  {
+                    "t": "2026-04-20",
+                    "v": 0.007867056914459278
+                  },
+                  {
+                    "t": "2026-04-21",
+                    "v": 0.00840790835463904
+                  },
+                  {
+                    "t": "2026-04-22",
+                    "v": 0.00891323951954647
+                  },
+                  {
+                    "t": "2026-04-23",
+                    "v": 0.009454469421768058
+                  },
+                  {
+                    "t": "2026-04-24",
+                    "v": -0.05967236959056046
+                  },
+                  {
+                    "t": "2026-04-27",
+                    "v": -0.058498080079609584
+                  },
+                  {
+                    "t": "2026-04-28",
+                    "v": -0.05807600690391582
+                  },
+                  {
+                    "t": "2026-04-29",
+                    "v": -0.05752528916318134
+                  },
+                  {
+                    "t": "2026-04-30",
+                    "v": -0.05710281081962775
+                  }
+                ]
+              }
+            ],
+            "howto_html": "<p>Each point is the <b>average of all unique pairwise correlations</b> among the Top-15 positions over the trailing 90 trading days — one scalar for \"how clustered the portfolio's biggest names are right now.\"</p><ul><li><b>Higher (toward +1)</b> = names moving together; idiosyncratic diversification eroding — a market-wide shock drags the whole top-15 down at once. Stress regimes push avg ρ well above its calm baseline.</li><li><b>Lower (toward 0)</b> = names moving independently; single-name moves cancel, so portfolio vol sits well below the weighted-average standalone vol (this is what drives the Diversification Ratio above 1).</li><li><b>What to watch</b> — <i>changes</i>, not the level. A line drifting up over months warns the book is becoming more single-factor (typically more SPY-like) even if the dollar weights haven't moved.</li></ul>"
+          }
+        },
+        "ewma": {
+          "available": true,
+          "reason": null,
+          "message": null,
+          "caption_html": "Ordered by Total PCTR. 3 of 15 in the daily-prices universe — TLH/treasury folds to SPY/SGOV already applied, options excluded. Window: trailing <b>504</b> trading days.",
+          "heatmap": {
+            "rows": [
+              "SPY",
+              "AAA",
+              "BBB"
+            ],
+            "cols": [
+              "SPY",
+              "AAA",
+              "BBB"
+            ],
+            "cells": [
+              [
+                {
+                  "present": true,
+                  "color": "#FB6F63",
+                  "text_html": "1.00"
+                },
+                {
+                  "present": true,
+                  "color": "#7ACFA0",
+                  "text_html": "-0.00"
+                },
+                {
+                  "present": true,
+                  "color": "#7FCFA0",
+                  "text_html": "0.02"
+                }
+              ],
+              [
+                {
+                  "present": true,
+                  "color": "#7ACFA0",
+                  "text_html": "-0.00"
+                },
+                {
+                  "present": true,
+                  "color": "#FB6F63",
+                  "text_html": "1.00"
+                },
+                {
+                  "present": true,
+                  "color": "#83D09F",
+                  "text_html": "0.04"
+                }
+              ],
+              [
+                {
+                  "present": true,
+                  "color": "#7FCFA0",
+                  "text_html": "0.02"
+                },
+                {
+                  "present": true,
+                  "color": "#83D09F",
+                  "text_html": "0.04"
+                },
+                {
+                  "present": true,
+                  "color": "#FB6F63",
+                  "text_html": "1.00"
+                }
+              ]
+            ],
+            "legend": {
+              "title": "ρ",
+              "lo": -0.6,
+              "hi": 1.0,
+              "gradient": "linear-gradient(to right, #2FD79A 0%, #59D39D 25%, #7BCFA0 38%, #D1D48D 62%, #E7B251 81%, #FB6F63 100%)"
+            }
+          },
+          "legend_caption_html": "<b>Color legend</b> — green = pair moves nearly independently (ρ ≈ 0, a genuine diversifier and the uncommon-good case in a real portfolio); yellow → orange = increasingly correlated; deep red = ρ ≈ 1 (diagonal and tight clusters). Scale anchored at ρ = −0.3 (anything more negative clips); negative pairwise correlation among holdings is rare in practice.",
+          "avg_roll": {
+            "title": "Rolling 90-day average pairwise correlation — Top 15",
+            "y_label": "ρ (rolling 90d, avg)",
+            "baseline": 0,
+            "series": [
+              {
+                "name": "Avg pairwise ρ",
+                "color": "#818CF8",
+                "points": [
+                  {
+                    "t": "2026-04-01",
+                    "v": 0.024988226807637706
+                  },
+                  {
+                    "t": "2026-04-02",
+                    "v": 0.025436650429881334
+                  },
+                  {
+                    "t": "2026-04-03",
+                    "v": 0.02585592259505659
+                  },
+                  {
+                    "t": "2026-04-06",
+                    "v": 0.008082417674774958
+                  },
+                  {
+                    "t": "2026-04-07",
+                    "v": 0.008563189257239007
+                  },
+                  {
+                    "t": "2026-04-08",
+                    "v": 0.007678466879430672
+                  },
+                  {
+                    "t": "2026-04-09",
+                    "v": 0.007121033282125618
+                  },
+                  {
+                    "t": "2026-04-10",
+                    "v": 0.007625747682663035
+                  },
+                  {
+                    "t": "2026-04-13",
+                    "v": 0.008166420456162024
+                  },
+                  {
+                    "t": "2026-04-14",
+                    "v": 0.00867152664076288
+                  },
+                  {
+                    "t": "2026-04-15",
+                    "v": 0.009212576036529354
+                  },
+                  {
+                    "t": "2026-04-16",
+                    "v": 0.008265719763026499
+                  },
+                  {
+                    "t": "2026-04-17",
+                    "v": 0.007362119258649315
+                  },
+                  {
+                    "t": "2026-04-20",
+                    "v": 0.007867056914459278
+                  },
+                  {
+                    "t": "2026-04-21",
+                    "v": 0.00840790835463904
+                  },
+                  {
+                    "t": "2026-04-22",
+                    "v": 0.00891323951954647
+                  },
+                  {
+                    "t": "2026-04-23",
+                    "v": 0.009454469421768058
+                  },
+                  {
+                    "t": "2026-04-24",
+                    "v": -0.05967236959056046
+                  },
+                  {
+                    "t": "2026-04-27",
+                    "v": -0.058498080079609584
+                  },
+                  {
+                    "t": "2026-04-28",
+                    "v": -0.05807600690391582
+                  },
+                  {
+                    "t": "2026-04-29",
+                    "v": -0.05752528916318134
+                  },
+                  {
+                    "t": "2026-04-30",
+                    "v": -0.05710281081962775
+                  }
+                ]
+              }
+            ],
+            "howto_html": "<p>Each point is the <b>average of all unique pairwise correlations</b> among the Top-15 positions over the trailing 90 trading days — one scalar for \"how clustered the portfolio's biggest names are right now.\"</p><ul><li><b>Higher (toward +1)</b> = names moving together; idiosyncratic diversification eroding — a market-wide shock drags the whole top-15 down at once. Stress regimes push avg ρ well above its calm baseline.</li><li><b>Lower (toward 0)</b> = names moving independently; single-name moves cancel, so portfolio vol sits well below the weighted-average standalone vol (this is what drives the Diversification Ratio above 1).</li><li><b>What to watch</b> — <i>changes</i>, not the level. A line drifting up over months warns the book is becoming more single-factor (typically more SPY-like) even if the dollar weights haven't moved.</li></ul>"
+          }
+        },
+        "rolling": {
+          "available": true,
+          "reason": null,
+          "message": null,
+          "caption_html": "Ordered by Total PCTR. 3 of 15 in the daily-prices universe — TLH/treasury folds to SPY/SGOV already applied, options excluded. Window: trailing <b>252</b> trading days.",
+          "heatmap": {
+            "rows": [
+              "SPY",
+              "BBB",
+              "AAA"
+            ],
+            "cols": [
+              "SPY",
+              "BBB",
+              "AAA"
+            ],
+            "cells": [
+              [
+                {
+                  "present": true,
+                  "color": "#FB6F63",
+                  "text_html": "1.00"
+                },
+                {
+                  "present": true,
+                  "color": "#82CF9F",
+                  "text_html": "0.03"
+                },
+                {
+                  "present": true,
+                  "color": "#80CFA0",
+                  "text_html": "0.02"
+                }
+              ],
+              [
+                {
+                  "present": true,
+                  "color": "#82CF9F",
+                  "text_html": "0.03"
+                },
+                {
+                  "present": true,
+                  "color": "#FB6F63",
+                  "text_html": "1.00"
+                },
+                {
+                  "present": true,
+                  "color": "#7BCFA0",
+                  "text_html": "-0.00"
+                }
+              ],
+              [
+                {
+                  "present": true,
+                  "color": "#80CFA0",
+                  "text_html": "0.02"
+                },
+                {
+                  "present": true,
+                  "color": "#7BCFA0",
+                  "text_html": "-0.00"
+                },
+                {
+                  "present": true,
+                  "color": "#FB6F63",
+                  "text_html": "1.00"
+                }
+              ]
+            ],
+            "legend": {
+              "title": "ρ",
+              "lo": -0.6,
+              "hi": 1.0,
+              "gradient": "linear-gradient(to right, #2FD79A 0%, #59D39D 25%, #7BCFA0 38%, #D1D48D 62%, #E7B251 81%, #FB6F63 100%)"
+            }
+          },
+          "legend_caption_html": "<b>Color legend</b> — green = pair moves nearly independently (ρ ≈ 0, a genuine diversifier and the uncommon-good case in a real portfolio); yellow → orange = increasingly correlated; deep red = ρ ≈ 1 (diagonal and tight clusters). Scale anchored at ρ = −0.3 (anything more negative clips); negative pairwise correlation among holdings is rare in practice.",
+          "avg_roll": {
+            "title": "Rolling 90-day average pairwise correlation — Top 15",
+            "y_label": "ρ (rolling 90d, avg)",
+            "baseline": 0,
+            "series": [
+              {
+                "name": "Avg pairwise ρ",
+                "color": "#818CF8",
+                "points": [
+                  {
+                    "t": "2026-04-01",
+                    "v": 0.024988226807637695
+                  },
+                  {
+                    "t": "2026-04-02",
+                    "v": 0.025436650429881334
+                  },
+                  {
+                    "t": "2026-04-03",
+                    "v": 0.02585592259505659
+                  },
+                  {
+                    "t": "2026-04-06",
+                    "v": 0.008082417674774967
+                  },
+                  {
+                    "t": "2026-04-07",
+                    "v": 0.008563189257239007
+                  },
+                  {
+                    "t": "2026-04-08",
+                    "v": 0.00767846687943068
+                  },
+                  {
+                    "t": "2026-04-09",
+                    "v": 0.0071210332821256645
+                  },
+                  {
+                    "t": "2026-04-10",
+                    "v": 0.007625747682663007
+                  },
+                  {
+                    "t": "2026-04-13",
+                    "v": 0.008166420456162005
+                  },
+                  {
+                    "t": "2026-04-14",
+                    "v": 0.0086715266407629
+                  },
+                  {
+                    "t": "2026-04-15",
+                    "v": 0.009212576036529335
+                  },
+                  {
+                    "t": "2026-04-16",
+                    "v": 0.00826571976302648
+                  },
+                  {
+                    "t": "2026-04-17",
+                    "v": 0.007362119258649334
+                  },
+                  {
+                    "t": "2026-04-20",
+                    "v": 0.007867056914459297
+                  },
+                  {
+                    "t": "2026-04-21",
+                    "v": 0.008407908354639013
+                  },
+                  {
+                    "t": "2026-04-22",
+                    "v": 0.008913239519546487
+                  },
+                  {
+                    "t": "2026-04-23",
+                    "v": 0.009454469421768011
+                  },
+                  {
+                    "t": "2026-04-24",
+                    "v": -0.059672369590560465
+                  },
+                  {
+                    "t": "2026-04-27",
+                    "v": -0.058498080079609556
+                  },
+                  {
+                    "t": "2026-04-28",
+                    "v": -0.05807600690391578
+                  },
+                  {
+                    "t": "2026-04-29",
+                    "v": -0.057525289163181344
+                  },
+                  {
+                    "t": "2026-04-30",
+                    "v": -0.05710281081962773
+                  }
+                ]
+              }
+            ],
+            "howto_html": "<p>Each point is the <b>average of all unique pairwise correlations</b> among the Top-15 positions over the trailing 90 trading days — one scalar for \"how clustered the portfolio's biggest names are right now.\"</p><ul><li><b>Higher (toward +1)</b> = names moving together; idiosyncratic diversification eroding — a market-wide shock drags the whole top-15 down at once. Stress regimes push avg ρ well above its calm baseline.</li><li><b>Lower (toward 0)</b> = names moving independently; single-name moves cancel, so portfolio vol sits well below the weighted-average standalone vol (this is what drives the Diversification Ratio above 1).</li><li><b>What to watch</b> — <i>changes</i>, not the level. A line drifting up over months warns the book is becoming more single-factor (typically more SPY-like) even if the dollar weights haven't moved.</li></ul>"
+          }
+        }
+      }
+    },
+    "stress": {
+      "caption_html": "Stress day = a day where SPY's daily log return is at least 1.5 σ below its mean (measured on the full sample). On a normal distribution that's roughly the worst 7% of days. The matrix below is <b>Δρ = stress-day Spearman ρ − full-sample Spearman ρ</b> for each pair (coral = correlation <i>spiked</i> in stress, teal = it <i>fell</i>, amber = unchanged). Per-name Δ down on the table above is the marginal view; this is the cross-name view.",
+      "why_spearman_html": "<b>Why Spearman here, Pearson everywhere else?</b> The conditional ρ on ~15–50 stress days is dominated by single outlier prints under Pearson — one distressed-equity −60% day can swing a cell by ±0.7 regardless of structural co-movement. Spearman converts each day's return to its rank within the sample, so the outlier day still participates but with bounded leverage. No data is dropped or clipped — the full-sample Δ baseline uses Spearman too so the subtraction stays apples-to-apples. The static Top-15 matrix above runs on ~250+ days, where Pearson is fine.",
+      "big3": {
+        "available": false,
+        "reason": "no_inputs",
+        "message": null,
+        "caption_html": null,
+        "heatmap": null
+      },
+      "top15": {
+        "ewma_lw": {
+          "available": false,
+          "reason": "insufficient_stress",
+          "message": "Need ≥15 stress days to estimate conditional correlations on the trailing-504d window; have 0.",
+          "caption_html": null,
+          "heatmap": null,
+          "howto_html": "<p>Each cell is (conditional ρ − full-sample ρ) for that pair. <b>Coral blocks</b> = pairs whose co-movement <i>spikes</i> on SPY's worst days — clusters of coral indicate names that crash together (typically: equity-beta names you'd hoped were diversified). <b>Teal blocks</b> = pairs that <i>decouple</i> in stress — usually flight-to-quality assets (treasuries, long-dollar) or genuinely uncorrelated factors. <b>Amber / pale cells</b> = unchanged from baseline.</p>"
+        },
+        "ewma": {
+          "available": false,
+          "reason": "insufficient_stress",
+          "message": "Need ≥15 stress days to estimate conditional correlations on the trailing-504d window; have 0.",
+          "caption_html": null,
+          "heatmap": null,
+          "howto_html": "<p>Each cell is (conditional ρ − full-sample ρ) for that pair. <b>Coral blocks</b> = pairs whose co-movement <i>spikes</i> on SPY's worst days — clusters of coral indicate names that crash together (typically: equity-beta names you'd hoped were diversified). <b>Teal blocks</b> = pairs that <i>decouple</i> in stress — usually flight-to-quality assets (treasuries, long-dollar) or genuinely uncorrelated factors. <b>Amber / pale cells</b> = unchanged from baseline.</p>"
+        },
+        "rolling": {
+          "available": false,
+          "reason": "insufficient_stress",
+          "message": "Need ≥15 stress days to estimate conditional correlations on the trailing-252d window; have 0.",
+          "caption_html": null,
+          "heatmap": null,
+          "howto_html": "<p>Each cell is (conditional ρ − full-sample ρ) for that pair. <b>Coral blocks</b> = pairs whose co-movement <i>spikes</i> on SPY's worst days — clusters of coral indicate names that crash together (typically: equity-beta names you'd hoped were diversified). <b>Teal blocks</b> = pairs that <i>decouple</i> in stress — usually flight-to-quality assets (treasuries, long-dollar) or genuinely uncorrelated factors. <b>Amber / pale cells</b> = unchanged from baseline.</p>"
+        }
+      }
+    }
+  },
+  "state": {
+    "available": true,
+    "unavailable": null,
+    "unavailable_message": null
+  }
+}

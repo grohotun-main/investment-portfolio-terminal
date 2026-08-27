@@ -1,0 +1,4 @@
+account_id,broker,account_type,description,opened
+TEST-A,fidelity,individual_tod,Synthetic Account A,2024-01-01
+TEST-B,jpm,jpm_brokerage,Synthetic Account B,2024-01-01
+TEST-C,fidelity,individual_tod,Synthetic Account C,2024-01-01

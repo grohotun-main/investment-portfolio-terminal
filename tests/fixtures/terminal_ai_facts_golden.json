@@ -1,0 +1,127 @@
+{
+  "section": "factors",
+  "available": true,
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "window": "Full history",
+  "model": "FF5 + Mom",
+  "alpha_by_model": [
+    {
+      "model": "CAPM",
+      "available": true,
+      "alpha_annual": "+9.6%",
+      "ci_half_width": "±9.8 pp",
+      "stats": "t = 1.99 · R² = 0.01 · 95% CI -0.3% … +19.4%"
+    },
+    {
+      "model": "FF3",
+      "available": true,
+      "alpha_annual": "+10.0%",
+      "ci_half_width": "±10.5 pp",
+      "stats": "t = 1.94 · R² = 0.03 · 95% CI -0.5% … +20.5%"
+    },
+    {
+      "model": "Carhart 4",
+      "available": true,
+      "alpha_annual": "+10.2%",
+      "ci_half_width": "±10.2 pp",
+      "stats": "t = 2.05 · R² = 0.12 · 95% CI +0.0% … +20.4%"
+    },
+    {
+      "model": "FF5",
+      "available": true,
+      "alpha_annual": "+10.5%",
+      "ci_half_width": "±11.0 pp",
+      "stats": "t = 1.95 · R² = 0.04 · 95% CI -0.5% … +21.5%"
+    },
+    {
+      "model": "FF5 + Mom",
+      "available": true,
+      "alpha_annual": "+11.1%",
+      "ci_half_width": "±10.6 pp",
+      "stats": "t = 2.14 · R² = 0.14 · 95% CI +0.5% … +21.7%"
+    }
+  ],
+  "fit": {
+    "n": "40",
+    "r2": "0.14",
+    "adj_r2": "-0.02"
+  },
+  "low_obs_warning": "40 months across 6 factors is fewer than 10 observations per parameter — treat betas as indicative, not precise.",
+  "betas": [
+    {
+      "factor": "mkt_rf",
+      "beta": 0.07591057852363906,
+      "se": 0.1359003125791099,
+      "t": 0.5585754519839696
+    },
+    {
+      "factor": "smb",
+      "beta": 0.27179457333303003,
+      "se": 0.3016928501235269,
+      "t": 0.9008982918280789
+    },
+    {
+      "factor": "hml",
+      "beta": -0.021126043469311347,
+      "se": 0.15443659878884422,
+      "t": -0.13679428085693762
+    },
+    {
+      "factor": "rmw",
+      "beta": -0.022008045829329248,
+      "se": 0.2900189380487841,
+      "t": -0.07588485764894179
+    },
+    {
+      "factor": "cma",
+      "beta": 0.29288282757901224,
+      "se": 0.3679673071884164,
+      "t": 0.7959479602057217
+    },
+    {
+      "factor": "mom",
+      "beta": 0.25096256433325126,
+      "se": 0.1309609778262967,
+      "t": 1.9163155964376013
+    }
+  ],
+  "attribution_pp": [
+    {
+      "label": "Risk-free (1-mo T-bill)",
+      "pp": 4.8
+    },
+    {
+      "label": "Market − RF",
+      "pp": 0.7317020663893569
+    },
+    {
+      "label": "Size (SMB)",
+      "pp": -1.688659684118116
+    },
+    {
+      "label": "Value (HML)",
+      "pp": -0.007795510040175873
+    },
+    {
+      "label": "Profitability (RMW)",
+      "pp": -0.04819762036623106
+    },
+    {
+      "label": "Investment (CMA)",
+      "pp": -0.3971491141971407
+    },
+    {
+      "label": "Momentum (Mom)",
+      "pp": 0.6535065175237864
+    },
+    {
+      "label": "Alpha (unexplained)",
+      "pp": 11.103593344809262
+    }
+  ],
+  "mean_return_pp": 15.146999999999998,
+  "aligned_window": "Aligned window 2023-01 → 2026-04 · factor file through 2026-04 (French publishes with a ~1-2 month lag; the regression trims to common months)."
+}

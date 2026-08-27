@@ -1,0 +1,131 @@
+{
+  "section": "performance",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "available": true,
+  "headline": {
+    "cum_twr_pct": 63.32,
+    "ann_twr_pct": 15.85,
+    "n_months": 40,
+    "irr_pct": null,
+    "irr_minus_twr_pp": null,
+    "best_month_pct": 7.5,
+    "best_month": "Jul 2025",
+    "worst_month_pct": -4.8,
+    "worst_month": "May 2023"
+  },
+  "drawdown": {
+    "current_dd_pct": 0.0,
+    "max_dd_pct": -7.43,
+    "max_dd_month": "Jun 2023"
+  },
+  "periodic": {
+    "n_months": 40,
+    "n_wins": 28,
+    "win_rate_pct": 70.0,
+    "best_year": "2025",
+    "best_year_pct": 24.6,
+    "worst_year": "2026",
+    "worst_year_pct": 2.9
+  },
+  "synthesized_twr": false,
+  "cashflows": {
+    "n_deposits": 2,
+    "n_withdrawals": 0,
+    "net_flow_direction": "inflow",
+    "synthetic_onboarding": false
+  },
+  "per_account": {
+    "n_accounts": 2,
+    "top": {
+      "account": "TEST-A",
+      "cum_twr_pct": 4.0,
+      "months": 2
+    },
+    "bottom": {
+      "account": "TEST-B",
+      "cum_twr_pct": 2.7,
+      "months": 2
+    }
+  },
+  "contributors": {
+    "available": true,
+    "method": "approximate: total-return basis (distributions reinvested at the ex-date, split-scaled), current weights held constant",
+    "windows": {
+      "60d": {
+        "top": [
+          {
+            "ticker": "SPY",
+            "weight_pct": 70.1,
+            "return_pct": 1.5,
+            "contrib_pp": 1.05
+          },
+          {
+            "ticker": "AAA",
+            "weight_pct": 16.7,
+            "return_pct": 1.2,
+            "contrib_pp": 0.19
+          },
+          {
+            "ticker": "BBB",
+            "weight_pct": 12.4,
+            "return_pct": 0.2,
+            "contrib_pp": 0.02
+          }
+        ],
+        "bottom": [],
+        "excluded_weight_pct": 0.8
+      },
+      "ytd": {
+        "top": [
+          {
+            "ticker": "SPY",
+            "weight_pct": 70.1,
+            "return_pct": 2.0,
+            "contrib_pp": 1.43
+          },
+          {
+            "ticker": "AAA",
+            "weight_pct": 16.7,
+            "return_pct": 1.7,
+            "contrib_pp": 0.28
+          },
+          {
+            "ticker": "BBB",
+            "weight_pct": 12.4,
+            "return_pct": 0.3,
+            "contrib_pp": 0.03
+          }
+        ],
+        "bottom": [],
+        "excluded_weight_pct": 0.8
+      },
+      "252d": {
+        "top": [
+          {
+            "ticker": "SPY",
+            "weight_pct": 70.1,
+            "return_pct": 6.6,
+            "contrib_pp": 4.59
+          },
+          {
+            "ticker": "AAA",
+            "weight_pct": 16.7,
+            "return_pct": 5.1,
+            "contrib_pp": 0.85
+          },
+          {
+            "ticker": "BBB",
+            "weight_pct": 12.4,
+            "return_pct": 0.8,
+            "contrib_pp": 0.1
+          }
+        ],
+        "bottom": [],
+        "excluded_weight_pct": 0.8
+      }
+    }
+  }
+}

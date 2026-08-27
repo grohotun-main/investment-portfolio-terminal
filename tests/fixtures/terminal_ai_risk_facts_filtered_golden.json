@@ -1,0 +1,10 @@
+{
+  "section": "risk",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all",
+    "asset_class": "Individual Stocks"
+  },
+  "available": false,
+  "reason": "too_short"
+}

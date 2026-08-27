@@ -1,0 +1,69 @@
+{
+  "section": "holdings_detail",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "available": true,
+  "as_of": "2026-04-30",
+  "omitted_weight_pct": 0.0,
+  "note": "weights are of the scoped book at the latest snapshot; the direct-index sleeve and the treasury ladder appear as one aggregated line each; option contracts are listed under their underlying ticker with their option class (strike, expiry and direction are not distinguished here — see the Options tab); positions whose identifier cannot be named are omitted and their weight reported in omitted_weight_pct; no share counts or dollar figures by design",
+  "positions": [
+    {
+      "ticker": "SPY",
+      "account": "Other (TEST-A)",
+      "class": "ETFs",
+      "weight_pct": 42.36,
+      "unrealized_pct": 14.0,
+      "unrealized_direction": "up"
+    },
+    {
+      "ticker": "SPY",
+      "account": "Other (TEST-B)",
+      "class": "ETFs",
+      "weight_pct": 21.18,
+      "unrealized_pct": 9.6,
+      "unrealized_direction": "up"
+    },
+    {
+      "ticker": "AAA",
+      "account": "Other (TEST-A)",
+      "class": "Individual Stocks",
+      "weight_pct": 15.16,
+      "unrealized_pct": 13.3,
+      "unrealized_direction": "up"
+    },
+    {
+      "ticker": "BBB",
+      "account": "Other (TEST-B)",
+      "class": "Fixed Income",
+      "weight_pct": 11.26,
+      "unrealized_pct": 1.0,
+      "unrealized_direction": "up"
+    },
+    {
+      "ticker": "CASHX",
+      "account": "Other (TEST-A)",
+      "class": "Cash & sweep",
+      "weight_pct": 7.43,
+      "unrealized_pct": 0.0,
+      "unrealized_direction": "flat"
+    },
+    {
+      "ticker": "SPY",
+      "account": "Other (TEST-A)",
+      "class": "Options (puts)",
+      "weight_pct": 1.86,
+      "unrealized_pct": -16.7,
+      "unrealized_direction": "down"
+    },
+    {
+      "ticker": "CCC",
+      "account": "Other (TEST-C)",
+      "class": "Individual Stocks",
+      "weight_pct": 0.74,
+      "unrealized_pct": 25.0,
+      "unrealized_direction": "up"
+    }
+  ]
+}

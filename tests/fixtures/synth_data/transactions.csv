@@ -1,0 +1,12 @@
+settlement_date,trade_date,broker,account_id,transaction_type,symbol,cusip,description,quantity,price,amount,source_file,flow_scope,pair_id
+2024-01-02,2024-01-02,fidelity,TEST-A,contribution,,,Initial deposit,0,0.00,80000.00,synth,external,
+2024-01-03,2024-01-03,fidelity,TEST-A,buy,SPY,,SPDR S&P 500 ETF,100,500.00,-50000.00,synth,,
+2024-01-03,2024-01-03,fidelity,TEST-A,buy,AAA,,Synthetic Equity A,200,90.00,-18000.00,synth,,
+2024-01-02,2024-01-02,jpm,TEST-B,contribution,,,Initial deposit,0,0.00,45000.00,synth,external,
+2024-01-03,2024-01-03,jpm,TEST-B,buy,SPY,,SPDR S&P 500 ETF,50,520.00,-26000.00,synth,,
+2024-01-03,2024-01-03,jpm,TEST-B,buy,BBB,,Synthetic Bond Fund,300,50.00,-15000.00,synth,,
+2026-03-15,2026-03-15,fidelity,TEST-A,dividend,SPY,,Dividend,0,0.00,175.00,synth,,
+2026-04-10,2026-04-10,fidelity,TEST-A,buy,SPY260918P00500000,,PUT SPY 09/18/26 500 SPDR S&P 500 ETF,2,15.00,-3000.00,synth,,
+2026-03-20,2026-03-20,fidelity,TEST-A,interest,,,Core cash interest,0,0.00,12.50,synth,,
+2026-04-15,2026-04-15,jpm,TEST-B,dividend,BBB,,Synthetic Equity B dividend,0,0.00,55.00,synth,,
+2026-04-15,2026-04-15,jpm,TEST-B,withholding,BBB,,Foreign tax withheld BBB,0,0.00,-8.25,synth,,

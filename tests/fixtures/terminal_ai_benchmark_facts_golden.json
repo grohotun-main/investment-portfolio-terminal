@@ -1,0 +1,71 @@
+{
+  "section": "benchmark",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "benchmark": {
+    "id": "spy",
+    "label": "SPY (S&P 500 TR)",
+    "short": "SPY",
+    "fallback_to_spy": false
+  },
+  "holdings_filter_active": false,
+  "available": true,
+  "window": {
+    "n_months": 27,
+    "years": 2.25,
+    "start": "Jan 31, 2024",
+    "end": "Apr 30, 2026"
+  },
+  "returns": [
+    {
+      "window": "YTD",
+      "annualized": false,
+      "available": true,
+      "port_return_pct": 2.91,
+      "bench_return_pct": 1.77,
+      "spread_pp": 1.14,
+      "port_vol_pct": 5.26,
+      "bench_vol_pct": 0.07
+    },
+    {
+      "window": "1Y",
+      "annualized": false,
+      "available": true,
+      "port_return_pct": 22.36,
+      "bench_return_pct": 5.57,
+      "spread_pp": 16.79,
+      "port_vol_pct": 8.86,
+      "bench_vol_pct": 0.08
+    },
+    {
+      "window": "3Y",
+      "annualized": true,
+      "available": false
+    },
+    {
+      "window": "5Y",
+      "annualized": true,
+      "available": false
+    },
+    {
+      "window": "Since inception",
+      "annualized": true,
+      "available": true,
+      "port_return_pct": 19.54,
+      "bench_return_pct": 5.77,
+      "spread_pp": 13.77,
+      "port_vol_pct": 7.84,
+      "bench_vol_pct": 0.1
+    }
+  ],
+  "consistency": {
+    "available": true,
+    "n_windows": 16,
+    "hit_rate_pct": 100.0,
+    "tracking_error_pct": 7.82,
+    "information_ratio": 1.62,
+    "window_months": 12
+  }
+}

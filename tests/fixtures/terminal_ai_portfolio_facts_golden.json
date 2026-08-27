@@ -1,0 +1,139 @@
+{
+  "section": "portfolio",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "benchmark": {
+    "id": "spy",
+    "label": "SPY (S&P 500 TR)"
+  },
+  "cash_weight_pct": 7.4,
+  "available": true,
+  "as_of": "2026-04-30",
+  "windows": [
+    {
+      "window": "Full history",
+      "available": true,
+      "n_months": 27,
+      "n_days_used": 22,
+      "portfolio": {
+        "twr_cum_pct": 49.41,
+        "twr_ann_pct": 19.54,
+        "vol_ann_pct": 7.84,
+        "max_dd_pct": -1.89,
+        "sharpe": 1.98
+      },
+      "benchmark": {
+        "twr_cum_pct": 13.45,
+        "twr_ann_pct": 5.77,
+        "vol_ann_pct": 0.1,
+        "max_dd_pct": 0.0,
+        "sharpe": 18.25
+      },
+      "beta": 2.56,
+      "correlation": 0.07
+    },
+    {
+      "window": "5y",
+      "available": false,
+      "n_months": 27,
+      "requested_months": 60
+    },
+    {
+      "window": "3y",
+      "available": false,
+      "n_months": 27,
+      "requested_months": 36
+    },
+    {
+      "window": "1y",
+      "available": true,
+      "n_months": 12,
+      "n_days_used": 22,
+      "portfolio": {
+        "twr_cum_pct": 22.36,
+        "twr_ann_pct": 22.36,
+        "vol_ann_pct": 8.86,
+        "max_dd_pct": -1.89,
+        "sharpe": 2.07
+      },
+      "benchmark": {
+        "twr_cum_pct": 5.57,
+        "twr_ann_pct": 5.57,
+        "vol_ann_pct": 0.08,
+        "max_dd_pct": 0.0,
+        "sharpe": 19.12
+      },
+      "beta": 2.56,
+      "correlation": 0.07
+    },
+    {
+      "window": "YTD",
+      "available": true,
+      "n_months": 4,
+      "n_days_used": 22,
+      "portfolio": {
+        "twr_cum_pct": 2.91,
+        "twr_ann_pct": 8.98,
+        "vol_ann_pct": 5.26,
+        "max_dd_pct": -1.42,
+        "sharpe": 0.95
+      },
+      "benchmark": {
+        "twr_cum_pct": 1.77,
+        "twr_ann_pct": 5.41,
+        "vol_ann_pct": 0.07,
+        "max_dd_pct": 0.0,
+        "sharpe": 20.26
+      },
+      "beta": 2.56,
+      "correlation": 0.07
+    }
+  ],
+  "concentration": {
+    "effective_n": 1.9,
+    "top5_weight_pct": 100.0,
+    "top10_weight_pct": 100.0,
+    "max_weight_pct": 70.1,
+    "n_positions": 4,
+    "top_risk_contributors": [
+      {
+        "ticker": "SPY",
+        "risk_share_pct": 91.1,
+        "weight_pct": 70.6
+      },
+      {
+        "ticker": "AAA",
+        "risk_share_pct": 7.9,
+        "weight_pct": 16.9
+      },
+      {
+        "ticker": "BBB",
+        "risk_share_pct": 1.0,
+        "weight_pct": 12.5
+      }
+    ]
+  },
+  "income": {
+    "available": true,
+    "forward_yield_on_covered_mv": "1.09%",
+    "yield_on_cost_pct": "1.21%",
+    "coverage_of_book": "90%",
+    "note": "yields are measured against the COVERED subset of the book (coverage_of_book gives its share); options/cash/unfetched tickers excluded"
+  },
+  "tax_posture": {
+    "available": true,
+    "long_share_pct": 90.5,
+    "short_share_pct": 9.5,
+    "long_net": "gain",
+    "short_net": "gain",
+    "note": "taxable accounts only; shares of unrealized P&L magnitude"
+  },
+  "latest_month": {
+    "month": "2026-04",
+    "portfolio_pct": 1.59,
+    "bench_pct": 0.45,
+    "spread_pp": 1.14
+  }
+}

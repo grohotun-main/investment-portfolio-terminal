@@ -1,0 +1,31 @@
+{
+  "section": "riskcontrib",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all",
+    "asset_class": "Individual Stocks"
+  },
+  "available": true,
+  "estimator": "ewma_lw",
+  "benchmark": "SPY",
+  "portfolio_vol_ann_pct": 0.31,
+  "diversification_ratio": "1.00×",
+  "top_risk_contributors": [
+    {
+      "ticker": "AAA",
+      "risk_share_pct": 100.0,
+      "weight_pct": 100.0,
+      "contrib_252d_pp": 4.87
+    }
+  ],
+  "benchmark_vol": {
+    "id": "SPY",
+    "bench_vol_pct": "0.32%",
+    "delta_pp": "-0.01 pp",
+    "dir": "flat"
+  },
+  "regime": {
+    "available": false
+  },
+  "treasury_ladder_present": false
+}

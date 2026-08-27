@@ -1,0 +1,51 @@
+{
+  "section": "frontier",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "available": true,
+  "capm": {
+    "rf_pct": 4.0,
+    "rf_src": "FRED DGS3MO",
+    "erp_pct": 4.5,
+    "beta_years": 5,
+    "assumed_beta_names": [
+      "SGOV"
+    ]
+  },
+  "current": {
+    "vol_pct": 0.45,
+    "exp_return_pct": 4.04,
+    "effective_n": 1.87
+  },
+  "at_your_vol": {
+    "point_vol_pct": 0.46,
+    "frontier_exp_return_pct": 4.04,
+    "gap_pp": 0.0,
+    "effective_n": 1.84,
+    "max_weight_pct": 71.0
+  },
+  "range": {
+    "min_vol_pct": 0.29,
+    "min_vol_exp_return_pct": 4.04,
+    "max_return_pct": 4.04,
+    "max_return_vol_pct": 0.46,
+    "n_points": 12
+  },
+  "markers": [
+    {
+      "key": "min_variance",
+      "label": "Min-variance",
+      "vol_pct": 0.29,
+      "exp_return_pct": 4.04
+    },
+    {
+      "key": "risk_parity",
+      "label": "Equal risk contribution",
+      "vol_pct": 0.17,
+      "exp_return_pct": 4.04
+    }
+  ],
+  "skipped_n": 0
+}

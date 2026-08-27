@@ -1,0 +1,90 @@
+{
+  "section": "performance",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all",
+    "asset_class": "Individual Stocks"
+  },
+  "available": true,
+  "headline": {
+    "cum_twr_pct": 0.42,
+    "ann_twr_pct": 5.2,
+    "n_months": 1,
+    "irr_pct": null,
+    "irr_minus_twr_pp": null,
+    "best_month_pct": 0.4,
+    "best_month": "Apr 2026",
+    "worst_month_pct": 0.4,
+    "worst_month": "Apr 2026"
+  },
+  "drawdown": {
+    "current_dd_pct": 0.0,
+    "max_dd_pct": 0.0,
+    "max_dd_month": "Apr 2026"
+  },
+  "periodic": {
+    "n_months": 1,
+    "n_wins": 1,
+    "win_rate_pct": 100.0,
+    "best_year": "2026",
+    "best_year_pct": 0.4,
+    "worst_year": "2026",
+    "worst_year_pct": 0.4
+  },
+  "synthesized_twr": true,
+  "per_account": {
+    "n_accounts": 2,
+    "top": {
+      "account": "TEST-A",
+      "cum_twr_pct": 4.0,
+      "months": 2
+    },
+    "bottom": {
+      "account": "TEST-B",
+      "cum_twr_pct": 2.7,
+      "months": 2
+    }
+  },
+  "contributors": {
+    "available": true,
+    "method": "approximate: total-return basis (distributions reinvested at the ex-date, split-scaled), current weights held constant",
+    "windows": {
+      "60d": {
+        "top": [
+          {
+            "ticker": "AAA",
+            "weight_pct": 95.3,
+            "return_pct": 1.2,
+            "contrib_pp": 1.11
+          }
+        ],
+        "bottom": [],
+        "excluded_weight_pct": 4.7
+      },
+      "ytd": {
+        "top": [
+          {
+            "ticker": "AAA",
+            "weight_pct": 95.3,
+            "return_pct": 1.7,
+            "contrib_pp": 1.6
+          }
+        ],
+        "bottom": [],
+        "excluded_weight_pct": 4.7
+      },
+      "252d": {
+        "top": [
+          {
+            "ticker": "AAA",
+            "weight_pct": 95.3,
+            "return_pct": 5.1,
+            "contrib_pp": 4.87
+          }
+        ],
+        "bottom": [],
+        "excluded_weight_pct": 4.7
+      }
+    }
+  }
+}

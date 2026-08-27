@@ -1,0 +1,13 @@
+statement_date,broker,account_id,account_type,symbol,cusip,description,asset_class,quantity,price,market_value,cost_basis,unrealized_gl,est_annual_income,currency,source_file
+2026-03-31,fidelity,TEST-A,individual_tod,SPY,,SPDR S&P 500 ETF,equity_etf,100,560.00,56000.00,50000.00,6000.00,700.00,USD,synth
+2026-03-31,fidelity,TEST-A,individual_tod,AAA,,Synthetic Equity A,equity_stock,200,100.00,20000.00,18000.00,2000.00,0.00,USD,synth
+2026-03-31,fidelity,TEST-A,individual_tod,CASHX,,Cash Sweep,cash,10000,1.00,10000.00,10000.00,0.00,150.00,USD,synth
+2026-03-30,jpm,TEST-B,jpm_brokerage,SPY,,SPDR S&P 500 ETF,equity_etf,50,560.00,28000.00,26000.00,2000.00,350.00,USD,synth
+2026-03-30,jpm,TEST-B,jpm_brokerage,BBB,,Synthetic Bond Fund,fixed_income,300,50.00,15000.00,15000.00,0.00,600.00,USD,synth
+2026-03-31,fidelity,TEST-C,individual_tod,CCC,,Synthetic Equity C,equity_stock,40,25.00,1000.00,800.00,200.00,0.00,USD,synth
+2026-04-30,fidelity,TEST-A,individual_tod,SPY,,SPDR S&P 500 ETF,equity_etf,100,570.00,57000.00,50000.00,7000.00,700.00,USD,synth
+2026-04-30,fidelity,TEST-A,individual_tod,AAA,,Synthetic Equity A,equity_stock,200,102.00,20400.00,18000.00,2400.00,0.00,USD,synth
+2026-04-30,fidelity,TEST-A,individual_tod,CASHX,,Cash Sweep,cash,10000,1.00,10000.00,10000.00,0.00,150.00,USD,synth
+2026-04-30,fidelity,TEST-A,individual_tod,SPY260918P00500000,,PUT SPY 09/18/26 500 SPDR S&P 500 ETF,option_put,2,12.50,2500.00,3000.00,-500.00,0.00,USD,synth
+2026-04-30,jpm,TEST-B,jpm_brokerage,SPY,,SPDR S&P 500 ETF,equity_etf,50,570.00,28500.00,26000.00,2500.00,350.00,USD,synth
+2026-04-30,jpm,TEST-B,jpm_brokerage,BBB,,Synthetic Bond Fund,fixed_income,300,50.50,15150.00,15000.00,150.00,600.00,USD,synth

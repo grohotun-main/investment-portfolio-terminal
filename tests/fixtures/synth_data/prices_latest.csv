@@ -1,0 +1,5 @@
+symbol,as_of_date,close,source,status
+SPY,2026-04-30,570.00,synth,ok
+AAA,2026-04-30,102.00,synth,ok
+BBB,2026-04-30,50.50,synth,ok
+CASHX,2026-04-30,1.00,synth,cash_fixed_1

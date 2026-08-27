@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "as_of_month": "2026-04",
+    "recon_available": true,
+    "accounts": [
+      {
+        "id": "other_test_a",
+        "label": "Other (TEST-A)"
+      },
+      {
+        "id": "other_test_b",
+        "label": "Other (TEST-B)"
+      },
+      {
+        "id": "other_test_c",
+        "label": "Other (TEST-C)"
+      }
+    ],
+    "classes": [
+      {
+        "id": "cash",
+        "label": "Cash & sweep"
+      },
+      {
+        "id": "equity_etf",
+        "label": "ETFs"
+      },
+      {
+        "id": "equity_stock",
+        "label": "Individual Stocks"
+      },
+      {
+        "id": "fixed_income",
+        "label": "Fixed Income"
+      },
+      {
+        "id": "option_put",
+        "label": "Options (puts)"
+      }
+    ],
+    "brokers": [
+      {
+        "id": "fidelity",
+        "label": "fidelity"
+      },
+      {
+        "id": "jpm",
+        "label": "jpm"
+      }
+    ],
+    "available_dates": [
+      "2026-04-30",
+      "2026-03-31"
+    ],
+    "synthetic": true,
+    "filter": {
+      "account": "all",
+      "asset_class": "all",
+      "broker": "all"
+    }
+  },
+  "headline": {
+    "level": "warning",
+    "text": "⚠ 1 account(s) carried forward — TEST-C last verified Mar 2026."
+  },
+  "summary": {
+    "n_ok": 2,
+    "n_known": 0,
+    "n_watch": 0,
+    "n_error": 0,
+    "n_carried": 1,
+    "worst_level": "amber"
+  },
+  "table": [
+    {
+      "Account": "TEST-C",
+      "Broker": "fidelity",
+      "State": "Carried forward",
+      "Last verified": "Mar 2026",
+      "Extracted": "—",
+      "Reported": "—",
+      "Δ$": "—",
+      "Δ%": "—",
+      "Verdict": "carried (lagging)"
+    },
+    {
+      "Account": "TEST-A",
+      "Broker": "fidelity",
+      "State": "Verified",
+      "Last verified": "Apr 2026",
+      "Extracted": "89,900.00",
+      "Reported": "89,900.00",
+      "Δ$": "+0.00",
+      "Δ%": "+0.00%",
+      "Verdict": "ok"
+    },
+    {
+      "Account": "TEST-B",
+      "Broker": "jpm",
+      "State": "Verified",
+      "Last verified": "Apr 2026",
+      "Extracted": "43,650.00",
+      "Reported": "43,650.00",
+      "Δ$": "+0.00",
+      "Δ%": "+0.00%",
+      "Verdict": "ok"
+    }
+  ],
+  "message": null
+}

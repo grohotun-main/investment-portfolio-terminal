@@ -1,0 +1,51 @@
+{
+  "section": "tax",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "available": true,
+  "ledger": {
+    "stale": false,
+    "stale_reason_present": false
+  },
+  "unrealized": {
+    "available": true,
+    "long_share_pct": 90.5,
+    "short_share_pct": 9.5,
+    "long_net": "gain",
+    "short_net": "gain",
+    "note": "taxable accounts only; shares of unrealized P&L magnitude"
+  },
+  "realized_ytd": {
+    "available": true,
+    "year": 2026,
+    "by_term": {
+      "short": {
+        "net_direction": "gain",
+        "share_pct": 36.3
+      },
+      "long": {
+        "net_direction": "gain",
+        "share_pct": 60.1
+      },
+      "unknown": {
+        "net_direction": "gain",
+        "share_pct": 3.6
+      }
+    },
+    "total_direction": "gain",
+    "options_uncovered_closes": 3,
+    "note": "shares of realized net magnitude by term; options included, uncovered option closes counted separately"
+  },
+  "harvest": {
+    "available": true,
+    "candidates": 1,
+    "wash_blocked": 0,
+    "ira_blocked": 0,
+    "window_observed_pct": 0.0,
+    "clear_means": "no blocking buy in the OBSERVED part of the window — later trades are not in the ledger yet",
+    "stale_note": null
+  },
+  "ripening_to_long_within_60d": 0
+}

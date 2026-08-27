@@ -1,0 +1,27 @@
+{
+  "section": "income",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "available": true,
+  "received": {
+    "available": true,
+    "dividends_share_pct": 94.8,
+    "interest_share_pct": 5.2,
+    "withholding_of_gross_pct": 3.4,
+    "projected_vs_ttm_ratio": 5.64
+  },
+  "forward": {
+    "available": true,
+    "yield_on_covered_mv_pct": 1.09,
+    "yield_on_covered_cost_pct": 1.21,
+    "coverage_of_book_pct": 90.0,
+    "n_payers": 2,
+    "top_payer": "SPY",
+    "top_payer_share_pct": 54.5,
+    "top5_share_pct": 100.0,
+    "history_through": "Mar 20, 2026"
+  },
+  "book_date": "Apr 30, 2026"
+}

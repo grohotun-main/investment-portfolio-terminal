@@ -1,0 +1,130 @@
+{
+  "kind": "estimate",
+  "year": 2026,
+  "baseline": {
+    "year": 2026,
+    "total": 239,
+    "federal": 169,
+    "federal_ordinary": 135,
+    "federal_preferential": 34,
+    "state": 78,
+    "niit": 0,
+    "ftc": 8,
+    "netting": {
+      "st_net": 600.0,
+      "lt_net": 0.0,
+      "ordinary_offset": 0.0,
+      "carryforward_out": 0.0
+    },
+    "marginal": {
+      "fed_ordinary": 0.22,
+      "fed_preferential": 0.15,
+      "ca": 0.093
+    },
+    "unknown_term": {
+      "assumption": "long",
+      "amount": 0.0,
+      "swing_if_other": 0
+    },
+    "assumptions": [
+      "tax attributable to the portfolio: bracket-walk(W-2 + portfolio) minus bracket-walk(W-2 alone)",
+      "standard deduction (federal and CA amounts)",
+      "unknown-term realized gains treated as long-term",
+      "prior-year carryforward treated as long-term",
+      "qualified dividend share: 100% of dividends",
+      "MAGI approximated as W-2 + net investment income",
+      "foreign withholding credited dollar-for-dollar (approximation)",
+      "federal tables: 2026 (Rev. Proc. 2025-32); CA tables: 2025 schedule (2026 indexation pending)",
+      "AMT and quarterly payment timing are out of scope"
+    ]
+  },
+  "with_sim": {
+    "year": 2026,
+    "total": 269,
+    "federal": 187,
+    "federal_ordinary": 135,
+    "federal_preferential": 52,
+    "state": 90,
+    "niit": 0,
+    "ftc": 8,
+    "netting": {
+      "st_net": 600.0,
+      "lt_net": 120.0,
+      "ordinary_offset": 0.0,
+      "carryforward_out": 0.0
+    },
+    "marginal": {
+      "fed_ordinary": 0.22,
+      "fed_preferential": 0.15,
+      "ca": 0.093
+    },
+    "unknown_term": {
+      "assumption": "long",
+      "amount": 0.0,
+      "swing_if_other": 0
+    },
+    "assumptions": [
+      "tax attributable to the portfolio: bracket-walk(W-2 + portfolio) minus bracket-walk(W-2 alone)",
+      "standard deduction (federal and CA amounts)",
+      "unknown-term realized gains treated as long-term",
+      "prior-year carryforward treated as long-term",
+      "qualified dividend share: 100% of dividends",
+      "MAGI approximated as W-2 + net investment income",
+      "foreign withholding credited dollar-for-dollar (approximation)",
+      "federal tables: 2026 (Rev. Proc. 2025-32); CA tables: 2025 schedule (2026 indexation pending)",
+      "AMT and quarterly payment timing are out of scope"
+    ]
+  },
+  "sim_legs": [
+    {
+      "lot_id": 0,
+      "symbol": "SPY",
+      "account_label": "TEST-A",
+      "qty": 1.0,
+      "proceeds": 570.0,
+      "basis_part": 450.0,
+      "gl": 120.0,
+      "term": "long",
+      "wash_observed": false
+    }
+  ],
+  "sim_rejected": [],
+  "profile_used": {
+    "filing_status": "single",
+    "w2_income": 100000.0,
+    "state": "CA",
+    "deduction": "standard",
+    "carryforward_loss": 0.0,
+    "qualified_dividend_pct": 1.0,
+    "unknown_term_assumption": "long"
+  },
+  "income": {
+    "dividends": 230.0,
+    "interest": 12.5,
+    "treasury_interest": 0.0,
+    "withholding": -8.25,
+    "through": "2026-04-15"
+  },
+  "provenance": {
+    "lots_stale": false,
+    "stale_reason": "",
+    "income_through": "2026-04-15",
+    "table_note": "fed 2026 (Rev. Proc. 2025-32) \u00b7 CA 2025 schedule"
+  },
+  "assumptions": [
+    "tax attributable to the portfolio: bracket-walk(W-2 + portfolio) minus bracket-walk(W-2 alone)",
+    "standard deduction (federal and CA amounts)",
+    "unknown-term realized gains treated as long-term",
+    "prior-year carryforward treated as long-term",
+    "qualified dividend share: 100% of dividends",
+    "MAGI approximated as W-2 + net investment income",
+    "foreign withholding credited dollar-for-dollar (approximation)",
+    "federal tables: 2026 (Rev. Proc. 2025-32); CA tables: 2025 schedule (2026 indexation pending)",
+    "AMT and quarterly payment timing are out of scope",
+    "whole taxable book (broker filter not applied)",
+    "realized YTD excludes Fidelity option confirms",
+    "wash flags cover only the observable window \u2014 zero flags is not safety",
+    "wash flags cover replacement purchases OTHER than the lot's own opening buy \u2014 a partial sale can still wash against the shares you keep from that same purchase",
+    "income actuals through 2026-04-15"
+  ]
+}

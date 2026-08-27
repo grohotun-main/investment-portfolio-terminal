@@ -1,0 +1,82 @@
+{
+  "section": "risk",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "available": true,
+  "risk_adjusted": {
+    "sharpe_1y": 2.07,
+    "sharpe_3y": 1.31,
+    "sortino_1y": 9.16,
+    "sortino_3y": 2.91,
+    "calmar_3y": 2.02,
+    "spy_sharpe_1y": 19.12,
+    "spy_sharpe_3y": 18.25,
+    "spy_sortino_1y": null,
+    "spy_sortino_3y": null,
+    "spy_calmar_3y": null,
+    "months_used_1y": 12,
+    "months_used_3y": 36
+  },
+  "drawdown": {
+    "current_dd_pct": 0.0,
+    "max_dd_1y_pct": -1.89,
+    "max_dd_3y_pct": -7.43,
+    "max_dd_itd_pct": -7.43,
+    "spy_current_dd_pct": 0.0,
+    "spy_max_dd_itd_pct": 0.0
+  },
+  "daily": {
+    "vol_60d_ann_pct": 0.02,
+    "vol_252d_ann_pct": 0.02,
+    "spy_vol_60d_ann_pct": 0.0,
+    "spy_vol_252d_ann_pct": 0.0,
+    "var_95_1d_pct": 0.02,
+    "cvar_95_1d_pct": 0.02,
+    "spy_var_95_1d_pct": 0.02,
+    "spy_cvar_95_1d_pct": 0.02,
+    "worst_day_pct": 0.02,
+    "spy_worst_day_pct": 0.02,
+    "n_days_60d": 22,
+    "n_days_252d": 22,
+    "beta_60d": 2.56,
+    "beta_252d": 2.56,
+    "up_beta_252d": 2.56,
+    "down_beta_252d": null,
+    "alpha_252d_ann_pct": -8.52
+  },
+  "daily_available": true,
+  "concentration": {
+    "effective_n": 1.9,
+    "top5_weight_pct": 100.0,
+    "top10_weight_pct": 100.0,
+    "max_weight_pct": 70.1,
+    "n_positions": 4,
+    "top_risk_contributors": [
+      {
+        "ticker": "SPY",
+        "risk_share_pct": 91.1,
+        "weight_pct": 70.6
+      },
+      {
+        "ticker": "AAA",
+        "risk_share_pct": 7.9,
+        "weight_pct": 16.9
+      },
+      {
+        "ticker": "BBB",
+        "risk_share_pct": 1.0,
+        "weight_pct": 12.5
+      }
+    ]
+  },
+  "coverage_gaps": null,
+  "stress": {
+    "available": false,
+    "scenarios": [],
+    "excluded_weight_pct": 0.8,
+    "n_excluded": 1
+  },
+  "cash_weight_pct": 7.4
+}

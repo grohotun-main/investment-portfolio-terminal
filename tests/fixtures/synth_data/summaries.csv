@@ -1,0 +1,6 @@
+statement_date,broker,account_id,reported_total,source_file
+2026-03-31,fidelity,TEST-A,86000.00,synth
+2026-03-31,jpm,TEST-B,43000.00,synth
+2026-03-31,fidelity,TEST-C,1000.00,synth
+2026-04-30,fidelity,TEST-A,89900.00,synth
+2026-04-30,jpm,TEST-B,43650.00,synth

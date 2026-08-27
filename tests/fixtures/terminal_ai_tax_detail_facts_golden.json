@@ -1,0 +1,58 @@
+{
+  "section": "tax_detail",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "available": true,
+  "as_of": "2026-06-28",
+  "ledger": {
+    "stale": false,
+    "stale_reason_present": false
+  },
+  "wash_calendar": {
+    "as_of": "2026-06-28",
+    "window_days": 30,
+    "tx_frontier": "2026-04-15",
+    "unkeyed_rows_omitted": 0,
+    "note": "whole book — wash rules cross accounts and brokers; trailing window of window_days ending at as_of over the transaction rows supplied (fresh through tx_frontier). wash_if_sold_before: a loss sale on or before this date is washed by the latest purchase — provided shares other than the ones being sold were acquired inside the window; a single lot round-tripped within the window is not washed by its own purchase. wash_if_rebought_before: a repurchase on or before this date washes a loss realized on the latest sale. Whether a sale realized a loss is not stated here; broker_flagged_wash_sells counts statement sells the broker printed a wash flag on (interim rows carry no flags). Option trades are not counted. Rows whose instrument has no ticker symbol (cash sweeps, unresolved reinvestments, bills) are not listed; unkeyed_rows_omitted counts them. Keys absent from a row mean zero or none. sleeve_only marks names whose in-window activity is all inside the direct-index sleeve account.",
+    "tickers": []
+  },
+  "harvest": {
+    "available": true,
+    "candidates": 1,
+    "candidates_omitted": 0,
+    "window_observed_pct": 0.0,
+    "clear_means": "no blocking buy in the OBSERVED part of the window — later trades are not in the ledger yet",
+    "tickers": [
+      {
+        "ticker": "BBB",
+        "accounts": [
+          "TEST-B"
+        ],
+        "terms": [
+          "short"
+        ],
+        "wash_status": "clear",
+        "window_ends": "2026-07-29"
+      }
+    ]
+  },
+  "lots": {
+    "available": true,
+    "coverage_note": "per-ticker lot detail covers 1 of 4 ticker-keyed positions with open lots (0 cusip-keyed bills/notes or unnamed positions excluded); actionable = harvest candidates, lots within 60 days of long-term, tickers traded inside the wash window — sleeve-only traded names are not lot-actionable; absent row keys mean zero or none; ask the Tax tab for the rest",
+    "tickers": [
+      {
+        "ticker": "BBB",
+        "accounts": [
+          "TEST-B"
+        ],
+        "lots": 1,
+        "short_lots": 1,
+        "marked_lots": 1,
+        "unrealized_direction": "loss",
+        "min_days_to_long_term": 192
+      }
+    ]
+  }
+}

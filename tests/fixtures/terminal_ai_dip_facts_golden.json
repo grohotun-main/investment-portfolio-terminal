@@ -1,0 +1,56 @@
+{
+  "section": "dip",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "available": true,
+  "vintage": "2024-12-31",
+  "turbulence": {
+    "available": false
+  },
+  "symbols": [
+    {
+      "ticker": "SPY",
+      "band": "strong",
+      "n_outcomes": 53,
+      "omega": null,
+      "omega_infinite": true,
+      "baseline_omega": null,
+      "omega_ci_lo": null,
+      "omega_ci_hi": null,
+      "current_dd_pct": -3.2,
+      "pct_history_shallower": 65.8,
+      "n_episodes_this_deep": 3,
+      "today_regime": "calm",
+      "history_years": 2.0
+    },
+    {
+      "ticker": "SCHD",
+      "band": "strong",
+      "n_outcomes": 53,
+      "omega": null,
+      "omega_infinite": true,
+      "baseline_omega": null,
+      "omega_ci_lo": null,
+      "omega_ci_hi": null,
+      "current_dd_pct": -3.2,
+      "pct_history_shallower": 65.8,
+      "n_episodes_this_deep": 3,
+      "today_regime": "calm",
+      "history_years": 2.0
+    }
+  ],
+  "skipped_short_history": [],
+  "referee": {
+    "ticker": "SPY",
+    "band": "strong",
+    "outcome": "validated",
+    "n_days": 74,
+    "n_episodes": 2,
+    "median_12m_pct": 20.7,
+    "hit_12m_pct": 100.0,
+    "omega_12m": null,
+    "omega_12m_infinite": true
+  }
+}

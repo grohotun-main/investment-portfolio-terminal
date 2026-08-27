@@ -1,0 +1,42 @@
+{
+  "section": "riskcontrib",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "available": true,
+  "estimator": "ewma_lw",
+  "benchmark": "SPY",
+  "portfolio_vol_ann_pct": 0.46,
+  "diversification_ratio": "1.06×",
+  "top_risk_contributors": [
+    {
+      "ticker": "SPY",
+      "risk_share_pct": 91.1,
+      "weight_pct": 70.6,
+      "contrib_252d_pp": 4.59
+    },
+    {
+      "ticker": "AAA",
+      "risk_share_pct": 7.9,
+      "weight_pct": 16.9,
+      "contrib_252d_pp": 0.85
+    },
+    {
+      "ticker": "BBB",
+      "risk_share_pct": 1.0,
+      "weight_pct": 12.5,
+      "contrib_252d_pp": 0.1
+    }
+  ],
+  "benchmark_vol": {
+    "id": "SPY",
+    "bench_vol_pct": "0.32%",
+    "delta_pp": "+0.14 pp",
+    "dir": "down"
+  },
+  "regime": {
+    "available": false
+  },
+  "treasury_ladder_present": false
+}

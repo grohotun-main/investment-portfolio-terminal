@@ -1,0 +1,363 @@
+{
+  "kind": "tax",
+  "meta": {
+    "built_at": "2026-06-28T12:00:00Z",
+    "open_lots": 7,
+    "gate": {
+      "passed": true,
+      "accuracy_pct": 99.5,
+      "accuracy_threshold_pct": 99.0,
+      "coverage_pct": 70.0,
+      "coverage_threshold_pct": 60.0
+    },
+    "joined_bands": {
+      "ok": 5,
+      "watch": 1
+    },
+    "stale": false,
+    "stale_reason": null,
+    "asof": "2026-06-28",
+    "filter": {},
+    "accounts": [
+      {
+        "id": "other_test_a",
+        "label": "Other (TEST-A)"
+      },
+      {
+        "id": "other_test_b",
+        "label": "Other (TEST-B)"
+      },
+      {
+        "id": "other_test_c",
+        "label": "Other (TEST-C)"
+      }
+    ],
+    "classes": [
+      {
+        "id": "cash",
+        "label": "Cash & sweep"
+      },
+      {
+        "id": "equity_etf",
+        "label": "ETFs"
+      },
+      {
+        "id": "equity_stock",
+        "label": "Individual Stocks"
+      },
+      {
+        "id": "fixed_income",
+        "label": "Fixed Income"
+      },
+      {
+        "id": "option_put",
+        "label": "Options (puts)"
+      }
+    ]
+  },
+  "summary": {
+    "accounts": [
+      {
+        "id": "TEST-A",
+        "label": "TEST-A",
+        "lots": 3,
+        "basis": 63000.0,
+        "market_value": 77400.0,
+        "unrealized_gl": 14400.0
+      },
+      {
+        "id": "TEST-B",
+        "label": "TEST-B",
+        "lots": 2,
+        "basis": 35300.0,
+        "market_value": 43650.0,
+        "unrealized_gl": 8350.0
+      },
+      {
+        "id": "TEST-C",
+        "label": "TEST-C",
+        "lots": 1,
+        "basis": 900.0,
+        "market_value": null,
+        "unrealized_gl": null
+      }
+    ],
+    "totals": {
+      "basis": 99200.0,
+      "priced_basis": 98300.0,
+      "unpriced_basis": 900.0,
+      "market_value": 121050.0,
+      "unrealized_gl": 22750.0,
+      "priced_lots": 5,
+      "stmt_priced_lots": 0,
+      "unpriced_lots": 1
+    },
+    "by_evidence": {
+      "printed": 1,
+      "reconstructed": 5
+    },
+    "by_band": {
+      "ok": 5,
+      "watch": 1
+    },
+    "excluded": {
+      "ira_accounts": 0,
+      "unknown_accounts": 1
+    },
+    "realized_ytd": {
+      "year": 2026,
+      "gains": 2231.45,
+      "losses": -566.35,
+      "net": 1665.1,
+      "by_term": {
+        "short": {
+          "gains": 925.25,
+          "losses": -320.5,
+          "net": 604.75
+        },
+        "long": {
+          "gains": 1245.8,
+          "losses": -245.85,
+          "net": 999.95
+        },
+        "unknown": {
+          "gains": 60.4,
+          "losses": 0.0,
+          "net": 60.4
+        }
+      },
+      "by_account": [
+        {
+          "account_id": "TEST-A",
+          "account_label": "TEST-A",
+          "term": "short",
+          "closes": 4,
+          "gains": 925.25,
+          "losses": -320.5,
+          "net": 604.75
+        },
+        {
+          "account_id": "TEST-B",
+          "account_label": "TEST-B",
+          "term": "long",
+          "closes": 2,
+          "gains": 1200.0,
+          "losses": -150.75,
+          "net": 1049.25
+        },
+        {
+          "account_id": "TEST-B",
+          "account_label": "TEST-B",
+          "term": "unknown",
+          "closes": 1,
+          "gains": 60.4,
+          "losses": 0.0,
+          "net": 60.4
+        },
+        {
+          "account_id": "TEST-C",
+          "account_label": "TEST-C",
+          "term": "long",
+          "closes": 2,
+          "gains": 45.8,
+          "losses": -95.1,
+          "net": -49.3
+        }
+      ],
+      "options_in": true,
+      "options_uncovered": 3,
+      "unrecognized_slots": 0,
+      "broker_unresolved": 0,
+      "unavailable": null
+    },
+    "silent_share_note": "every lot is shown. Basis provenance: 99.5% accurate on the 70.0% of joined basis the ledger reconstructs itself; the remaining 30.0% carries the broker's own printed figures (instrument totals exact, per-lot slicing approximate \u2014 why TLH excludes those instruments)"
+  },
+  "lots": [
+    {
+      "lot_id": 2,
+      "account_id": "TEST-A",
+      "account_label": "TEST-A",
+      "symbol": "AAA",
+      "instrument_key": "AAA",
+      "type": "stock",
+      "is_tlh": false,
+      "origin": "opening",
+      "acquired_date": null,
+      "term": "unknown",
+      "days_to_long_term": null,
+      "quantity_remaining": 200.0,
+      "basis_remaining": 15000.0,
+      "price": 102.0,
+      "price_source": "live",
+      "price_asof": null,
+      "market_value": 20400.0,
+      "unrealized_gl": 5400.0,
+      "basis_evidence": "printed",
+      "band": "ok"
+    },
+    {
+      "lot_id": 0,
+      "account_id": "TEST-A",
+      "account_label": "TEST-A",
+      "symbol": "SPY",
+      "instrument_key": "SPY",
+      "type": "etf",
+      "is_tlh": false,
+      "origin": "buy",
+      "acquired_date": "2024-05-10",
+      "term": "long",
+      "days_to_long_term": null,
+      "quantity_remaining": 60.0,
+      "basis_remaining": 27000.0,
+      "price": 570.0,
+      "price_source": "live",
+      "price_asof": null,
+      "market_value": 34200.0,
+      "unrealized_gl": 7200.0,
+      "basis_evidence": "reconstructed",
+      "band": "ok"
+    },
+    {
+      "lot_id": 1,
+      "account_id": "TEST-A",
+      "account_label": "TEST-A",
+      "symbol": "SPY",
+      "instrument_key": "SPY",
+      "type": "etf",
+      "is_tlh": false,
+      "origin": "buy",
+      "acquired_date": "2025-11-03",
+      "term": "short",
+      "days_to_long_term": 129,
+      "quantity_remaining": 40.0,
+      "basis_remaining": 21000.0,
+      "price": 570.0,
+      "price_source": "live",
+      "price_asof": null,
+      "market_value": 22800.0,
+      "unrealized_gl": 1800.0,
+      "basis_evidence": "reconstructed",
+      "band": "ok"
+    },
+    {
+      "lot_id": 4,
+      "account_id": "TEST-B",
+      "account_label": "TEST-B",
+      "symbol": "BBB",
+      "instrument_key": "BBB",
+      "type": "other",
+      "is_tlh": false,
+      "origin": "buy",
+      "acquired_date": "2026-01-05",
+      "term": "short",
+      "days_to_long_term": 192,
+      "quantity_remaining": 300.0,
+      "basis_remaining": 15300.0,
+      "price": 50.5,
+      "price_source": "live",
+      "price_asof": null,
+      "market_value": 15150.0,
+      "unrealized_gl": -150.0,
+      "basis_evidence": "reconstructed",
+      "band": "watch"
+    },
+    {
+      "lot_id": 3,
+      "account_id": "TEST-B",
+      "account_label": "TEST-B",
+      "symbol": "SPY",
+      "instrument_key": "SPY",
+      "type": "etf",
+      "is_tlh": false,
+      "origin": "buy",
+      "acquired_date": "2023-01-15",
+      "term": "long",
+      "days_to_long_term": null,
+      "quantity_remaining": 50.0,
+      "basis_remaining": 20000.0,
+      "price": 570.0,
+      "price_source": "live",
+      "price_asof": null,
+      "market_value": 28500.0,
+      "unrealized_gl": 8500.0,
+      "basis_evidence": "reconstructed",
+      "band": "ok"
+    },
+    {
+      "lot_id": 5,
+      "account_id": "TEST-C",
+      "account_label": "TEST-C",
+      "symbol": "CCC",
+      "instrument_key": "CCC",
+      "type": "stock",
+      "is_tlh": false,
+      "origin": "buy",
+      "acquired_date": "2026-02-10",
+      "term": "short",
+      "days_to_long_term": 228,
+      "quantity_remaining": 40.0,
+      "basis_remaining": 900.0,
+      "price": null,
+      "price_source": null,
+      "price_asof": null,
+      "market_value": null,
+      "unrealized_gl": null,
+      "basis_evidence": "reconstructed",
+      "band": "ok"
+    }
+  ],
+  "harvest": {
+    "candidates": [
+      {
+        "account_id": "TEST-B",
+        "account_label": "TEST-B",
+        "symbol": "BBB",
+        "instrument_key": "BBB",
+        "type": "other",
+        "is_tlh": false,
+        "acquired_date": "2026-01-05",
+        "term": "short",
+        "quantity_remaining": 300.0,
+        "basis_remaining": 15300.0,
+        "price": 50.5,
+        "market_value": 15150.0,
+        "unrealized_gl": -150.0,
+        "wash_status": "clear",
+        "blocking_buys": [],
+        "is_ira_blocked": false,
+        "window_ends": "2026-07-29"
+      }
+    ],
+    "summary": {
+      "as_of": "2026-06-28",
+      "window_days": 30,
+      "lots_seen": 7,
+      "excluded_non_taxable_accounts": 1,
+      "excluded_ira_accounts": 0,
+      "excluded_unknown_accounts": 1,
+      "excluded_printed_evidence": 1,
+      "excluded_unpriced": 1,
+      "excluded_no_basis": 0,
+      "excluded_gain_or_flat": 3,
+      "excluded_no_shares_remaining": 0,
+      "candidates": 1,
+      "blocked": 0,
+      "ira_blocked": 0,
+      "total_unrealized_loss": -150.0,
+      "window_days_total": 31,
+      "window_days_observed": 0,
+      "window_observed_pct": 0.0,
+      "tx_frontier": "2026-04-15"
+    },
+    "semantics": {
+      "window_days": 30,
+      "as_of": "2026-06-28",
+      "tx_frontier": "2026-04-15",
+      "window_days_total": 31,
+      "window_days_observed": 0,
+      "window_observed_pct": 0.0,
+      "clear_means": "no blocking buy in the OBSERVED part of the window \u2014 later trades are not in the ledger yet",
+      "stale_note": null
+    }
+  }
+}

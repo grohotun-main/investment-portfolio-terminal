@@ -1,0 +1,342 @@
+{
+  "meta": {
+    "accounts": [
+      {
+        "id": "other_test_a",
+        "label": "Other (TEST-A)"
+      },
+      {
+        "id": "other_test_b",
+        "label": "Other (TEST-B)"
+      },
+      {
+        "id": "other_test_c",
+        "label": "Other (TEST-C)"
+      }
+    ],
+    "classes": [
+      {
+        "id": "cash",
+        "label": "Cash & sweep"
+      },
+      {
+        "id": "equity_etf",
+        "label": "ETFs"
+      },
+      {
+        "id": "equity_stock",
+        "label": "Individual Stocks"
+      },
+      {
+        "id": "fixed_income",
+        "label": "Fixed Income"
+      },
+      {
+        "id": "option_put",
+        "label": "Options (puts)"
+      }
+    ],
+    "brokers": [
+      {
+        "id": "fidelity",
+        "label": "fidelity"
+      },
+      {
+        "id": "jpm",
+        "label": "jpm"
+      }
+    ],
+    "available_dates": [
+      "2026-04-30",
+      "2026-03-31"
+    ],
+    "synthetic": true,
+    "filter": {
+      "account": "all",
+      "asset_class": "all",
+      "broker": "all"
+    },
+    "book_date": "Apr 30, 2026"
+  },
+  "caption": "Income is computed on the full broker-filtered book — the Holdings (Account / Asset-class) filter does not apply to this tab.",
+  "received": {
+    "empty": false,
+    "empty_message": null,
+    "kpis": [
+      {
+        "label": "Trailing-12M income (actual)",
+        "value": "$234",
+        "sub": "trailing 365 days · net of withholding"
+      },
+      {
+        "label": "YTD income (actual)",
+        "value": "$234",
+        "sub": "calendar 2026"
+      },
+      {
+        "label": "Projected next-12M",
+        "value": "$1,320",
+        "sub": "dividends + bond coupons — see Forward income"
+      }
+    ],
+    "chart": {
+      "components": {
+        "monthly": {
+          "x": [
+            "Mar 2026",
+            "Apr 2026"
+          ],
+          "series": [
+            {
+              "name": "Dividends",
+              "color": "#4DA3F5",
+              "values": [
+                175.0,
+                55.0
+              ]
+            },
+            {
+              "name": "Interest",
+              "color": "#2FD79A",
+              "values": [
+                12.5,
+                0.0
+              ]
+            },
+            {
+              "name": "Withholding",
+              "color": "#FB6F63",
+              "values": [
+                0.0,
+                -8.25
+              ]
+            }
+          ],
+          "mode": "stacked"
+        },
+        "yearly": {
+          "x": [
+            "2026"
+          ],
+          "series": [
+            {
+              "name": "Dividends",
+              "color": "#4DA3F5",
+              "values": [
+                230.0
+              ]
+            },
+            {
+              "name": "Interest",
+              "color": "#2FD79A",
+              "values": [
+                12.5
+              ]
+            },
+            {
+              "name": "Withholding",
+              "color": "#FB6F63",
+              "values": [
+                -8.25
+              ]
+            }
+          ],
+          "mode": "stacked"
+        },
+        "cumulative": {
+          "x": [
+            "Mar 2026",
+            "Apr 2026"
+          ],
+          "series": [
+            {
+              "name": "Dividends",
+              "color": "#4DA3F5",
+              "values": [
+                175.0,
+                230.0
+              ]
+            },
+            {
+              "name": "Interest",
+              "color": "#2FD79A",
+              "values": [
+                12.5,
+                12.5
+              ]
+            },
+            {
+              "name": "Withholding",
+              "color": "#FB6F63",
+              "values": [
+                0.0,
+                -8.25
+              ]
+            },
+            {
+              "name": "Net (cumulative)",
+              "color": "#EDF2F9",
+              "width": 4,
+              "values": [
+                187.5,
+                234.25
+              ]
+            }
+          ],
+          "mode": "line"
+        }
+      },
+      "by_account": {
+        "monthly": {
+          "x": [
+            "Mar 2026",
+            "Apr 2026"
+          ],
+          "series": [
+            {
+              "name": "TEST-A",
+              "color": "#4DA3F5",
+              "values": [
+                187.5,
+                0.0
+              ]
+            },
+            {
+              "name": "TEST-B",
+              "color": "#2DD4BF",
+              "values": [
+                0.0,
+                46.75
+              ]
+            }
+          ],
+          "mode": "stacked"
+        },
+        "yearly": {
+          "x": [
+            "2026"
+          ],
+          "series": [
+            {
+              "name": "TEST-A",
+              "color": "#4DA3F5",
+              "values": [
+                187.5
+              ]
+            },
+            {
+              "name": "TEST-B",
+              "color": "#2DD4BF",
+              "values": [
+                46.75
+              ]
+            }
+          ],
+          "mode": "stacked"
+        },
+        "cumulative": {
+          "x": [
+            "Mar 2026",
+            "Apr 2026"
+          ],
+          "series": [
+            {
+              "name": "TEST-A",
+              "color": "#4DA3F5",
+              "values": [
+                187.5,
+                187.5
+              ]
+            },
+            {
+              "name": "TEST-B",
+              "color": "#2DD4BF",
+              "values": [
+                0.0,
+                46.75
+              ]
+            }
+          ],
+          "mode": "line"
+        }
+      }
+    }
+  },
+  "forward": {
+    "available": true,
+    "unavailable_message": null,
+    "kpis": [
+      {
+        "label": "Projected 12M income",
+        "value": "$1,320",
+        "sub": null
+      },
+      {
+        "label": "Yield (covered MV)",
+        "value": "1.09%",
+        "sub": null
+      },
+      {
+        "label": "Yield on cost",
+        "value": "1.21%",
+        "sub": "holdings with known cost basis only"
+      },
+      {
+        "label": "Coverage (% of NAV)",
+        "value": "90%",
+        "sub": "options, cash and unfetched tickers are uncovered; bonds project via coupons"
+      }
+    ],
+    "nav_caption": "Yields and coverage are measured against the book's live-marked NAV $134,550 (as of Apr 30, 2026) — the marked basis the Holdings value uses, not the return-basis NAV the Performance tab reconciles.",
+    "payers_empty": false,
+    "payers_message": null,
+    "top_chart": {
+      "bars": [
+        {
+          "x": "SPY",
+          "v": 720.0000000000001
+        },
+        {
+          "x": "BBB",
+          "v": 600.0
+        }
+      ]
+    },
+    "detail": {
+      "columns": [
+        "Symbol",
+        "Projected 12M",
+        "T12M / share",
+        "Shares / face",
+        "Yield",
+        "Yield on cost",
+        "Market value",
+        "% of NAV"
+      ],
+      "rows": [
+        {
+          "Symbol": "SPY",
+          "Projected 12M": "$720",
+          "T12M / share": "$4.80",
+          "Shares / face": "150",
+          "Yield": "0.84%",
+          "Yield on cost": "0.95%",
+          "Market value": "$85,500",
+          "% of NAV": "63.55%"
+        },
+        {
+          "Symbol": "BBB",
+          "Projected 12M": "$600",
+          "T12M / share": "-",
+          "Shares / face": "300",
+          "Yield": "3.96%",
+          "Yield on cost": "4.00%",
+          "Market value": "$15,150",
+          "% of NAV": "11.26%"
+        }
+      ]
+    },
+    "history_through_caption": "Dividend history through Mar 20, 2026 — book as of Apr 30, 2026."
+  },
+  "methodology": "<ul><li><b>Actuals:</b> dividend / interest / withholding rows from the transaction ledger, grouped by settlement month. Gross income; withholding (foreign tax) is summed as recorded (mostly small reclaims positive, occasional tax negative), so the stacked bars read net. Return-of-capital distributions on held shares (<code>principal_pmt</code> — NEOS-style funds, special payouts) count as dividends: ROC is tax character, not a different kind of yield; cash-in-lieu and bond principal are excluded. <code>reinvestment</code> rows are the buy side of DRIPs and are excluded — the cash dividend row is already counted.</li><li><b>Per-holding actuals are not shown</b>: ~22% of dividend dollars in the ledger still lack a ticker, so per-name attribution comes from the forward model instead.</li><li><b>Forward income</b> = trailing-12-month per-share cash dividends (Polygon, ex-date basis) × current shares. One-time / special distributions (Polygon frequency 0 or type SC) are excluded from the annualization — a one-off payout is not a run-rate. Reacts to dividend cuts with up to a year's lag by construction.</li><li><b>Bond coupons:</b> fixed-income rows without a dividend file (bare-CUSIP Treasury rungs, bond funds) project the statement's est. annual income when present, else face × coupon parsed from the description. Going-concern ladder: no maturity pro-rating — a maturing rung is assumed rolled into similar paper.</li><li><b>Coverage:</b> any symbol-bearing holding with a fetched history file — class labels are not trusted (JPM files SGOV under fixed income; TLH-account names carry a display class) — plus coupon-priced bonds. Options, cash and never-fetched tickers are <i>uncovered</i> — excluded from yield math but counted in NAV, so the coverage tile is honest.</li><li><b>Renames</b> are spliced at fetch time via TICKER_HISTORY (prior symbol's dividends before the effective date).</li><li>Book = latest month in the (broker-filtered) positions panel, including interim months when loaded; the Holdings (Account / Asset-class) filter does not apply here, and coverage / yields use the book's live-marked NAV. A ticker first bought mid-interim stays uncovered until it appears in a statement month and the history is refreshed.</li></ul>"
+}

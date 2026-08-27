@@ -1,0 +1,274 @@
+{
+  "section": "brief",
+  "scope": {
+    "broker": "Fidelity + JPM",
+    "history_start": "all"
+  },
+  "available": true,
+  "performance": {
+    "available": true,
+    "headline": {
+      "cum_twr_pct": 63.32,
+      "ann_twr_pct": 15.85,
+      "n_months": 40,
+      "irr_pct": null,
+      "irr_minus_twr_pp": null,
+      "best_month_pct": 7.5,
+      "best_month": "Jul 2025",
+      "worst_month_pct": -4.8,
+      "worst_month": "May 2023"
+    },
+    "drawdown": {
+      "current_dd_pct": 0.0,
+      "max_dd_pct": -7.43,
+      "max_dd_month": "Jun 2023"
+    },
+    "synthesized_twr": false,
+    "contributors": {
+      "available": true,
+      "method": "approximate: total-return basis (distributions reinvested at the ex-date, split-scaled), current weights held constant",
+      "windows": {
+        "60d": {
+          "top": [
+            {
+              "ticker": "SPY",
+              "weight_pct": 70.1,
+              "return_pct": 1.5,
+              "contrib_pp": 1.05
+            },
+            {
+              "ticker": "AAA",
+              "weight_pct": 16.7,
+              "return_pct": 1.2,
+              "contrib_pp": 0.19
+            },
+            {
+              "ticker": "BBB",
+              "weight_pct": 12.4,
+              "return_pct": 0.2,
+              "contrib_pp": 0.02
+            }
+          ],
+          "bottom": [],
+          "excluded_weight_pct": 0.8
+        },
+        "ytd": {
+          "top": [
+            {
+              "ticker": "SPY",
+              "weight_pct": 70.1,
+              "return_pct": 2.0,
+              "contrib_pp": 1.43
+            },
+            {
+              "ticker": "AAA",
+              "weight_pct": 16.7,
+              "return_pct": 1.7,
+              "contrib_pp": 0.28
+            },
+            {
+              "ticker": "BBB",
+              "weight_pct": 12.4,
+              "return_pct": 0.3,
+              "contrib_pp": 0.03
+            }
+          ],
+          "bottom": [],
+          "excluded_weight_pct": 0.8
+        },
+        "252d": {
+          "top": [
+            {
+              "ticker": "SPY",
+              "weight_pct": 70.1,
+              "return_pct": 6.6,
+              "contrib_pp": 4.59
+            },
+            {
+              "ticker": "AAA",
+              "weight_pct": 16.7,
+              "return_pct": 5.1,
+              "contrib_pp": 0.85
+            },
+            {
+              "ticker": "BBB",
+              "weight_pct": 12.4,
+              "return_pct": 0.8,
+              "contrib_pp": 0.1
+            }
+          ],
+          "bottom": [],
+          "excluded_weight_pct": 0.8
+        }
+      }
+    }
+  },
+  "risk": {
+    "available": true,
+    "daily": {
+      "vol_60d_ann_pct": 0.02,
+      "vol_252d_ann_pct": 0.02,
+      "spy_vol_60d_ann_pct": 0.0,
+      "spy_vol_252d_ann_pct": 0.0,
+      "var_95_1d_pct": 0.02,
+      "cvar_95_1d_pct": 0.02,
+      "spy_var_95_1d_pct": 0.02,
+      "spy_cvar_95_1d_pct": 0.02,
+      "worst_day_pct": 0.02,
+      "spy_worst_day_pct": 0.02,
+      "n_days_60d": 22,
+      "n_days_252d": 22,
+      "beta_60d": 2.56,
+      "beta_252d": 2.56,
+      "up_beta_252d": 2.56,
+      "down_beta_252d": null,
+      "alpha_252d_ann_pct": -8.52
+    },
+    "daily_available": true,
+    "concentration": {
+      "effective_n": 1.9,
+      "top5_weight_pct": 100.0,
+      "top10_weight_pct": 100.0,
+      "max_weight_pct": 70.1,
+      "n_positions": 4,
+      "top_risk_contributors": [
+        {
+          "ticker": "SPY",
+          "risk_share_pct": 91.1,
+          "weight_pct": 70.6
+        },
+        {
+          "ticker": "AAA",
+          "risk_share_pct": 7.9,
+          "weight_pct": 16.9
+        },
+        {
+          "ticker": "BBB",
+          "risk_share_pct": 1.0,
+          "weight_pct": 12.5
+        }
+      ]
+    },
+    "coverage_gaps": null,
+    "cash_weight_pct": 7.4,
+    "stress": {
+      "available": false,
+      "scenarios": [],
+      "excluded_weight_pct": 0.8,
+      "n_excluded": 1
+    }
+  },
+  "vs_benchmark": {
+    "available": true,
+    "benchmark_short": "SPY",
+    "fallback_to_spy": false,
+    "windows": [
+      {
+        "window": "YTD",
+        "annualized": false,
+        "available": true,
+        "port_return_pct": 2.91,
+        "bench_return_pct": 1.77,
+        "spread_pp": 1.14,
+        "port_vol_pct": 5.26,
+        "bench_vol_pct": 0.07
+      },
+      {
+        "window": "1Y",
+        "annualized": false,
+        "available": true,
+        "port_return_pct": 22.36,
+        "bench_return_pct": 5.57,
+        "spread_pp": 16.79,
+        "port_vol_pct": 8.86,
+        "bench_vol_pct": 0.08
+      },
+      {
+        "window": "Since inception",
+        "annualized": true,
+        "available": true,
+        "port_return_pct": 19.54,
+        "bench_return_pct": 5.77,
+        "spread_pp": 13.77,
+        "port_vol_pct": 7.84,
+        "bench_vol_pct": 0.1
+      }
+    ],
+    "consistency": {
+      "available": true,
+      "n_windows": 16,
+      "hit_rate_pct": 100.0,
+      "tracking_error_pct": 7.82,
+      "information_ratio": 1.62,
+      "window_months": 12
+    }
+  },
+  "income": {
+    "available": true,
+    "forward": {
+      "available": true,
+      "yield_on_covered_mv_pct": 1.09,
+      "yield_on_covered_cost_pct": 1.21,
+      "coverage_of_book_pct": 90.0,
+      "n_payers": 2,
+      "top_payer": "SPY",
+      "top_payer_share_pct": 54.5,
+      "top5_share_pct": 100.0,
+      "history_through": "Mar 20, 2026"
+    },
+    "received": {
+      "available": true,
+      "dividends_share_pct": 94.8,
+      "interest_share_pct": 5.2,
+      "withholding_of_gross_pct": 3.4,
+      "projected_vs_ttm_ratio": 5.64
+    },
+    "book_date": "Apr 30, 2026"
+  },
+  "tax": {
+    "available": true,
+    "unrealized": {
+      "available": true,
+      "long_share_pct": 90.5,
+      "short_share_pct": 9.5,
+      "long_net": "gain",
+      "short_net": "gain",
+      "note": "taxable accounts only; shares of unrealized P&L magnitude"
+    },
+    "realized_ytd": {
+      "available": true,
+      "year": 2026,
+      "by_term": {
+        "short": {
+          "net_direction": "gain",
+          "share_pct": 36.3
+        },
+        "long": {
+          "net_direction": "gain",
+          "share_pct": 60.1
+        },
+        "unknown": {
+          "net_direction": "gain",
+          "share_pct": 3.6
+        }
+      },
+      "total_direction": "gain",
+      "options_uncovered_closes": 3,
+      "note": "shares of realized net magnitude by term; options included, uncovered option closes counted separately"
+    },
+    "harvest": {
+      "available": true,
+      "candidates": 1,
+      "wash_blocked": 0,
+      "ira_blocked": 0,
+      "window_observed_pct": 0.0,
+      "clear_means": "no blocking buy in the OBSERVED part of the window — later trades are not in the ledger yet",
+      "stale_note": null
+    },
+    "ripening_to_long_within_60d": 0,
+    "ledger": {
+      "stale": false,
+      "stale_reason_present": false
+    }
+  }
+}
