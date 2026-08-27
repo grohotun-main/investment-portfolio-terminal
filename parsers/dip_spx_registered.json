@@ -1,0 +1,340 @@
+{
+  "schema": 1,
+  "kind": "spx_extension",
+  "ticker": "SPX",
+  "registered": "2026-07-19",
+  "series": {
+    "meta": {
+      "id": "SPX",
+      "start": "1950-01-03",
+      "end": "2026-07-17",
+      "price_segments": {
+        "gspc_until": "1993-01-29",
+        "spy_from": "1993-01-29"
+      },
+      "tr_segments": {
+        "synthetic_until": "1988-01-04",
+        "sp500tr_from": "1988-01-04",
+        "spy_from": "1993-01-29"
+      },
+      "components": {
+        "spy_last": "2026-07-17",
+        "gspc_last": "2026-07-17",
+        "sptr_last": "2026-07-17"
+      },
+      "yield_span": [
+        "1949-01",
+        "2026-06"
+      ]
+    },
+    "data_gates": {
+      "corr_gspc_vs_spy": {
+        "corr": 0.983450665147439,
+        "n_overlap": 8422,
+        "corr_2002p": 0.9907074119797417,
+        "n_overlap_2002p": 6173,
+        "ok": true
+      },
+      "corr_sptr_vs_spy": {
+        "corr": 0.98486531704904,
+        "n_overlap": 8422,
+        "corr_2002p": 0.9921652008953072,
+        "n_overlap_2002p": 6173,
+        "ok": true
+      },
+      "tracking": {
+        "ann_diff_bps": 5.889843477522305,
+        "p95_roll252_bps": 22.680088304507517,
+        "n_overlap": 9695,
+        "ok": true
+      },
+      "all_ok": true
+    }
+  },
+  "config": {
+    "stride": 5,
+    "burn_in_years": 10,
+    "censor": 252,
+    "horizon": 252,
+    "incumbent": {
+      "strong_rr": 0.67,
+      "requires_ci": true
+    },
+    "min_episodes": 5,
+    "incumbent_window": [
+      "2003-01-29",
+      "2025-06-23"
+    ]
+  },
+  "evals": {
+    "n": 3299,
+    "first": "1960-01-04",
+    "last": "2025-07-14"
+  },
+  "replay": {
+    "primary": {
+      "stat": 0.06561264095943997,
+      "ci_lo": -2.101195509929021,
+      "ci_hi": 5.290489392865497,
+      "n_edge_days": 1554,
+      "n_edge_episodes": 42,
+      "block_rows": 51,
+      "outcome": "not_supported"
+    },
+    "referee": {
+      "strong": {
+        "n_days": 561,
+        "n_episodes": 12,
+        "med_252": 0.1559436905677669,
+        "med_126": 0.0743880534176029,
+        "med_63": 0.04263929524246568,
+        "med_21": 0.015411985718866816,
+        "hit_252": 0.7878787878787878,
+        "omega_252": 4.610483946058672
+      },
+      "neutral": {
+        "n_days": 993,
+        "n_episodes": 42,
+        "med_252": 0.13072209319805084,
+        "med_126": 0.05849350466645431,
+        "med_63": 0.029217356083573565,
+        "med_21": 0.012464767924557085,
+        "hit_252": 0.8056394763343404,
+        "omega_252": 6.9606358140611535
+      },
+      "weak": {
+        "n_days": 190,
+        "n_episodes": 24,
+        "med_252": 0.13360316505459047,
+        "med_126": 0.04961818010604013,
+        "med_63": 0.031630525371351026,
+        "med_21": 0.013869947282180717,
+        "hit_252": 0.7157894736842105,
+        "omega_252": 2.259412972430157
+      },
+      "inconclusive": {
+        "n_days": 74,
+        "n_episodes": 5,
+        "med_252": 0.3518141755480305,
+        "med_126": 0.2314538084964748,
+        "med_63": 0.11327011309715951,
+        "med_21": 0.05010695177036972,
+        "hit_252": 1.0,
+        "omega_252": null,
+        "omega_252_inf": true
+      },
+      "shallow": {
+        "n_days": 1481,
+        "n_episodes": 398,
+        "med_252": 0.11964706250507096,
+        "med_126": 0.0613395379117867,
+        "med_63": 0.032149496113904386,
+        "med_21": 0.011858001923350514,
+        "hit_252": 0.7771775827143822,
+        "omega_252": 6.272185521804742
+      },
+      "all": {
+        "n_days": 3299,
+        "n_episodes": 398,
+        "med_252": 0.13384946341107695,
+        "med_126": 0.06427741349555705,
+        "med_63": 0.033257008363661855,
+        "med_21": 0.013122828619479776,
+        "hit_252": 0.7890269778720824,
+        "omega_252": 5.756875784910266
+      }
+    },
+    "tk_rule": {
+      "n_days": 705,
+      "n_episodes": 14,
+      "med_252": 0.1413744333622171,
+      "med_126": 0.06488550797811898,
+      "med_63": 0.035750489964182064,
+      "med_21": 0.01437787397497825,
+      "hit_252": 0.8226950354609929,
+      "omega_252": 5.601840310142821
+    },
+    "incumbent_window": {
+      "stat": 25.980498109969243,
+      "ci_lo": 8.832304946199143,
+      "ci_hi": 352.4619465747295,
+      "n_edge_days": 470,
+      "n_edge_episodes": 9,
+      "block_rows": 51,
+      "outcome": "validated"
+    }
+  },
+  "sensitivity": {
+    "burn_in_5y": {
+      "evals": {
+        "n": 3551,
+        "first": "1955-01-03",
+        "last": "2025-07-14"
+      },
+      "primary": {
+        "stat": -0.2140783563324975,
+        "ci_lo": -2.37010753046576,
+        "ci_hi": 4.153554957733791,
+        "n_edge_days": 1644,
+        "n_edge_episodes": 50,
+        "block_rows": 51,
+        "outcome": "not_supported"
+      }
+    }
+  },
+  "gate": {
+    "incumbent": {
+      "primary": {
+        "stat": -1.146391838851594,
+        "ci_lo": -4.20391491967167,
+        "ci_hi": 9.19654616870168,
+        "n_strong_days": 561,
+        "n_strong_episodes": 12,
+        "block_rows": 51,
+        "omega_inf": false,
+        "outcome": "not_supported"
+      },
+      "descriptive": {
+        "strong": {
+          "n_days": 561,
+          "n_episodes": 12,
+          "med_252": 0.1559436905677669,
+          "med_126": 0.0743880534176029,
+          "med_63": 0.04263929524246568,
+          "med_21": 0.015411985718866816,
+          "hit_252": 0.7878787878787878,
+          "omega_252": 4.610483946058672
+        },
+        "residual_neutral": {
+          "n_days": 993,
+          "n_episodes": 42,
+          "med_252": 0.13072209319805084,
+          "med_126": 0.05849350466645431,
+          "med_63": 0.029217356083573565,
+          "med_21": 0.012464767924557085,
+          "hit_252": 0.8056394763343404,
+          "omega_252": 6.9606358140611535
+        }
+      }
+    },
+    "candidates": [
+      {
+        "id": "rr0",
+        "strong_rr": 0.0,
+        "requires_ci": true,
+        "preference": 1,
+        "primary": {
+          "stat": -0.6041332318870225,
+          "ci_lo": -3.543112508512812,
+          "ci_hi": 7.743458790878248,
+          "n_strong_days": 881,
+          "n_strong_episodes": 17,
+          "block_rows": 51,
+          "omega_inf": false,
+          "outcome": "not_supported"
+        },
+        "descriptive": {
+          "strong": {
+            "n_days": 881,
+            "n_episodes": 17,
+            "med_252": 0.13868886466069874,
+            "med_126": 0.06357568358099441,
+            "med_63": 0.03473943982385719,
+            "med_21": 0.013031028062403305,
+            "hit_252": 0.7968217934165721,
+            "omega_252": 5.152742553023243
+          },
+          "residual_neutral": {
+            "n_days": 673,
+            "n_episodes": 42,
+            "med_252": 0.14328827632205665,
+            "med_126": 0.06417692032557532,
+            "med_63": 0.030800272832907538,
+            "med_21": 0.014382020120387473,
+            "hit_252": 0.8023774145616642,
+            "omega_252": 6.948180783313325
+          }
+        }
+      },
+      {
+        "id": "rr50",
+        "strong_rr": 0.5,
+        "requires_ci": true,
+        "preference": 2,
+        "primary": {
+          "stat": -0.5788420914462726,
+          "ci_lo": -3.5658687542865377,
+          "ci_hi": 8.718064838684123,
+          "n_strong_days": 783,
+          "n_strong_episodes": 15,
+          "block_rows": 51,
+          "omega_inf": false,
+          "outcome": "not_supported"
+        },
+        "descriptive": {
+          "strong": {
+            "n_days": 783,
+            "n_episodes": 15,
+            "med_252": 0.13919868917192746,
+            "med_126": 0.06798320609212771,
+            "med_63": 0.03681616766830187,
+            "med_21": 0.014713228239096487,
+            "hit_252": 0.7969348659003831,
+            "omega_252": 5.178033693463993
+          },
+          "residual_neutral": {
+            "n_days": 771,
+            "n_episodes": 42,
+            "med_252": 0.14240921118186045,
+            "med_126": 0.06012687748538026,
+            "med_63": 0.029772673030305397,
+            "med_21": 0.01230933368515208,
+            "hit_252": 0.8015564202334631,
+            "omega_252": 6.658082462008183
+          }
+        }
+      },
+      {
+        "id": "pt67",
+        "strong_rr": 0.67,
+        "requires_ci": false,
+        "preference": 3,
+        "primary": {
+          "stat": -1.1469302389415086,
+          "ci_lo": -4.126502047231608,
+          "ci_hi": 8.935604593469854,
+          "n_strong_days": 599,
+          "n_strong_episodes": 13,
+          "block_rows": 51,
+          "omega_inf": false,
+          "outcome": "not_supported"
+        },
+        "descriptive": {
+          "strong": {
+            "n_days": 599,
+            "n_episodes": 13,
+            "med_252": 0.14793932069488136,
+            "med_126": 0.0719791215332879,
+            "med_63": 0.0411695217414072,
+            "med_21": 0.013925209081616208,
+            "hit_252": 0.7929883138564274,
+            "omega_252": 4.609945545968757
+          },
+          "residual_neutral": {
+            "n_days": 955,
+            "n_episodes": 42,
+            "med_252": 0.1323283634444703,
+            "med_126": 0.06012687748538026,
+            "med_63": 0.029772673030305397,
+            "med_21": 0.013295536217584392,
+            "hit_252": 0.8031413612565445,
+            "omega_252": 7.076605155383479
+          }
+        }
+      }
+    ],
+    "selection_rule": "first candidate by preference order whose strong band validates (ci_lo > 0 or omega_inf, >= 5 episodes); none -> incumbent gate stays",
+    "selected": null
+  },
+  "consequence": "artifact only \u2014 no UI or gate change ships from this registration (spec 2026-07-19 locked decision 3)"
+}

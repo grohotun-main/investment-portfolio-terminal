@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "kind": "ladder_v2",
+  "ticker": "SPY",
+  "registered": "2026-07-19",
+  "config": {
+    "stride": 5,
+    "burn_in_years": 10,
+    "censor": 252,
+    "horizon": 252,
+    "cash_leg": "ff_rf_daily",
+    "exit": "recovery_to_anchor_peak",
+    "min_tranches": 3,
+    "gate": {
+      "strong_rr": 0.67,
+      "requires_ci": true
+    },
+    "metric": {
+      "primary": "terminal_wealth_log_ratio",
+      "block_days": 126
+    }
+  },
+  "fractions": {
+    "neutral": 0.25,
+    "strong": 0.5,
+    "tk_rule": 1.0
+  },
+  "evals": {
+    "n": 1128,
+    "first": "2003-01-29",
+    "last": "2025-06-23"
+  },
+  "ladder": {
+    "n_tranches": 9,
+    "skipped_deploys": 73,
+    "avg_equity_exposure": 0.1671105592459314,
+    "final_wealth": 5.770961229958044,
+    "baseline_final_wealth": 3.7794740816469012
+  },
+  "prior_observation": "The v1 registration (2026-07-18, all-windows Omega primary) read not_supported while final wealth showed 5.77x vs 3.78x; this v2 metric was chosen after observing that run, to fix the inf-Omega degeneracy. The same-day gate experiment selected no new gate, so the deploy pattern and this stat's point value were fully known at v2 registration time; the CI and the outcome rule's result were not computed until after the registration committed.",
+  "primary": {
+    "stat": 0.4232537895135487,
+    "ci_lo": -0.2694526485511333,
+    "ci_hi": 1.2181061701239828,
+    "n_days": 8407,
+    "block_days": 126,
+    "outcome": "not_supported"
+  },
+  "sensitivity": {
+    "block_21": {
+      "ci_lo": -0.275114208549691,
+      "ci_hi": 1.1807810913783132
+    },
+    "block_63": {
+      "ci_lo": -0.32204223030840995,
+      "ci_hi": 1.1468145266716112
+    },
+    "block_252": {
+      "ci_lo": -0.2611937856768614,
+      "ci_hi": 1.1506105065275432
+    }
+  },
+  "descriptive": {
+    "deployed_omega": {
+      "stat": null,
+      "ci_lo": null,
+      "ci_hi": null,
+      "n_rows": 390,
+      "block_rows": 51
+    }
+  }
+}
