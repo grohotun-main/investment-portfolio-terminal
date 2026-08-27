@@ -1,0 +1,31 @@
+# Runtime + test dependencies, pinned exactly (public-repo supply-chain
+# discipline). Verified on Python 3.11.
+
+# Math / data
+pandas==3.0.3
+numpy==2.4.4
+# EVT/GPD tail model on the Buy-the-Dip tab (parsers/tail_risk.py)
+scipy==1.17.1
+
+# HTTP fetches (Polygon / FRED)
+requests==2.34.1
+# Windows CA-trust shim for TLS-intercepting AV; injected at import time by
+# parsers/_config.py, a no-op on machines that don't need it.
+truststore==0.10.4
+
+# Deep-history fetcher for the Buy-the-Dip tab (lazy import)
+yfinance==1.4.1
+
+# Offline single-name hedge report (tools/hedge_report.py)
+plotly==6.7.0
+
+# MERIDIAN terminal: loopback-only API + vanilla front-end (terminal/).
+# Plain uvicorn (no [standard] extras) keeps the supply chain lean.
+fastapi==0.138.1
+uvicorn==0.46.0
+# httpx backs fastapi.testclient.TestClient in the terminal test suite.
+httpx==0.28.1
+
+# AI narration layer (terminal/ai_service.py) — soft-imported: the app and
+# the full test suite run without it (AI panels off; offline fake seam).
+anthropic==0.121.0

@@ -1,0 +1,7 @@
+repos:
+  - repo: https://github.com/gitleaks/gitleaks
+    # Pinned by commit SHA (not tag) so a re-pointed v8.18.0 tag in the
+    # upstream repo can't silently swap the hook code we run on every commit.
+    rev: b813e6fe08b87541cb77296359ba1b7a50a00c98  # v8.18.0
+    hooks:
+      - id: gitleaks
