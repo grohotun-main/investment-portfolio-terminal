@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>MERIDIAN · Portfolio Terminal</title>
+  <link rel="stylesheet" href="/tokens.css">
+  <link rel="stylesheet" href="/app.css">
+  <script defer src="/app.js"></script>
+</head>
+<body>
+  <div class="shell">
+
+    <!-- ============ LEFT NAV RAIL ============ -->
+    <aside class="rail">
+      <div class="rail-brand">
+        <div class="rail-logo"><div class="rail-logo-mark"></div></div>
+        <div class="rail-brand-text">
+          <div class="rail-wordmark">MERIDIAN</div>
+          <div class="rail-subtitle">PORTFOLIO TERMINAL</div>
+        </div>
+      </div>
+
+      <nav class="rail-nav">
+        <div class="nav-group">
+          <div class="nav-group-label">Positions</div>
+          <button class="nav-item active" type="button" data-tab="holdings" aria-current="page">
+            <span class="nav-dot"></span>Holdings
+          </button>
+          <button class="nav-item" type="button" data-tab="tax"><span class="nav-dot"></span>Tax Management</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">AI Analysis</div>
+          <button class="nav-item" type="button" data-tab="ai"><span class="nav-dot"></span>AI Analysis</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">Performance</div>
+          <button class="nav-item" type="button" data-tab="performance"><span class="nav-dot"></span>Performance</button>
+          <button class="nav-item" type="button" data-tab="benchmark"><span class="nav-dot"></span>vs Benchmark</button>
+          <button class="nav-item" type="button" data-tab="income"><span class="nav-dot"></span>Income</button>
+          <button class="nav-item" type="button" data-tab="factor"><span class="nav-dot"></span>Factor Analysis</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">Risk &amp; Hedging</div>
+          <button class="nav-item" type="button" data-tab="risk"><span class="nav-dot"></span>Risk Overview</button>
+          <button class="nav-item" type="button" data-tab="riskcontrib"><span class="nav-dot"></span>Risk Contribution</button>
+          <button class="nav-item" type="button" data-tab="risksim"><span class="nav-dot"></span>Risk Simulation</button>
+          <button class="nav-item" type="button" data-tab="options"><span class="nav-dot"></span>Options Hedging</button>
+        </div>
+        <div class="nav-group">
+          <div class="nav-group-label">Signals &amp; Data</div>
+          <button class="nav-item" type="button" data-tab="dip"><span class="nav-dot"></span>Buy the Dip</button>
+          <button class="nav-item" type="button" data-tab="health"><span class="nav-dot"></span>Data Health</button>
+        </div>
+        <div class="nav-group" id="act-group">
+          <div class="nav-group-label">Data ops</div>
+          <button class="nav-item act-btn" type="button" data-action="refresh_all"><span class="nav-dot"></span>Refresh all data</button>
+          <button class="nav-item act-btn" type="button" data-action="interim"><span class="nav-dot"></span>Pull interim transactions</button>
+          <button class="nav-item act-btn" type="button" data-action="market_data"><span class="nav-dot"></span>Refresh market data</button>
+          <button class="nav-item act-btn" type="button" data-action="ingest_statements"><span class="nav-dot"></span>Ingest statements</button>
+        </div>
+      </nav>
+
+      <div class="act-panel" id="act-panel" hidden></div>
+
+      <div class="rail-notice" id="rail-notice" hidden>
+        <div class="rail-notice-head">
+          <span class="rail-notice-dot"></span>
+          <span class="rail-notice-title" id="rail-notice-title"></span>
+        </div>
+        <div class="rail-notice-body" id="rail-notice-body"></div>
+      </div>
+    </aside>
+
+    <!-- ============ MAIN COLUMN ============ -->
+    <main class="main">
+
+      <!-- top control bar -->
+      <header class="ctl">
+        <div class="badge-synthetic" id="badge-synthetic" hidden>
+          <span class="badge-synthetic-dot"></span>
+          <span class="badge-synthetic-label">Synthetic</span>
+          <span class="badge-synthetic-sub">illustrative data · design mockup</span>
+        </div>
+        <div class="ctl-spacer"></div>
+        <div class="ctl-controls">
+          <label class="pill pill-select">
+            <span class="pill-key">As of</span>
+            <select id="sel-asof" class="pill-native"></select>
+            <span class="pill-caret">▾</span>
+          </label>
+          <div class="pill pill-multi" id="ms-account"></div>
+          <div class="pill pill-multi" id="ms-class"></div>
+          <div class="pill pill-multi" id="ms-broker"></div>
+          <label class="pill pill-select">
+            <span class="pill-key">History</span>
+            <select id="sel-history" class="pill-native"></select>
+            <span class="pill-caret">▾</span>
+          </label>
+          <div class="pill pill-status" id="pill-status" hidden>
+            <span class="pill-key">Data</span>
+            <span class="status-dot status-ok" id="status-dot">●</span>
+            <span class="status-n" id="status-n"></span>
+            <div class="ms-popover status-popover" id="status-popover" hidden></div>
+          </div>
+          <div class="ctl-divider"></div>
+          <button class="pill-refresh act-btn" type="button" data-action="refresh_all"><span class="pill-refresh-icon">⟳</span>Refresh all</button>
+          <button class="pill-refresh" type="button" id="load-all-tabs"><span class="pill-refresh-icon">⤓</span>Load all tabs</button>
+        </div>
+      </header>
+
+      <!-- persistent KPI tape -->
+      <div class="tape" id="tape"></div>
+
+      <!-- ============ CONTENT ============ -->
+      <div class="body">
+        <section class="tabview" id="tab-holdings"><div class="holdings">
+          <div class="eyebrow">Positions · Module 01</div>
+          <h1 class="page-title">Portfolio holdings</h1>
+          <p class="page-subtitle" id="page-subtitle">A live, marked-to-market snapshot of every position — allocation, top weights, and the full line-item book.</p>
+
+          <div class="callout callout-health" id="health"></div>
+
+          <div class="section-head">
+            <h2 class="section-title">Snapshot</h2>
+            <span class="section-note" id="snapshot-note"></span>
+          </div>
+          <div id="snapshot"></div>
+
+          <div class="callout callout-blue" id="carried" hidden></div>
+
+          <div class="section-head section-head-gap">
+            <h2 class="section-title">Allocation</h2>
+            <span class="section-note">by asset class &amp; by account</span>
+          </div>
+          <div class="alloc-grid">
+            <div class="card" id="alloc-class"></div>
+            <div class="card" id="alloc-account"></div>
+          </div>
+
+          <div class="section-head section-head-gap">
+            <h2 class="section-title">Top holdings</h2>
+            <span class="section-note">largest positions by market value</span>
+          </div>
+          <div class="card" id="top"></div>
+
+          <!-- All-holdings table removed per TK (QA-polish S8): the 12-col
+               table overflowed the page; the data stays on Streamlit + CSV. -->
+        </div></section>
+        <section class="tabview" id="tab-performance" hidden>
+          <div class="eyebrow">Performance · Module 02</div>
+          <h1 class="page-title">Performance</h1>
+          <p class="lede" id="perf-lede"></p>
+          <div class="callout callout-warn" id="perf-combined" hidden></div>
+          <div class="callout callout-blue" id="perf-filter" hidden></div>
+          <div id="perf-ai"></div>
+          <details class="exp"><summary><span class="chev">›</span> How this works</summary>
+            <div class="eb" id="perf-explainer"></div></details>
+          <div class="section-head"><h2 class="section-title">Headline returns</h2><span class="section-note" id="perf-headline-note"></span></div>
+          <div id="perf-headline"></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">External cash flows</h2><span class="section-note">real new money in / out</span></div>
+          <div id="perf-cashflows"></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">Cumulative TWR</h2><span class="section-note">investment return only — deposits stripped out</span></div>
+          <div class="card" id="perf-cumtwr"></div>
+          <div id="perf-stub-caption" class="stub-caption" hidden></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">Drawdown (TWR)</h2><span class="section-note">peak-to-trough of the wealth index</span></div>
+          <div class="card" id="perf-drawdown"></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">Periodic returns</h2><span class="section-note">each bar is one period's TWR</span></div>
+          <div class="card" id="perf-periodic"></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">Per-account TWR</h2><span class="section-note">each account independently</span></div>
+          <div class="table-wrap"><table class="tbl" id="perf-peraccount"></table></div>
+          <div class="footnote" id="perf-peraccount-foot"></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">Total NAV by month</h2><span class="section-note">for reference</span></div>
+          <div id="perf-nav-trio"></div>
+          <div class="card" id="perf-nav" style="margin-top:12px"></div>
+          <div class="footnote" id="perf-nav-note"></div>
+        </section>
+        <section class="tabview" id="tab-benchmark" hidden>
+          <div class="eyebrow">Performance · Module 03</div>
+          <h1 class="page-title" id="bench-title">Performance vs SPY</h1>
+          <p class="lede" id="bench-lede"></p>
+          <div class="fctl-group" id="bench-controls">
+            <span class="fctl-label">Benchmark</span>
+            <select id="bench-benchmark-select" class="pill-native">
+              <option value="auto">Auto</option>
+              <option value="spy">SPY (S&amp;P 500 TR)</option>
+              <option value="60_40">60/40 SPY/AGG blend</option>
+            </select>
+            <span class="fctl-cap" id="bench-benchmark-cap"></span>
+          </div>
+          <div class="callout" id="bench-empty" hidden></div>
+          <div class="callout callout-blue" id="bench-filter" hidden></div>
+          <details class="exp"><summary><span class="chev">›</span> How this works</summary>
+            <div class="eb" id="bench-explainer"></div></details>
+          <div class="section-head"><h2 class="section-title">Returns</h2><span class="section-note" id="bench-returns-note">trailing periods — portfolio vs benchmark</span></div>
+          <div class="card" id="bench-returns"></div>
+          <div id="bench-stub-caption" class="stub-caption" hidden></div>
+          <div id="bench-ai"></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">Headline</h2><span class="section-note" id="bench-window-note"></span></div>
+          <div id="bench-headline"></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">Growth of $100,000</h2><span class="section-note" id="bench-growth-note">portfolio vs SPY total return</span></div>
+          <div class="card" id="bench-growth"></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">Drawdown</h2><span class="section-note" id="bench-dd-note">peak-to-trough — portfolio vs SPY</span></div>
+          <div id="bench-dd-trio"></div>
+          <div class="card" id="bench-drawdown" style="margin-top:12px"></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">Periodic returns</h2><span class="section-note" id="bench-periodic-note">TWR by period — portfolio vs SPY</span></div>
+          <div class="card" id="bench-periodic"></div>
+        </section>
+        <section class="tabview" id="tab-income" hidden>
+          <div class="eyebrow">Performance · Module 04</div>
+          <h1 class="page-title">Income</h1>
+          <p class="lede" id="income-caption"></p>
+          <div id="income-ai"></div>
+
+          <div class="section-head"><h2 class="section-title">Income received</h2><span class="section-note">actual dividends, interest &amp; withholding</span></div>
+          <div class="callout callout-blue" id="income-received-empty" hidden></div>
+          <div id="income-received-kpis"></div>
+          <div class="card" id="income-received-chart" hidden style="margin-top:12px"></div>
+
+          <div class="section-head section-head-gap"><h2 class="section-title">Forward income</h2><span class="section-note">projected next 12 months</span></div>
+          <div class="callout callout-blue" id="income-forward-unavailable" hidden></div>
+          <div id="income-forward-kpis"></div>
+          <div class="footnote" id="income-nav-caption"></div>
+          <div class="callout callout-blue" id="income-payers-empty" hidden></div>
+          <div class="card" id="income-top" hidden style="margin-top:12px"></div>
+          <div class="table-wrap"><table class="tbl" id="income-detail"></table></div>
+          <div class="footnote" id="income-history-caption"></div>
+          <div id="income-actions"></div>
+
+          <details class="exp"><summary><span class="chev">›</span> Methodology &amp; caveats</summary>
+            <div class="eb" id="income-methodology"></div></details>
+        </section>
+        <section class="tabview" id="tab-tax" hidden>
+          <div class="eyebrow">Positions · Module 02</div>
+          <h1 class="page-title">Tax Management</h1>
+          <p class="lede" id="tax-caption"></p>
+          <div class="callout callout-blue" id="tax-error" hidden></div>
+
+          <div id="tax-body" hidden>
+            <div id="tax-ai"></div>
+            <div class="callout callout-warn" id="tax-stale" hidden></div>
+            <div id="tax-kpis"></div>
+            <div id="tax-estimate"></div>
+            <div class="footnote" id="tax-silent-note"></div>
+
+            <div class="section-head section-head-gap"><h2 class="section-title" id="tax-view-title">Open lots</h2><span class="section-note" id="tax-lots-note"></span></div>
+            <div class="factor-controls" id="tax-controls"></div>
+            <div class="callout callout-warn" id="tax-harvest-unavailable" hidden></div>
+            <div class="footnote" id="tax-harvest-honesty" hidden></div>
+            <div class="table-wrap"><table class="tbl" id="tax-lots"></table></div>
+            <div class="footnote" id="tax-excluded-note"></div>
+            <details class="exp" id="tax-harvest-exp" hidden><summary><span class="chev">›</span> How the harvest scan reads — and what it cannot see</summary>
+              <div class="eb">
+                <p><b>Not tax advice.</b> This is a scan of a reconstructed ledger, not a recommendation to sell anything.</p>
+                <p><b>A "clear" chip is bounded by what the ledger can see.</b> The wash guard knows only ingested trades — the strip above shows how much of the 31-day window is observed. Trades after the frontier, including this week's, are invisible.</p>
+                <p><b>Matching is same-instrument only.</b> Only the same instrument key blocks — "substantially identical" ETFs are deliberately not judged, so a block can be missed. Options are outside the lot ledger and never block.</p>
+                <p><b>Reconstructed lots are not broker lot IDs.</b> The ledger recovers basis, never lot identity — these rows cannot be handed to a broker as lot instructions.</p>
+                <p><b>An IRA blocker is permanent.</b> An IRA replacement destroys the loss outright instead of deferring it into the new lot's basis; those rows are flagged separately, not as "wait out the window".</p>
+                <p><b>Only reconstructed-evidence lots are scanned.</b> Printed-basis lots carry no arithmetic of ours to stand behind — excluded and counted, not shown.</p>
+              </div></details>
+          </div>
+        </section>
+        <section class="tabview" id="tab-factor" hidden>
+          <div class="eyebrow">Performance · Module 05</div>
+          <h1 class="page-title">Factor analysis</h1>
+          <p class="lede" id="factor-caption"></p>
+          <div class="callout callout-blue" id="factor-empty" hidden></div>
+
+          <div id="factor-body" hidden>
+            <div id="factor-ai"></div>
+            <div class="factor-controls" id="factor-controls"></div>
+            <div class="callout callout-warn" id="factor-aligned-empty" hidden></div>
+
+            <div id="factor-sections" hidden>
+              <div class="section-head"><h2 class="section-title">Annualized alpha by model</h2><span class="section-note">intercept ×12 · ±95% CI</span></div>
+              <div id="factor-strip"></div>
+
+              <div class="section-head section-head-gap"><h2 class="section-title">Model detail</h2><span class="section-note" id="factor-model-note"></span></div>
+              <div class="callout callout-warn" id="factor-toofew" hidden></div>
+              <div id="factor-detail" hidden>
+                <div id="factor-metrics"></div>
+                <div class="footnote" id="factor-window-caption"></div>
+                <div class="callout callout-warn" id="factor-lowobs" hidden></div>
+                <div class="table-wrap"><table class="tbl" id="factor-beta"></table></div>
+
+                <div class="section-head section-head-gap"><h2 class="section-title">Where the return came from</h2><span class="section-note">attribution waterfall</span></div>
+                <div class="card" id="factor-waterfall"></div>
+
+                <div class="section-head section-head-gap"><h2 class="section-title">Attribution over time</h2><span class="section-note">per-month return decomposed</span></div>
+                <div class="card" id="factor-attr"></div>
+
+                <div class="section-head section-head-gap"><h2 class="section-title">Rolling factor betas</h2><span class="section-note">trailing-window re-fit</span></div>
+                <div class="card" id="factor-rolling"></div>
+              </div>
+
+              <div class="section-head section-head-gap"><h2 class="section-title">Per-holding factor betas (daily)</h2><span class="section-note">daily total-return closes</span></div>
+              <div class="callout callout-blue" id="factor-ph-empty" hidden></div>
+              <div id="factor-ph" hidden>
+                <div class="table-wrap"><table class="tbl" id="factor-ph-table"></table></div>
+                <div class="footnote" id="factor-ph-skipped"></div>
+                <div class="footnote" id="factor-ph-caption"></div>
+              </div>
+
+              <div class="section-head section-head-gap"><h2 class="section-title">Cross-check: monthly TWR vs daily synthetic</h2><span class="section-note">same model, two lenses</span></div>
+              <div class="callout callout-blue" id="factor-cc-empty" hidden></div>
+              <div id="factor-cc" hidden>
+                <div class="table-wrap"><table class="tbl" id="factor-cc-table"></table></div>
+                <div class="footnote" id="factor-cc-caption"></div>
+              </div>
+            </div>
+
+            <details class="exp"><summary><span class="chev">›</span> Methodology &amp; caveats</summary>
+              <div class="eb" id="factor-methodology"></div></details>
+          </div>
+        </section>
+        <section class="tabview" id="tab-risk" hidden>
+          <div class="eyebrow">Risk &amp; Hedging · Module 06</div>
+          <h1 class="page-title">Risk</h1>
+          <p class="lede" id="risk-caption"></p>
+          <div class="callout callout-warn" id="risk-asof-note" hidden></div>
+          <div class="callout" id="risk-empty" hidden></div>
+
+          <div id="risk-body" hidden>
+            <div id="risk-ai"></div>
+            <div class="callout callout-blue" id="risk-filter-note" hidden></div>
+            <details class="exp" id="risk-coverage" hidden><summary><span class="chev">›</span> <span id="risk-coverage-title"></span></summary>
+              <div class="eb" id="risk-coverage-body"></div></details>
+
+            <div class="section-head"><h2 class="section-title">Risk-adjusted return</h2><span class="section-note">reward per unit of risk · vs SPY</span></div>
+            <div id="risk-ra-tiles"></div>
+            <div class="card" id="risk-ra-chart" style="margin-top:12px"></div>
+
+            <div class="section-head section-head-gap"><h2 class="section-title">Drawdown</h2><span class="section-note">peak-to-trough of the wealth index</span></div>
+            <div id="risk-dd-tiles"></div>
+            <div class="section-head section-head-gap"><h3 class="section-subtitle">Top 3 drawdown episodes</h3></div>
+            <div class="callout callout-blue" id="risk-dd-episodes-empty" hidden></div>
+            <div class="table-wrap"><table class="tbl" id="risk-dd-episodes"></table></div>
+            <div class="card" id="risk-dd-chart" style="margin-top:12px"></div>
+
+            <div class="section-head section-head-gap"><h2 class="section-title">Concentration — Effective N bets</h2><span class="section-note" id="risk-conc-note"></span></div>
+            <div id="risk-conc-tiles"></div>
+            <div class="card" id="risk-conc-donut" style="margin-top:12px"></div>
+            <div class="footnote" id="risk-conc-caption"></div>
+
+            <div class="section-head section-head-gap"><h2 class="section-title">Volatility &amp; tail risk (daily)</h2><span class="section-note">annualized vol · VaR / CVaR · worst day</span></div>
+            <div class="callout callout-blue" id="risk-daily-empty" hidden></div>
+            <div id="risk-daily-body" hidden>
+              <div id="risk-vol-tiles"></div>
+              <div class="card" id="risk-dist-chart" style="margin-top:12px"></div>
+              <div class="card" id="risk-vol-chart" style="margin-top:12px"></div>
+            </div>
+
+            <div class="section-head section-head-gap"><h2 class="section-title">Beta to SPY</h2><span class="section-note">daily OLS · β &amp; α</span></div>
+            <div class="callout callout-blue" id="risk-beta-empty" hidden></div>
+            <div id="risk-beta-body" hidden>
+              <div id="risk-beta-tiles"></div>
+              <div class="card" id="risk-scatter" style="margin-top:12px"></div>
+              <div class="card" id="risk-beta-chart" style="margin-top:12px"></div>
+              <div class="card" id="risk-alpha-chart" style="margin-top:12px"></div>
+              <div class="eb risk-quadrant-wrap" id="risk-quadrant" style="margin-top:14px"></div>
+            </div>
+          </div>
+        </section>
+        <section class="tabview" id="tab-riskcontrib" hidden>
+          <div class="eyebrow">Risk &amp; Hedging · Module 07</div>
+          <h1 class="page-title">Risk contribution</h1>
+          <div class="callout callout-blue" id="rc-info"></div>
+          <p class="lede" id="rc-caption"></p>
+          <div class="callout callout-blue" id="rc-filter-note" hidden></div>
+          <div class="callout" id="rc-empty" hidden></div>
+
+          <div id="rc-body" hidden>
+            <div id="rc-ai"></div>
+            <div class="rc-controls" id="rc-controls"></div>
+            <div class="footnote" id="rc-ladder" hidden></div>
+            <div class="eb" id="rc-estimator-strip"></div>
+            <div id="rc-warnings"></div>
+
+            <div class="section-head"><h2 class="section-title">Portfolio risk</h2><span class="section-note">vs the selected benchmark</span></div>
+            <div id="rc-portfolio"></div>
+
+            <div class="section-head section-head-gap"><h2 class="section-title">Top contributors</h2><span class="section-note">who drives the risk budget</span></div>
+            <div id="rc-top-tiles"></div>
+            <div class="card" id="rc-pairbar" style="margin-top:12px"></div>
+
+            <div class="section-head section-head-gap"><h2 class="section-title">Top 15 positions — total / downside / ES</h2></div>
+            <div class="table-wrap"><table class="tbl" id="rc-table"></table></div>
+            <div class="footnote" id="rc-row-cue"></div>
+            <div class="footnote" id="rc-window-caption"></div>
+
+            <div class="rc-dr-section" id="rc-dr" hidden>
+              <div class="section-head section-head-gap"><h2 class="section-title">Diversification ratio in context</h2><span class="section-note">how much correlation is helping</span></div>
+              <p class="lede" id="rc-dr-caption"></p>
+              <div class="callout" id="rc-dr-empty" hidden></div>
+              <div id="rc-dr-analytics" hidden>
+                <div class="rc-controls" id="rc-dr-control"></div>
+                <div class="callout callout-warn" id="rc-dr-fallback" hidden></div>
+                <div id="rc-dr-tiles"></div>
+                <div class="rc-dr-gauge-title" id="rc-dr-gauge-title"></div>
+                <div class="card" id="rc-dr-gauge" style="margin-top:8px"></div>
+                <div class="footnote" id="rc-dr-gauge-cap"></div>
+                <div class="rc-dr-chart-title" id="rc-dr-chart-title" style="margin-top:12px"></div>
+                <div class="card" id="rc-dr-chart" style="margin-top:8px"></div>
+                <div class="footnote" id="rc-dr-chart-cap"></div>
+                <div class="rc-dr-chart-title" id="rc-dr-bands-title" style="margin-top:12px"></div>
+                <div class="card" id="rc-dr-bands" style="margin-top:8px"></div>
+                <details class="exp" style="margin-top:12px"><summary><span class="chev">&rsaquo;</span> How this works</summary>
+                  <div class="eb" id="rc-dr-howto"></div></details>
+              </div>
+            </div>
+
+            <div class="rc-regime-section" id="rc-regime" hidden>
+              <div class="section-head section-head-gap"><h2 class="section-title">Diversification under market regimes</h2><span class="section-note">does it hold when stress hits</span></div>
+              <p class="lede" id="rc-regime-caption"></p>
+              <div class="callout" id="rc-regime-empty" hidden></div>
+              <div id="rc-regime-analytics" hidden>
+                <div class="footnote" id="rc-regime-window"></div>
+                <div class="callout" id="rc-regime-character"></div>
+                <div class="footnote" id="rc-regime-asymmetry" hidden></div>
+                <div class="card" id="rc-regime-heatmap" style="margin-top:8px"></div>
+                <div id="rc-regime-tiles" style="margin-top:10px"></div>
+                <details class="exp" style="margin-top:12px"><summary><span class="chev">&rsaquo;</span> Cell detail (mean / median / std × all windows + ratio)</summary>
+                  <div class="table-wrap" style="padding:0 14px 14px"><table class="tbl" id="rc-regime-detail"></table></div></details>
+                <details class="exp" style="margin-top:12px"><summary><span class="chev">&rsaquo;</span> How this works</summary>
+                  <div class="eb" id="rc-regime-howto"></div></details>
+              </div>
+            </div>
+
+            <div class="rc-corr-section" id="rc-corr" hidden>
+              <div class="section-head section-head-gap"><h2 class="section-title">Major-holding correlations</h2><span class="section-note">how co-aligned the big pieces are</span></div>
+              <p class="lede" id="rc-corr-caption"></p>
+
+              <div class="rc-subhead">Big-3 — SPY / SGOV / GLD</div>
+              <div class="callout" id="rc-corr-b3-msg" hidden></div>
+              <div class="footnote" id="rc-corr-b3-cap"></div>
+              <div class="card" id="rc-corr-b3-heatmap" style="margin-top:8px"></div>
+              <div class="rc-dr-chart-title" id="rc-corr-b3-roll-title" style="margin-top:12px" hidden></div>
+              <div class="rc-controls" id="rc-corr-b3-roll-ctl"></div>
+              <div class="footnote" id="rc-corr-b3-roll-legend"></div>
+              <div class="card" id="rc-corr-b3-roll" style="margin-top:8px"></div>
+
+              <div class="rc-subhead">Top-15 weighted positions</div>
+              <div class="callout" id="rc-corr-t15-msg" hidden></div>
+              <div class="footnote" id="rc-corr-t15-cap"></div>
+              <div class="card" id="rc-corr-t15-heatmap" style="margin-top:8px"></div>
+              <div class="footnote" id="rc-corr-t15-legend"></div>
+              <div class="rc-dr-chart-title" id="rc-corr-t15-avg-title" style="margin-top:12px" hidden></div>
+              <div class="card" id="rc-corr-t15-avg" style="margin-top:8px"></div>
+              <details class="exp" style="margin-top:12px"><summary><span class="chev">&rsaquo;</span> How to read</summary>
+                <div class="eb" id="rc-corr-t15-avg-howto"></div></details>
+
+              <div id="rc-corr-stress">
+                <div class="section-head section-head-gap"><h2 class="section-title">Stress correlations — SPY ≤ −1.5σ days</h2><span class="section-note">where co-movement spikes on bad days</span></div>
+                <p class="lede" id="rc-corr-stress-caption"></p>
+                <div class="footnote" id="rc-corr-stress-why"></div>
+                <div class="rc-subhead">Big-3 — SPY / SGOV / GLD</div>
+                <div class="callout" id="rc-corr-sb3-msg" hidden></div>
+                <div class="footnote" id="rc-corr-sb3-cap"></div>
+                <div class="card" id="rc-corr-sb3-heatmap" style="margin-top:8px"></div>
+                <div class="rc-subhead">Top-15 weighted positions</div>
+                <div class="callout" id="rc-corr-st15-msg" hidden></div>
+                <div class="footnote" id="rc-corr-st15-cap"></div>
+                <div class="card" id="rc-corr-st15-heatmap" style="margin-top:8px"></div>
+                <details class="exp" id="rc-corr-st15-howto-det" style="margin-top:12px"><summary><span class="chev">&rsaquo;</span> How to read the Δ matrix</summary>
+                  <div class="eb" id="rc-corr-st15-howto"></div></details>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="tabview" id="tab-risksim" hidden>
+          <div class="eyebrow">Risk &amp; Hedging · Module 08</div>
+          <h1 class="page-title">Risk Simulation</h1>
+          <p class="lede" id="rss-caption"></p>
+          <div class="callout" id="rss-empty" hidden></div>
+
+          <div id="rss-body" hidden>
+            <div id="rss-live" class="sr-only" aria-live="polite"></div>
+            <div class="rss-layout">
+              <div class="rss-top">
+                <div class="rss-panel rss-ws-grid">
+                  <div class="section-head"><h2 class="section-title">Simulated weights</h2><span class="section-note">step 1 · edit &amp; run</span></div>
+                  <p class="footnote" id="rss-grid-caption"></p>
+                  <table class="rss-grid" id="rss-grid"></table>
+                  <div class="rss-meter">
+                    <div class="callout" id="rss-status"></div>
+                    <div class="rss-meter-kpis">
+                      <div class="kpi"><div class="kpi-label">Σ New %</div><div class="kpi-value" id="rss-sum">—</div></div>
+                      <div class="kpi"><div class="kpi-label">Unallocated</div><div class="kpi-value" id="rss-unalloc">—</div></div>
+                    </div>
+                  </div>
+                  <div class="rss-actions">
+                    <button class="btn" id="rss-normalize" type="button">Normalize to 100%</button>
+                    <button class="btn" id="rss-reset" type="button">Reset</button>
+                    <button class="btn btn-primary" id="rss-run" type="button" disabled>Run simulation</button>
+                  </div>
+                  <div class="callout callout-error" id="rss-run-error" hidden></div>
+                  <details class="exp rss-cand-exp"><summary><span class="chev">&rsaquo;</span> Candidate tickers <span class="section-note">up to 3 · not held · proxy back-fills history</span></summary>
+                    <div class="eb">
+                      <div class="rss-candidate" id="rss-candidate">
+                        <div class="rss-cand-head">Add up to 3 candidate tickers (not held) — proxy back-fills short history</div>
+                        <div class="rss-cand-row" data-cand-slot="1">
+                          <label class="rss-opt-field">Candidate ticker
+                            <input type="text" id="rss-cand-1" maxlength="10" autocomplete="off" placeholder="e.g. PDBC (not held)"></label>
+                          <label class="rss-opt-field">Asset class
+                            <select id="rss-class-1" class="rss-cand-select"></select></label>
+                          <label class="rss-opt-field">Proxy ticker (optional)
+                            <input type="text" id="rss-proxy-1" maxlength="10" autocomplete="off" placeholder="e.g. GSG — splices history"></label>
+                        </div>
+                        <div class="rss-cand-row" data-cand-slot="2">
+                          <label class="rss-opt-field">Candidate ticker
+                            <input type="text" id="rss-cand-2" maxlength="10" autocomplete="off" placeholder="e.g. PDBC (not held)"></label>
+                          <label class="rss-opt-field">Asset class
+                            <select id="rss-class-2" class="rss-cand-select"></select></label>
+                          <label class="rss-opt-field">Proxy ticker (optional)
+                            <input type="text" id="rss-proxy-2" maxlength="10" autocomplete="off" placeholder="e.g. GSG — splices history"></label>
+                        </div>
+                        <div class="rss-cand-row" data-cand-slot="3">
+                          <label class="rss-opt-field">Candidate ticker
+                            <input type="text" id="rss-cand-3" maxlength="10" autocomplete="off" placeholder="e.g. PDBC (not held)"></label>
+                          <label class="rss-opt-field">Asset class
+                            <select id="rss-class-3" class="rss-cand-select"></select></label>
+                          <label class="rss-opt-field">Proxy ticker (optional)
+                            <input type="text" id="rss-proxy-3" maxlength="10" autocomplete="off" placeholder="e.g. GSG — splices history"></label>
+                        </div>
+                        <div class="callout" id="rss-cand-note" hidden></div>
+                      </div>
+                    </div></details>
+                </div>
+                <div class="rss-panel rss-console" id="rss-opt" hidden>
+                  <div class="section-head"><h2 class="section-title">Constraint console</h2><span class="section-note">step 2 · optional</span></div>
+                  <details class="exp" id="rss-howto"><summary><span class="chev">&rsaquo;</span> How this works</summary>
+                    <div class="eb"><p class="footnote" id="rss-opt-caption"></p></div></details>
+                  <div class="rss-console-row">
+                    <label class="rss-opt-field">Per-name cap %
+                      <input type="number" id="rss-opt-cap" min="1" max="100" step="1" value="100">
+                    </label>
+                    <label class="rss-opt-field">Equity risk premium %
+                      <input type="number" id="rss-opt-erp" min="0.1" max="20" step="0.1" value="4.5">
+                    </label>
+                  </div>
+                  <table class="rss-console-table" id="rss-console-table"></table>
+                  <p class="footnote">Floors bind min-variance only · cap 100 = off, 0 legal ·
+                    budget blank = unset (risk-parity only) · ERP feeds the frontier</p>
+                  <div class="rss-opt-actions">
+                    <button class="btn" id="rss-opt-minvar" type="button">Suggest min-variance weights</button>
+                    <button class="btn" id="rss-opt-riskparity" type="button">Suggest risk-parity weights</button>
+                  </div>
+                  <div class="callout" id="rss-opt-msg" hidden></div>
+                  <div class="callout" id="rss-opt-warn" hidden></div>
+                </div>
+              </div>
+              <div class="rss-canvas">
+                <div class="rss-sweeps rss-block">
+                  <div class="section-head"><h2 class="section-title">Trade-off sweeps</h2><span class="section-note">one optimizer solve per point — click a point to preview &amp; apply</span></div>
+                  <div class="rss-toolbar">
+                    <div class="rss-sweep-tabs" role="tablist">
+                      <button class="rss-sweep-tab active" id="rss-tab-trace" type="button"
+                              role="tab" aria-selected="true">Vol vs concentration</button>
+                      <button class="rss-sweep-tab" id="rss-tab-frontier" type="button"
+                              role="tab" aria-selected="false">Efficient frontier</button>
+                    </div>
+                    <div class="rss-sweep-controls">
+                      <button class="btn btn-primary" id="rss-sweep-run" type="button">Run sweep</button>
+                      <button class="btn" id="rss-sweep-fullarc" type="button" hidden>Full arc</button>
+                      <div class="rss-progress" id="rss-sweep-progress" hidden>
+                        <div class="rss-progress-fill" id="rss-sweep-progress-fill"></div>
+                        <span class="rss-progress-text" id="rss-sweep-progress-text"></span>
+                      </div>
+                    </div>
+                  </div>
+                  <p class="footnote" id="rss-sweep-note"></p>
+                  <div id="rss-sweep-result" class="rss-block rss-sweep-grid" hidden>
+                    <div>
+                      <div class="card" id="rss-sweep-chart"></div>
+                      <p class="footnote" id="rss-sweep-caption"></p>
+                      <div class="callout" id="rss-sweep-warn" hidden></div>
+                    </div>
+                    <div class="rss-apply-panel" id="rss-apply-panel" hidden>
+                      <div class="rss-subhead" id="rss-apply-subhead">Traced point</div>
+                      <table class="tbl" id="rss-apply-facts"></table>
+                      <div class="rss-subhead">Weights</div>
+                      <table class="tbl rss-apply-weights" id="rss-apply-weights"></table>
+                      <div class="rss-opt-actions">
+                        <button class="btn btn-primary" id="rss-apply-btn" type="button">Apply to grid</button>
+                        <button class="btn" id="rss-apply-dismiss" type="button">Dismiss</button>
+                      </div>
+                      <p class="footnote">Apply fills the New % column — review, then Run. The grid’s
+                        current values are replaced.</p>
+                    </div>
+                  </div>
+                  <div id="frontier-ai"></div>
+                </div>
+                <div id="rss-result" hidden>
+                  <div class="footnote rss-coverage" id="rss-coverage"></div>
+                  <div class="callout callout-blue" id="rss-run-note" hidden></div>
+                  <div id="risksim-ai"></div>
+                  <div class="section-head section-head-gap"><h2 class="section-title">Current vs simulated weights</h2></div>
+                  <div class="card" id="rss-weightbars"></div>
+
+                  <div class="section-head section-head-gap"><h2 class="section-title">Risk — before / after</h2></div>
+                  <div class="rss-headline">
+                    <div><div class="rss-group-label">Risk</div><div id="rss-h-risk"></div></div>
+                    <div><div class="rss-group-label">Diversification</div><div id="rss-h-div"></div></div>
+                    <div><div class="rss-group-label">Concentration</div><div id="rss-h-conc"></div></div>
+                  </div>
+                  <p class="footnote" id="rss-headline-caption"></p>
+                  <div class="footnote" id="rss-dr-note"></div>
+
+                  <div class="rss-detail-grid">
+                    <div class="card rss-master">
+                      <div class="ch"><div class="ctitle">Before / after — all metrics</div><div class="csub">green Δ = risk improved · red Δ = worsened</div></div>
+                      <div class="rss-master-group">Vol &amp; risk-adjusted return</div>
+                      <table class="tbl" id="rss-vol-table"></table>
+                      <div class="rss-master-group">Tail &amp; drawdown</div>
+                      <table class="tbl" id="rss-tail-table"></table>
+                      <div class="rss-master-group">Stress &amp; regime</div>
+                      <table class="tbl" id="rss-stress-table"></table>
+                    </div>
+                    <div class="rss-heatcol">
+                      <div class="rss-corr-pair">
+                        <div><div class="rss-subhead">Correlation — Before</div><div class="card" id="rss-corr-before"></div></div>
+                        <div><div class="rss-subhead">Correlation — After</div><div class="card" id="rss-corr-after"></div></div>
+                      </div>
+                      <div class="rss-corr-pair">
+                        <div><div class="rss-subhead">Conditional (SPY stress) — Before</div><div class="card" id="rss-scorr-before"></div></div>
+                        <div><div class="rss-subhead">Conditional (SPY stress) — After</div><div class="card" id="rss-scorr-after"></div></div>
+                      </div>
+                      <p class="footnote" id="rss-stress-caption"></p>
+                    </div>
+                  </div>
+
+                  <div class="section-head section-head-gap"><h2 class="section-title">Risk contribution (after)</h2><span class="section-note">per-holding share of simulated risk</span></div>
+                  <div class="table-wrap"><table class="tbl" id="rss-riskcontrib"></table></div>
+                  <div class="footnote" id="rss-mcr-note"></div>
+
+                  <div class="section-head section-head-gap"><h2 class="section-title">Drawdown — simulated book</h2><span class="section-note">daily, overlap window</span></div>
+                  <div class="card" id="rss-drawdown"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+        <section class="tabview" id="tab-options" hidden>
+          <div class="eyebrow">Risk &amp; Hedging · Module 09</div>
+          <h1 class="page-title">Options Hedging</h1>
+          <p class="lede" id="opt-caption"></p>
+          <div id="opt-staleness" class="opt-staleness"></div>
+          <div class="callout callout-blue" id="opt-empty" hidden></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">Aggregate exposure</h2></div>
+          <div id="opt-tiles"></div>
+          <div class="section-note" id="opt-iv-caption"></div>
+          <div class="chart-wrap"><div id="opt-iv-spark"></div></div>
+          <p class="lede" id="opt-footer"></p>
+          <div class="section-head section-head-gap"><h2 class="section-title">Portfolio composition</h2></div>
+          <div id="opt-composition"></div>
+          <div class="opt-controls" id="opt-controls">
+            <div class="opt-ctl-group"><span class="opt-ctl-label">Mode</span>
+              <div id="opt-mode" class="seg"></div></div>
+            <div class="opt-ctl-group"><span class="opt-ctl-label">Target</span>
+              <div id="opt-target" class="seg"></div></div>
+          </div>
+          <div class="callout callout-blue" id="opt-rec-warn" hidden></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">Hedge signals</h2></div>
+          <div id="opt-signals-headline" class="section-note"></div>
+          <div class="table-wrap"><table class="tbl" id="opt-signals-table"></table></div>
+          <div class="section-note" id="opt-signals-caption"></div>
+          <div id="opt-scenarios-section" hidden>
+            <div class="section-head section-head-gap"><h2 class="section-title">Scenarios</h2></div>
+            <div class="table-wrap"><table class="tbl" id="opt-scenarios"></table></div>
+            <div id="opt-scenario-notes"></div>
+            <div class="callout" id="opt-headline" hidden></div>
+          </div>
+          <div id="opt-coverage-section" hidden>
+            <div class="section-head section-head-gap"><h2 class="section-title">Existing puts (held)</h2></div>
+            <div class="table-wrap"><table class="tbl" id="opt-existing-puts"></table></div>
+            <div class="section-note" id="opt-existing-puts-note"></div>
+            <div class="section-head section-head-gap"><h2 class="section-title">New puts to add</h2></div>
+            <div class="table-wrap"><table class="tbl" id="opt-new-puts"></table></div>
+            <div class="section-note" id="opt-new-puts-note"></div>
+            <div class="section-head section-head-gap"><h2 class="section-title">Combined coverage</h2></div>
+            <div id="opt-coverage-tiles"></div>
+            <div class="section-note">
+              <strong>Exit rule (locked):</strong> sell each put at <strong>3&times;</strong> premium paid.
+              Roll when 90 days to expiry or SPY drifts &plusmn;10%, whichever first; not on drawdowns.
+            </div>
+            <details class="exp"><summary><span class="chev">&rsaquo;</span> How the exit rule was chosen</summary>
+              <div class="eb">
+                <p><strong>The rule.</strong> Sell each put when its market value reaches <strong>3&times; the premium paid</strong>
+                  &mdash; a profit-take that banks the convex spike in a crash instead of round-tripping it back to zero on the
+                  recovery.</p>
+                <p><strong>How we got 3&times;.</strong> Back-tested exit multiples {2&times;, 3&times;, 5&times;, 7&times;} on a
+                  continuously-laddered 90-DTE / 5%-OTM SPY put program, repricing every leg against <em>real Polygon daily
+                  option closes</em>, scored by <strong>payoff per dollar of premium drag</strong> (crash payoff captured
+                  &divide; premium bled in calm periods).</p>
+                <p><strong>Data.</strong> Real SPY option closes back to <strong>2016</strong> (Massive/Polygon Options
+                  Advanced), across five crashes: 2018 Q4 (&minus;20%), 2020 COVID (&minus;34%), 2022 H1 (&minus;23%),
+                  April 2025 (&minus;19%), Iran war 2026 (&minus;9%).</p>
+                <p><strong>Result</strong> &mdash; 3&times; wins on both axes (least drag <em>and</em> most payoff per premium
+                  dollar):</p>
+                <table class="tbl">
+                  <thead><tr><th>mult</th><th>drag %/yr</th><th>pay / $ drag</th></tr></thead>
+                  <tbody>
+                    <tr><td>2&times;</td><td>3.30</td><td>2.45</td></tr>
+                    <tr><td><strong>3&times;</strong></td><td><strong>2.16</strong></td><td><strong>3.96</strong></td></tr>
+                    <tr><td>5&times;</td><td>4.64</td><td>1.92</td></tr>
+                    <tr><td>7&times;</td><td>4.85</td><td>1.63</td></tr>
+                  </tbody>
+                </table>
+                <p>Higher multiples bleed more premium waiting for a bigger pop that rarely beats taking 3&times; early. An
+                  earlier 2-year sample wrongly favored 5&times; &mdash; one lucky fire made pay/$drag look like 21 &mdash;
+                  and the deeper data corrected it.</p>
+                <p><strong>Caveat.</strong> A back-test on five episodes with option history to 2016; re-run
+                  <code>scratch/sweep_exit_multiplier_phase2.py</code> if the option data is ever extended further back.</p>
+              </div></details>
+          </div>
+          <details class="exp"><summary><span class="chev">&rsaquo;</span> How this tab works</summary>
+            <div class="eb">
+              <p><strong>Position parsing.</strong> Strike + expiry come from the position description (JPM) or the most
+                recent matching BUY transaction (Fidelity). Cost basis is recovered from BUY txns in the same account,
+                aggregated across tranches. Code at <code>parsers/option_positions.py</code>.</p>
+              <p><strong>IV + spot snapshot.</strong> <code>Refresh option IV</code> calls
+                <code>parsers/fetch_option_position_iv.py</code>, which pulls one Polygon chain snapshot per unique
+                (underlying, expiry) and writes the matching contract's mid, IV, &Delta;, and bid/ask &mdash; plus the
+                same-expiry ATM IV (closest same-type strike to spot, no extra fetch) &mdash; to
+                <code>data/option_position_snapshot.csv</code>. The CSV is the single source of truth for everything below
+                the table.</p>
+              <p><strong>Greeks.</strong> &Delta;, &Gamma;, vega, &theta; are computed by our LR-American binomial pricer
+                (<code>parsers/options_pricer.py</code>) using (Polygon spot, Polygon IV, fresh DTE, latest 3-mo T-bill r,
+                fixed q per ticker). LR was chosen over CRR because vega oscillates non-monotonically across n on CRR
+                &mdash; see <code>parsers/stress_hedge.py</code> docstring.</p>
+              <p><strong>Aggregate exposure.</strong> Top row is the book at a glance, over the <em>live</em> book only
+                (expired and zero-quantity legs excluded): <em>Notional protected</em> (&Sigma; put contracts &times; 100
+                &times; strike &mdash; the face value the puts would put), <em>Premium at risk</em> (live Polygon-mid value
+                of the open long options, statement value where no mid yet), <em>Unrealized P&amp;L</em> (live MV &minus;
+                cost), and <em>Weighted DTE</em> (MV-weighted days to expiry). Bottom row turns per-row Greeks (raw pricer
+                units) into book totals: <em>&Gamma; ($, per 1% spot)</em> = &Sigma; qty&middot;100&middot;&gamma;&middot;spot&sup2;&middot;0.01,
+                the convexity bump in $-delta from a 1% move; <em>Vega ($, per 1 vol pt)</em> = &Sigma;
+                qty&middot;100&middot;vega&middot;0.01; <em>&Theta; ($/day)</em> = &Sigma; qty&middot;100&middot;&theta;/365;
+                and <em>Weighted IV</em>, MV-weighted.</p>
+              <p><strong>Portfolio composition.</strong> Splits the filtered book into equity, cash-equivalent (SGOV /
+                money-market / Treasuries) and existing options. Classification and the engine's input frames are built in
+                <code>parsers/options_hedging_data.py</code> &mdash; unit-tested, so the data-shaping is locked.</p>
+              <p><strong>Mode &amp; target.</strong> <em>A &mdash; Cap drawdown</em> targets a maximum portfolio loss (the
+                5&ndash;25% radio); <em>B &mdash; Tail hedge</em> spends a fixed annual premium budget on deep-OTM (20%)
+                puts instead. The target sets strike depth: Mode A strikes at the cap (10% cap &rarr; a 90%-of-spot put),
+                Mode B at a fixed 20% OTM. Mode A nets your existing puts (recommends only the shortfall to the cap); Mode B
+                does not &mdash; its basket is a standing premium laddered in on top of whatever you already hold. New-put
+                tenor is ~180 days.</p>
+              <p><strong>Scenarios.</strong> Five fixed portfolio drawdowns (&minus;5% to &minus;25%). For each, the engine
+                inverts the drawdown into the <em>implied SPY drop</em> that would cause it, using each holding's
+                crash-beta &mdash; the median of (name return / SPY return) across four historical crashes (COVID, 2022 H1,
+                April 2025, the 2026 Iran war) &mdash; plus your cash cushion (<code>parsers/crash_betas.py</code>,
+                <code>parsers/hedge_scenarios.py</code>). It then reprices everything at that stressed spot. The columns
+                are colour-grouped: <em>Unhedged P&amp;L</em> (no hedges); the <strong>blue</strong> <em>existing-hedge</em>
+                group &mdash; <em>Existing-hedge payoff</em> (intrinsic of held puts) and <em>Existing-hedge P&amp;L</em> =
+                Unhedged P&amp;L + that payoff (the result with only your current puts), in $ and %; <em>New-hedge
+                payoff</em> (intrinsic of the recommended puts); and the <strong>green</strong> <em>combined</em> group
+                &mdash; <em>Combined hedged P&amp;L</em> (unhedged + both) in $ and %, plus <em>Capital saved by
+                hedges</em> (existing + new). A <code>&mdash;</code> in a column means crash-beta history is missing for a
+                name; refresh daily prices.</p>
+              <p><strong>The recommendation.</strong> <code>parsers/hedge_recommender.py</code> finds your
+                <em>excess-MCR</em> names &mdash; those whose marginal contribution to risk (the same EWMA-Ledoit-Wolf MCR
+                as the Risk Contribution tab) exceeds 1.5&times; their natural weight in SPY. It sizes single-name puts to
+                neutralize each such name's idiosyncratic loss in the worst scenario (whole contracts, rounded up), then
+                one SPY put to fill the residual gap to your cap. Live premiums come from a targeted Polygon chain fetch
+                (<code>parsers/fetch_targeted_chain.py</code>). Mode B instead splits the premium budget between SPY and
+                the excess names by risk share, flooring contracts to the budget.</p>
+              <p><strong>Caps.</strong> The headline reports the <em>signed</em> worst of the 5 scenarios &mdash; the
+                most-negative net P&amp;L (a real loss), not the biggest-magnitude one. <em>Current</em> = with existing
+                puts only; <em>Target</em> = the cap you picked; <em>Combined</em> = after the recommended new puts.
+                Because single-name puts neutralize concentration in full rather than trimming exactly to the cap, the
+                combined basket over-covers &mdash; so its worst case lands well below target and, in the deeper
+                scenarios, is often a convex <strong>gain</strong> rather than a loss (shown as <code>+%</code> in the
+                table).</p>
+              <p><strong>Existing puts &amp; rolling.</strong> The read-only table shows each held put with its worst-case
+                payoff and a <strong>Sell at (3&times;)</strong> target. The locked exit closes a put once its value
+                reaches 3&times; the premium paid (shown per-option in both the existing- and new-puts tables); <em>Roll
+                by</em> = 90 days before expiry; <em>Roll into &asymp;</em> = a fresh ~180-day put dated around then
+                (nearest listed monthly). Also roll if SPY drifts &plusmn;10% from the strike anchor &mdash; whichever
+                first; don't sell into a drawdown.</p>
+              <p><strong>Coverage.</strong> TEST-* accounts are scrambled fixture data and are excluded by the broker
+                filter. The hedging math covers only held names with daily-price history (the coverage-% caption flags the
+                gap); unpriced names and unparsed positions are dropped before the math runs.</p>
+            </div></details>
+        </section>
+        <section class="tabview" id="tab-health" hidden>
+          <div class="eyebrow">Signals &amp; Data · Module 11</div>
+          <h1 class="page-title">Data health</h1>
+          <p class="lede">Verifies this month's statement ingest: per-account extracted vs reported totals, and which accounts are carried forward. Bands match the ingest gate (reconcile_holdings) — watch &gt;0.30%, error &gt;2% and &gt;$10k.</p>
+          <div class="callout" id="health-verdict"></div>
+          <div class="health-summary" id="health-summary"></div>
+          <div class="section-head section-head-gap"><h2 class="section-title">Reconciliation</h2><span class="section-note" id="health-recon-note"></span></div>
+          <div class="callout callout-blue" id="health-empty" hidden></div>
+          <div class="table-wrap"><table class="tbl" id="health-table"></table></div>
+        </section>
+        <section class="tabview" id="tab-dip" hidden>
+          <div class="eyebrow">Signals &amp; Data · Module 12</div>
+          <h1 class="page-title">Buy the dip</h1>
+          <p class="lede" id="dip-caption"></p>
+          <div class="opt-staleness" id="dip-staleness"></div>
+          <div id="dip-ai"></div>
+          <div class="callout callout-blue" id="dip-turbulence" hidden></div>
+          <details class="exp"><summary><span class="chev">›</span> <span id="dip-legend-title"></span></summary>
+            <div class="eb" id="dip-legend-body"></div></details>
+          <div class="callout callout-blue" id="dip-empty" hidden></div>
+          <form id="dip-adhoc-form" class="dip-adhoc">
+            <input id="dip-adhoc-input" type="text" maxlength="10" autocomplete="off"
+                   placeholder="🔍 Check any ticker — e.g. GOOGL" />
+            <button id="dip-adhoc-btn" type="submit" class="pill-refresh">Check the dip</button>
+          </form>
+          <div id="dip-adhoc-result"></div>
+          <div id="dip-cards"></div>
+        </section>
+        <section class="tabview" id="tab-ai" hidden>
+          <div class="eyebrow">AI Analysis · Module 01</div>
+          <h1 class="page-title">AI portfolio analysis</h1>
+          <p class="lede">Is this book riskier than its benchmark, and why — engine-computed facts below, model narration on top.</p>
+          <div class="ai-layout">
+            <div class="ai-main">
+              <div class="fctl-group" id="ai-bench-controls">
+                <span class="fctl-label">Benchmark</span>
+                <select id="ai-benchmark-select" class="pill-native">
+                  <option value="auto">Auto</option>
+                  <option value="spy">SPY (S&amp;P 500 TR)</option>
+                  <option value="60_40">60/40 SPY/AGG blend</option>
+                </select>
+                <span class="fctl-cap" id="ai-benchmark-cap"></span>
+              </div>
+              <div class="callout callout-blue" id="ai-empty" hidden></div>
+              <div id="brief-ai"></div>
+              <div id="ai-narrative"></div>
+              <div class="section-head section-head-gap"><h2 class="section-title" id="ai-window-title">Portfolio vs SPY</h2><span class="section-note" id="ai-window-note">five windows · monthly TWR + daily beta/corr</span></div>
+              <div class="table-wrap"><table class="tbl" id="ai-window-table"></table></div>
+              <div class="section-head section-head-gap"><h2 class="section-title">Book posture</h2><span class="section-note">concentration · income · tax · cash</span></div>
+              <div id="ai-tiles"></div>
+            </div>
+            <aside id="ai-chat-wrap" class="ai-chat-dock" hidden>
+              <div class="section-head section-head-gap"><h2 class="section-title">Ask AI Analyst</h2><span class="section-note">answers from the book's computed facts · dollar-free by design · history clears on reload</span>
+                <div class="ai-chat-tools">
+                  <button id="ai-chat-copy" class="ai-chat-tool" type="button" title="Copy the whole conversation as plain text" disabled>Copy</button>
+                  <button id="ai-chat-clear" class="ai-chat-tool" type="button" title="Clear the conversation (click twice)" disabled>Clear</button>
+                </div>
+              </div>
+              <div id="ai-chat-log" class="ai-chat-log"></div>
+              <div class="ai-chat-suggest" id="ai-chat-suggest">
+                <button type="button">Top risk driver?</button>
+                <button type="button">Biggest tax lever this year?</button>
+                <button type="button">How concentrated am I?</button>
+              </div>
+              <form id="ai-chat-form" class="ai-chat-form">
+                <input id="ai-chat-input" class="ai-chat-input" type="text" maxlength="2000" placeholder="Ask about the portfolio — e.g. why is volatility up this year?" autocomplete="off">
+                <button id="ai-chat-send" class="act-inline act-btn" type="submit">Send</button>
+              </form>
+              <p class="footnote ai-chat-foot">Descriptive analytics, not investment advice.</p>
+            </aside>
+          </div>
+        </section>
+
+        <div class="app-footer" id="app-footer"></div>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
