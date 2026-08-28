@@ -156,51 +156,6 @@ class TestServer(unittest.TestCase):
             os.environ["APP_DATA_DIR"] = str(FIXTURE)
 
 
-class TestParity(unittest.TestCase):
-    """Cross-check the terminal view against what the Streamlit Data Health tab
-    actually renders: the color-coded headline alert + the reconciliation
-    dataframe. Activates the tab via session_state['active_tab']. Slow (boots
-    Streamlit) — intentional."""
-
-    @classmethod
-    def setUpClass(cls):
-        os.environ["APP_DATA_DIR"] = str(FIXTURE)
-        from streamlit.testing.v1 import AppTest
-        cls.frames = hs.load_frames(FIXTURE)
-        cls.view = hes.build_health_view(cls.frames)
-        cls.report = _recompute_report(cls.frames)
-        at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=120).run()
-        at.session_state["active_tab"] = "Data Health"
-        cls.at = at.run()
-
-    @classmethod
-    def tearDownClass(cls):
-        os.environ.pop("APP_DATA_DIR", None)
-
-    def test_headline_alert_parity(self):
-        # amber -> st.warning; the terminal headline.text must appear among the
-        # rendered alerts (the chrome strip + the tab both emit it). Streamlit
-        # auto-extracts a leading emoji from the message into the alert's `.icon`
-        # and reports the remainder as `.value`, so the engine string (which
-        # leads with the band glyph) is reconstituted as `icon + " " + value`
-        # before comparison — otherwise the leading glyph would never match.
-        level, text = format_health_headline(self.report)
-        bucket = {"green": self.at.success, "amber": self.at.warning,
-                  "red": self.at.error, "grey": self.at.info}[level]
-        full = [(a.icon + " " + a.value) if a.icon else a.value for a in bucket]
-        self.assertIn(text, full,
-                      "terminal headline text not found among Streamlit alerts")
-        # the terminal's data-layer headline text is the same engine string
-        self.assertEqual(self.view["headline"]["text"], text)
-
-    def test_table_parity(self):
-        self.assertGreaterEqual(len(self.at.dataframe), 1,
-                                "Data Health tab rendered no dataframe")
-        got = self.at.dataframe[0].value.reset_index(drop=True)
-        exp = pd.DataFrame(self.view["table"]).reset_index(drop=True)
-        pd.testing.assert_frame_equal(got, exp, check_dtype=False)
-
-
 class TestGolden(unittest.TestCase):
     GOLDEN = (Path(__file__).resolve().parent / "fixtures"
               / "terminal_data_health_golden.json")

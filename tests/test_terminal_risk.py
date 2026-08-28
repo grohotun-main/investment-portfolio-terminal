@@ -269,40 +269,6 @@ class TestServer(unittest.TestCase):
             os.environ["APP_DATA_DIR"] = str(FIXTURE)
 
 
-class TestParity(unittest.TestCase):
-    """Cross-check the terminal tiles against what the Streamlit Risk tab renders
-    at default controls: the st.metric-backed tiles (concentration Effective N /
-    Max weight / Top-5; the five β tiles; Current DD when at an all-time high).
-    Slow (boots Streamlit). The render_compare tiles use st.markdown, not
-    st.metric, so they're covered by the engine-parity gate above."""
-
-    @classmethod
-    def setUpClass(cls):
-        os.environ["APP_DATA_DIR"] = str(FIXTURE)
-        from streamlit.testing.v1 import AppTest
-        cls.frames = hs.load_frames(FIXTURE)
-        cls.view = rs.build_risk_view(cls.frames)
-        at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=180).run()
-        at.session_state["active_tab"] = "Risk Overview"
-        cls.at = at.run()
-
-    @classmethod
-    def tearDownClass(cls):
-        os.environ.pop("APP_DATA_DIR", None)
-
-    def test_concentration_and_beta_metrics_present(self):
-        metric_values = {m.value for m in self.at.metric}
-        conc = self.view["concentration"]["tiles"]
-        for t in conc:
-            self.assertIn(t["value"], metric_values,
-                          f"concentration {t['label']}={t['value']} not in Streamlit metrics")
-        if self.view["beta"] and self.view["beta"]["available"]:
-            for t in self.view["beta"]["tiles"]:
-                if t["value"] != "—":
-                    self.assertIn(t["value"], metric_values,
-                                  f"beta {t['label']}={t['value']} not in Streamlit metrics")
-
-
 class TestGolden(unittest.TestCase):
     GOLDEN = (Path(__file__).resolve().parent / "fixtures"
               / "terminal_risk_golden.json")

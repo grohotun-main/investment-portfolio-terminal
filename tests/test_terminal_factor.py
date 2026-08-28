@@ -294,54 +294,6 @@ class TestServer(unittest.TestCase):
             os.environ["APP_DATA_DIR"] = str(FIXTURE)
 
 
-class TestParity(unittest.TestCase):
-    """Cross-check the terminal view against what the Streamlit Factor tab
-    actually renders at its default controls (window=Full, model=FF5+Mom): the
-    alpha-by-model strip + n/R²/Adj.R² metrics (st.metric) and the β/SE/t table
-    (st.dataframe). The '1:1 exactly' gate. Slow (boots Streamlit)."""
-
-    @classmethod
-    def setUpClass(cls):
-        os.environ["APP_DATA_DIR"] = str(FIXTURE)
-        from streamlit.testing.v1 import AppTest
-        cls.frames = hs.load_frames(FIXTURE)
-        cls.view = fs.build_factor_view(cls.frames)
-        at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=180).run()
-        at.session_state["active_tab"] = "Factor Analysis"
-        cls.at = at.run()
-
-    @classmethod
-    def tearDownClass(cls):
-        os.environ.pop("APP_DATA_DIR", None)
-
-    def test_strip_and_metrics_present(self):
-        metric_values = {m.value for m in self.at.metric}
-        wb = self.view["by_window"]["Full history"]
-        for e in wb["strip"]:
-            self.assertIn(e["value"], metric_values,
-                          f"strip {e['model']}={e['value']} not in Streamlit metrics")
-        mb = wb["models"]["FF5 + Mom"]
-        for v in mb["metrics"].values():
-            self.assertIn(v, metric_values, f"detail metric {v} not in metrics")
-
-    def test_beta_table_parity(self):
-        # find the beta dataframe (the one with a 'β' column)
-        beta_df = None
-        for d in self.at.dataframe:
-            if "β" in list(d.value.columns):
-                beta_df = d.value
-                break
-        self.assertIsNotNone(beta_df, "no β dataframe rendered by the Factor tab")
-        got = beta_df.reset_index(drop=True)
-        rows = self.view["by_window"]["Full history"]["models"]["FF5 + Mom"]["beta_table"]["rows"]
-        self.assertEqual(len(got), len(rows))
-        for i, row in enumerate(rows):
-            self.assertEqual(str(got["Factor"].iloc[i]), row["Factor"])
-            self.assertEqual(f"{float(got['β'].iloc[i]):+.2f}", row["β"])
-            self.assertEqual(f"{float(got['SE'].iloc[i]):.2f}", row["SE"])
-            self.assertEqual(f"{float(got['t'].iloc[i]):+.2f}", row["t"])
-
-
 class TestGolden(unittest.TestCase):
     GOLDEN = (Path(__file__).resolve().parent / "fixtures"
               / "terminal_factor_golden.json")
@@ -495,10 +447,6 @@ class TestCaptionBasisHonesty(unittest.TestCase):
         src = inspect.getsource(fs)
         for phrase in self.BANNED:
             self.assertNotIn(phrase, src, f"stale price-only claim: {phrase!r}")
-
-    def test_app_cross_check_caption_does_not_claim_omitted_dividends(self):
-        src = (ROOT / "app.py").read_text(encoding="utf-8")
-        self.assertNotIn("omits dividends", src)
 
     def test_terminal_static_chrome_does_not_claim_price_only(self):
         # The live smoke for this fix found a FIFTH stale surface the

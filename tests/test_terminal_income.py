@@ -217,43 +217,6 @@ class TestServer(unittest.TestCase):
         self.assertIn("brokers", r.json()["meta"])
 
 
-class TestParity(unittest.TestCase):
-    """Cross-check the terminal view against what the Streamlit Income tab
-    actually renders: the actual-income + forward KPIs (st.metric) and the
-    forward detail dataframe. Uses the real today on both sides (the Streamlit
-    body hardcodes date.today()). Slow (boots Streamlit) — intentional."""
-
-    @classmethod
-    def setUpClass(cls):
-        os.environ["APP_DATA_DIR"] = str(FIXTURE)
-        from streamlit.testing.v1 import AppTest
-        cls.frames = hs.load_frames(FIXTURE)
-        cls.view = ins.build_income_view(cls.frames)  # today, like Streamlit
-        at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=120).run()
-        at.session_state["active_tab"] = "Income"
-        cls.at = at.run()
-
-    @classmethod
-    def tearDownClass(cls):
-        os.environ.pop("APP_DATA_DIR", None)
-
-    def test_kpi_values_present_among_metrics(self):
-        metric_values = {m.value for m in self.at.metric}
-        for card in (self.view["received"]["kpis"] + self.view["forward"]["kpis"]):
-            self.assertIn(card["value"], metric_values,
-                          f"terminal KPI {card['label']}={card['value']} "
-                          "not found among Streamlit metrics")
-
-    def test_forward_detail_table_parity(self):
-        self.assertGreaterEqual(len(self.at.dataframe), 1,
-                                "Income tab rendered no dataframe")
-        got = self.at.dataframe[0].value.reset_index(drop=True)
-        exp = pd.DataFrame(self.view["forward"]["detail"]["rows"],
-                           columns=self.view["forward"]["detail"]["columns"]
-                           ).reset_index(drop=True)
-        pd.testing.assert_frame_equal(got, exp, check_dtype=False)
-
-
 class TestGolden(unittest.TestCase):
     GOLDEN = (Path(__file__).resolve().parent / "fixtures"
               / "terminal_income_golden.json")

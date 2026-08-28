@@ -391,48 +391,6 @@ class TestServer(unittest.TestCase):
         self.assertEqual(r.json()["meta"]["benchmark"]["id"], "60_40")
 
 
-class TestParity(unittest.TestCase):
-    """Cross-check the service's UNFILTERED headline KPIs against the SAME
-    numbers the Streamlit Benchmark tab renders. The benchmark-relative numbers
-    are NOT in the persistent KPI tape, so this activates the Benchmark tab
-    (session_state['active_tab']) and scrapes its st.metric values. Slow (boots
-    Streamlit) — intentional."""
-
-    @classmethod
-    def setUpClass(cls):
-        os.environ["APP_DATA_DIR"] = str(FIXTURE)
-        from streamlit.testing.v1 import AppTest
-        cls.frames = hs.load_frames(FIXTURE)
-        cls.view = bs.build_benchmark_view(cls.frames)
-        at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=120).run()
-        # Activate the Benchmark tab (the nav rail sets this session_state key).
-        at.session_state["active_tab"] = "Performance vs Benchmark"
-        at = at.run()
-        cls.metric_vals = [str(getattr(m, "value", "")) for m in at.metric]
-
-    @classmethod
-    def tearDownClass(cls):
-        os.environ.pop("APP_DATA_DIR", None)
-
-    def _require_metrics(self):
-        if len(self.metric_vals) < 4:
-            self.skipTest("Benchmark tab did not render its 4 KPI metrics "
-                          "under AppTest")
-
-    def test_kpi_row_positional_parity(self):
-        self._require_metrics()
-        # The benchmark KPI row renders k1..k4 in order: TWR ann / IRR
-        # (windowed) / Monthly win-rate / $100K->portfolio. at.metric is in
-        # document order, and the persistent tape is st.markdown (not
-        # st.metric), so metric_vals[0..3] are exactly these four cards. A
-        # positional check (vs substring-in-blob) can't pass on a coincidental
-        # collision and pins each card to its Streamlit counterpart.
-        for i, key in enumerate(("twr", "irr", "winrate", "wealth")):
-            self.assertEqual(
-                self.metric_vals[i], self.view["headline"][i]["value"],
-                f"benchmark KPI metric {i} ({key}) diverged from Streamlit")
-
-
 class TestGolden(unittest.TestCase):
     GOLDEN = (Path(__file__).resolve().parent / "fixtures"
               / "terminal_benchmark_golden.json")

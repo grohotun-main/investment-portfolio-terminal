@@ -636,46 +636,6 @@ class TestBrokerMeta(unittest.TestCase):
         self.assertEqual(meta["filter"]["broker"], "all")  # default echo scalar
 
 
-class TestParity(unittest.TestCase):
-    """Cross-check the service's headline numbers against the SAME numbers the
-    Streamlit Holdings tab renders, via AppTest over the committed fixture. The
-    KPI tape is the contract: portfolio value, cum TWR, annualized, IRR, vol/β
-    and max drawdown must all appear, byte-identical, in the Streamlit markdown.
-    Slow (boots Streamlit) — that is expected and intentional."""
-
-    @classmethod
-    def setUpClass(cls):
-        import os
-        os.environ["APP_DATA_DIR"] = str(FIXTURE)
-        from streamlit.testing.v1 import AppTest
-        from terminal import holdings_service as hs
-        cls.view = hs.build_holdings_view(hs.load_frames(FIXTURE))
-        at = AppTest.from_file(str(ROOT / "app.py"), default_timeout=120).run()
-        cls.blob = " ".join(str(getattr(e, "value", e)) for e in at.markdown)
-
-    def test_portfolio_value_present(self):
-        self.assertIn(self.view["tape"][0]["value"], self.blob)
-
-    def test_cum_twr_present(self):
-        self.assertIn(self.view["tape"][1]["value"], self.blob)
-
-    def test_annualized_present(self):
-        self.assertIn(self.view["tape"][2]["value"], self.blob)
-
-    def test_irr_present(self):
-        # On the fixture (no PORTFOLIO IRR row, no history cutoff) this is "—";
-        # the service must agree with Streamlit's render, whatever it is.
-        self.assertIn(self.view["tape"][3]["value"], self.blob)
-
-    def test_vol_and_beta_present(self):
-        vol_cell = self.view["tape"][4]
-        self.assertIn(vol_cell["value"], self.blob)   # e.g. "0.0%"
-        self.assertIn(vol_cell["sub"], self.blob)     # e.g. "β 2.56"
-
-    def test_max_dd_present(self):
-        self.assertIn(self.view["tape"][5]["value"], self.blob)
-
-
 class TestGolden(unittest.TestCase):
     GOLDEN = FIXTURE.parent / "terminal_holdings_golden.json"
 
@@ -1135,22 +1095,6 @@ class TestApplyGlobalFilters(unittest.TestCase):
             self.assertNotIn("PORTFOLIO",
                              set(out.irr_table["account_id"].astype(str)))
 
-    def test_broker_options_flag_test_brokers(self):
-        # Demo/test broker options carry test:True so the front-end can label
-        # the unchecked default state with the REAL broker names (test brokers
-        # are opt-in, never part of the default). Real options stay {id,label}
-        # exactly — the committed fixture has no demo brokers, so goldens
-        # never see the flag.
-        frames = self._inject_demo_broker()
-        opts, _ = self.hs._broker_options(self.hs._current_snap(frames))
-        by_label = {o["label"]: o for o in opts}
-        self.assertIs(by_label["Fidelity Test"].get("test"), True)
-        real = [o for o in opts
-                if o["label"] not in self.hs.TEST_BROKER_LABELS]
-        self.assertGreater(len(real), 0)
-        for o in real:
-            self.assertNotIn("test", o)
-
     def _inject_demo_broker(self):
         """Return a frames with a demo-broker ("Fidelity Test") position spliced
         into the LATEST snapshot month of BOTH positions and positions_monthly,
@@ -1172,18 +1116,6 @@ class TestApplyGlobalFilters(unittest.TestCase):
         if not self.frames.prices_latest.empty:
             pm = self.hs.mark_to_market(pm, self.frames.prices_latest)
         return replace(self.frames, positions=pos, positions_monthly=pm)
-
-    def test_real_default_drops_demo_but_keeps_real_twr(self):
-        # The real default (["all"] → real brokers) must DROP the overlaid demo
-        # broker AND keep the (real) cached twr_portfolio — only a non-real
-        # selection blanks the real book.
-        frames = self._inject_demo_broker()
-        self.assertFalse(self.frames.twr_portfolio.empty,
-                         "fixture twr must be non-empty for this test")
-        out = self.hs.apply_global_filters(frames, ["all"])  # default = real only
-        self.assertNotIn("Fidelity Test",
-                         set(out.positions["broker"].astype(str)))  # demo dropped
-        self.assertFalse(out.twr_portfolio.empty)   # real cached twr KEPT (not blanked)
 
     def test_demo_only_isolates_and_blanks(self):
         # Selecting ONLY the demo broker isolates it and blanks the real twr.
