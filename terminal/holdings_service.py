@@ -149,7 +149,7 @@ def _display_symbol(row: pd.Series) -> str:
 
 
 def _account_bucket(account_id: str, symbol: str | float) -> str:
-    """Mirror app.py:258-273 — fixed bucket, TOD-split, or ``Other (id)``."""
+    """Fixed bucket, TOD-split, or the bare account id as its own bucket."""
     fixed = ACCOUNT_BUCKETS_FIXED.get(account_id)
     if fixed is not None:
         return fixed
@@ -158,7 +158,7 @@ def _account_bucket(account_id: str, symbol: str | float) -> str:
         if sym in TOD_CORE_ETF_SYMBOLS:
             return "Core ETFs"
         return "Individual Stocks"
-    return f"Other ({account_id})"
+    return account_id
 
 
 def _reclass_asset(account_id: str, symbol: str | float, asset_class: str) -> str:

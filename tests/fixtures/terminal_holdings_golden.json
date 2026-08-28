@@ -8,16 +8,16 @@
     ],
     "accounts": [
       {
-        "id": "other_test_a",
-        "label": "Other (TEST-A)"
+        "id": "test_a",
+        "label": "TEST-A"
       },
       {
-        "id": "other_test_b",
-        "label": "Other (TEST-B)"
+        "id": "test_b",
+        "label": "TEST-B"
       },
       {
-        "id": "other_test_c",
-        "label": "Other (TEST-C)"
+        "id": "test_c",
+        "label": "TEST-C"
       }
     ],
     "classes": [
@@ -186,21 +186,21 @@
     "n": 3,
     "rows": [
       {
-        "label": "Other (TEST-A)",
+        "label": "TEST-A",
         "broker": "alpine",
         "color": "#4DA3F5",
         "pct": 66.81531029357116,
         "bar": 100.0
       },
       {
-        "label": "Other (TEST-B)",
+        "label": "TEST-B",
         "broker": "harbor",
         "color": "#2DD4BF",
         "pct": 32.441471571906355,
         "bar": 48.5539488320356
       },
       {
-        "label": "Other (TEST-C)",
+        "label": "TEST-C",
         "broker": "alpine",
         "color": "#4DA3F5",
         "pct": 0.7432181345224823,
@@ -263,7 +263,7 @@
       {
         "symbol": "SPY",
         "description": "SPDR S&P 500 ETF",
-        "account": "Other (TEST-A)",
+        "account": "TEST-A",
         "asset_class": "equity_etf",
         "class_label": "ETFs",
         "qty": "100.0000",
@@ -281,7 +281,7 @@
       {
         "symbol": "SPY",
         "description": "SPDR S&P 500 ETF",
-        "account": "Other (TEST-B)",
+        "account": "TEST-B",
         "asset_class": "equity_etf",
         "class_label": "ETFs",
         "qty": "50.0000",
@@ -299,7 +299,7 @@
       {
         "symbol": "AAA",
         "description": "Synthetic Equity A",
-        "account": "Other (TEST-A)",
+        "account": "TEST-A",
         "asset_class": "equity_stock",
         "class_label": "Individual Stocks",
         "qty": "200.0000",
@@ -317,7 +317,7 @@
       {
         "symbol": "BBB",
         "description": "Synthetic Bond Fund",
-        "account": "Other (TEST-B)",
+        "account": "TEST-B",
         "asset_class": "fixed_income",
         "class_label": "Fixed Income",
         "qty": "300.0000",
@@ -335,7 +335,7 @@
       {
         "symbol": "CASHX",
         "description": "Cash Sweep",
-        "account": "Other (TEST-A)",
+        "account": "TEST-A",
         "asset_class": "cash",
         "class_label": "Cash & sweep",
         "qty": "10,000.0000",
@@ -353,7 +353,7 @@
       {
         "symbol": "SPY260918P00500000",
         "description": "PUT SPY 09/18/26 500 SPDR S&P 500 ETF",
-        "account": "Other (TEST-A)",
+        "account": "TEST-A",
         "asset_class": "option_put",
         "class_label": "Options (puts)",
         "qty": "2.0000",
@@ -371,7 +371,7 @@
       {
         "symbol": "CCC",
         "description": "Synthetic Equity C",
-        "account": "Other (TEST-C)",
+        "account": "TEST-C",
         "asset_class": "equity_stock",
         "class_label": "Individual Stocks",
         "qty": "40.0000",

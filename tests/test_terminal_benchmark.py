@@ -724,7 +724,7 @@ class TestBenchmarkFacts(unittest.TestCase):
         with mock.patch.object(ai.bs, "build_benchmark_view",
                                return_value=fake_view):
             f = ai._facts_benchmark(self.frames, "all", None,
-                                    {"account": "other_test_a"})
+                                    {"account": "test_a"})
         self.assertTrue(f["holdings_filter_active"])
         c = f["consistency"]
         self.assertTrue(c["available"])

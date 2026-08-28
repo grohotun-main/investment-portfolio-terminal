@@ -11,7 +11,7 @@
   "positions": [
     {
       "ticker": "SPY",
-      "account": "Other (TEST-A)",
+      "account": "TEST-A",
       "class": "ETFs",
       "weight_pct": 42.36,
       "unrealized_pct": 14.0,
@@ -19,7 +19,7 @@
     },
     {
       "ticker": "SPY",
-      "account": "Other (TEST-B)",
+      "account": "TEST-B",
       "class": "ETFs",
       "weight_pct": 21.18,
       "unrealized_pct": 9.6,
@@ -27,7 +27,7 @@
     },
     {
       "ticker": "AAA",
-      "account": "Other (TEST-A)",
+      "account": "TEST-A",
       "class": "Individual Stocks",
       "weight_pct": 15.16,
       "unrealized_pct": 13.3,
@@ -35,7 +35,7 @@
     },
     {
       "ticker": "BBB",
-      "account": "Other (TEST-B)",
+      "account": "TEST-B",
       "class": "Fixed Income",
       "weight_pct": 11.26,
       "unrealized_pct": 1.0,
@@ -43,7 +43,7 @@
     },
     {
       "ticker": "CASHX",
-      "account": "Other (TEST-A)",
+      "account": "TEST-A",
       "class": "Cash & sweep",
       "weight_pct": 7.43,
       "unrealized_pct": 0.0,
@@ -51,7 +51,7 @@
     },
     {
       "ticker": "SPY",
-      "account": "Other (TEST-A)",
+      "account": "TEST-A",
       "class": "Options (puts)",
       "weight_pct": 1.86,
       "unrealized_pct": -16.7,
@@ -59,7 +59,7 @@
     },
     {
       "ticker": "CCC",
-      "account": "Other (TEST-C)",
+      "account": "TEST-C",
       "class": "Individual Stocks",
       "weight_pct": 0.74,
       "unrealized_pct": 25.0,

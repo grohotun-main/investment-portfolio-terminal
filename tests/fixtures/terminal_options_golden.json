@@ -4,16 +4,16 @@
     "caption": "Tracks long-option protection in the portfolio. Parses each option position's strike/expiry from broker statements, prices Greeks via the same LR-American pricer used by `stress_hedge`, and shows scenario P&L for tail-event shocks. Inherits the global Broker filter; ignores Account / Asset-class filters (every long option shows regardless of the active class slice).",
     "accounts": [
       {
-        "id": "other_test_a",
-        "label": "Other (TEST-A)"
+        "id": "test_a",
+        "label": "TEST-A"
       },
       {
-        "id": "other_test_b",
-        "label": "Other (TEST-B)"
+        "id": "test_b",
+        "label": "TEST-B"
       },
       {
-        "id": "other_test_c",
-        "label": "Other (TEST-C)"
+        "id": "test_c",
+        "label": "TEST-C"
       }
     ],
     "classes": [

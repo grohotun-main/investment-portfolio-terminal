@@ -578,6 +578,49 @@ def series_files(out: Path, prices: pd.DataFrame, rng: np.random.Generator):
                                  2.4, 2.1, 1.8, 1.6, 1.4]}).to_csv(
         out / "spy_holdings.csv", index=False)
 
+    # Deep Big-3 history (long_history_prices.csv) for the long-window
+    # correlation and regime analytics: SPY + GLD from 2007 carrying the
+    # 2008 and 2020 crash episodes, BIL as the pre-2020 T-bill proxy, and
+    # SGOV only from its 2020 launch — so the BIL back-splice runs exactly
+    # as it does in the live deployment.
+    pre_idx = pd.bdate_range(date(2007, 1, 3), START - timedelta(days=1))
+    n_pre = len(pre_idx)
+    mkt_pre = rng.normal(0.075 / 252, 0.17 / np.sqrt(252), n_pre)
+    mkt_pre[(pre_idx >= "2008-09-02") & (pre_idx <= "2009-03-09")] -= 0.0058
+    mkt_pre[(pre_idx > "2009-03-09") & (pre_idx <= "2010-04-30")] += 0.0018
+    mkt_pre[(pre_idx >= "2020-02-20") & (pre_idx <= "2020-03-23")] -= 0.0135
+    mkt_pre[(pre_idx > "2020-03-23") & (pre_idx <= "2020-08-31")] += 0.0042
+    spy_pre = np.cumprod(1 + mkt_pre)
+    gld_pre = np.cumprod(1 + rng.normal(0.055 / 252,
+                                        0.15 / np.sqrt(252), n_pre))
+    bil_pre = np.cumprod(1 + np.full(n_pre, 0.016 / 252)
+                         + rng.normal(0, 0.00008, n_pre))
+    lh_rows = []
+
+    def emit_long(sym, pre_dates, pre_path, modern: pd.Series | None):
+        anchor = (float(modern.iloc[0]) if modern is not None
+                  else float(pre_path[-1]))
+        scaled = pre_path / pre_path[-1] * anchor
+        for d, c in zip(pre_dates, scaled):
+            lh_rows.append({"symbol": sym, "date": d.strftime("%Y-%m-%d"),
+                            "close": round(float(c), 2)})
+        if modern is not None:
+            for d, c in modern.items():
+                lh_rows.append({"symbol": sym,
+                                "date": d.strftime("%Y-%m-%d"),
+                                "close": round(float(c), 2)})
+
+    emit_long("SPY", pre_idx, spy_pre, prices["SPY"])
+    emit_long("GLD", pre_idx, gld_pre, prices["GLD"])
+    # BIL: modern segment mirrors SGOV (near-identical T-bill instruments).
+    emit_long("BIL", pre_idx, bil_pre,
+              prices["SGOV"] / float(prices["SGOV"].iloc[0]) * 91.5)
+    sgov_mask = pre_idx >= "2020-05-26"
+    sgov_pre = np.cumprod(1 + np.full(int(sgov_mask.sum()), 0.012 / 252)
+                          + rng.normal(0, 0.00006, int(sgov_mask.sum())))
+    emit_long("SGOV", pre_idx[sgov_mask], sgov_pre, prices["SGOV"])
+    pd.DataFrame(lh_rows).to_csv(out / "long_history_prices.csv", index=False)
+
     # Option snapshot for the two put legs (plausible greeks, demo-flat).
     spot = float(last["SPY"])
     snap = []

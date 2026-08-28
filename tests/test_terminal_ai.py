@@ -2855,8 +2855,8 @@ class TestRiskFacts(unittest.TestCase):
         # count (40), still names the accounts in scope; NOT asserted byte-equal
         # to the None-based whole-book facts (spec §2 edge).
         facts = ai.build_facts("risk", self.frames,
-                               dims={"account": ["other_test_a", "other_test_b",
-                                                 "other_test_c"]})
+                               dims={"account": ["test_a", "test_b",
+                                                 "test_c"]})
         self.assertTrue(facts["available"])
         self.assertIn("account", facts["scope"])
         self.assertEqual(facts["risk_adjusted"]["months_used_3y"], 36)
@@ -2967,8 +2967,8 @@ class TestRiskContribFacts(unittest.TestCase):
 
     def test_account_filter_names_scope(self):
         facts = ai.build_facts("riskcontrib", self.frames,
-                               dims={"account": ["other_test_a"]})
-        self.assertEqual(facts["scope"]["account"], "Other (TEST-A)")
+                               dims={"account": ["test_a"]})
+        self.assertEqual(facts["scope"]["account"], "TEST-A")
 
     def test_whole_book_scope_has_no_filter_keys(self):
         facts = ai.build_facts("riskcontrib", self.frames)
@@ -3719,7 +3719,7 @@ class TestScopeKeyFilter(unittest.TestCase):
         self.assertNotEqual(base, filt)
 
     def test_account_only_differs_from_class_only(self):
-        a = ai.scope_key(["all"], "all", {"account": ["other_test_a"]})
+        a = ai.scope_key(["all"], "all", {"account": ["test_a"]})
         c = ai.scope_key(["all"], "all", {"asset_class": ["equity_stock"]})
         self.assertNotEqual(a, c)
 
@@ -3848,7 +3848,7 @@ class TestIncomeFacts(unittest.TestCase):
         a = ai._facts_income(self.frames, "all", ["all"], None,
                              asof=self.ASOF)
         b = ai._facts_income(self.frames, "all", ["all"],
-                             {"account": ["other_test_a"]}, asof=self.ASOF)
+                             {"account": ["test_a"]}, asof=self.ASOF)
         self.assertEqual(a, b)
 
     def test_no_dollar_keys_anywhere(self):
@@ -4113,7 +4113,7 @@ class TestRoutesFilterThreadingB3(_RouteFilterHarness, unittest.TestCase):
         # scope key — the second call is a cache hit, not a new generation.
         with self._fake("income text"):
             r1 = self.client.get("/api/ai/explain?section=income"
-                                 "&account=other_test_a")
+                                 "&account=test_a")
             self.assertEqual(r1.json()["kind"], "generating")
         with mock.patch.object(ai, "resolve_client",
                                side_effect=AssertionError("should hit cache")):

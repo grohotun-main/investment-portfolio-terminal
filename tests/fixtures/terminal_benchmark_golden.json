@@ -12,16 +12,16 @@
     "filter_caption": "Full combined portfolio (Alpine + Harbor) vs SPY total return — use the Account / Asset-class filters to compare a subset.",
     "accounts": [
       {
-        "id": "other_test_a",
-        "label": "Other (TEST-A)"
+        "id": "test_a",
+        "label": "TEST-A"
       },
       {
-        "id": "other_test_b",
-        "label": "Other (TEST-B)"
+        "id": "test_b",
+        "label": "TEST-B"
       },
       {
-        "id": "other_test_c",
-        "label": "Other (TEST-C)"
+        "id": "test_c",
+        "label": "TEST-C"
       }
     ],
     "classes": [
