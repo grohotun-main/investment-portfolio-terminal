@@ -117,8 +117,8 @@ full write-up is in [ARCHITECTURE.md](ARCHITECTURE.md).
 ## Quickstart
 
 ```bash
-git clone https://github.com/grohotun-main/meridian-portfolio-terminal.git
-cd meridian-portfolio-terminal
+git clone https://github.com/grohotun-main/investment-portfolio-terminal.git
+cd investment-portfolio-terminal
 python -m venv .venv && .venv\Scripts\activate    # or: source .venv/bin/activate
 pip install -r requirements.txt
 copy config_example.py config_local.py            # or: cp
