@@ -1,0 +1,93 @@
+{
+ "benchmark|{\"broker\":[\"all\"],\"dims\":{\"benchmark\":\"auto\"},\"history_start\":\"all\"}": {
+  "text": "{\"headline\": \"Across Alpine + Harbor (full history since Dec 2022), the book trails SPY (S&P 500 TR): 14.9% vs 19.1% annualized to date, -4.2pp, provisional.\", \"bullets\": [\"YTD to date: portfolio 5.2% vs SPY 8.9%, spread -3.6pp; final period marked to live prices, unaudited.\", \"1Y to date: 23.5% vs 33.1%, -9.6pp — the widest lag; vol 10.8% vs 14.3%.\", \"3Y annualized to date: 13.4% vs 15.9%, -2.5pp, with notably lower vol (12.9% vs 18.1%).\", \"Since inception to date: 14.9% vs 19.1%, -4.2pp; vol 12.4% vs 18.0% — less risk, less return.\", \"The book lags SPY in every available window; short and long windows agree, no leads to report.\", \"Consistency: beat SPY in only 34.4% of rolling 12-month windows; tracking error 6.7%, information ratio -0.65 — wins come in bursts.\"], \"caveat\": \"The 5Y window is not fully covered by available history, and the final period through Aug 21, 2026 is provisional until the statement lands.\"}",
+  "data_version": "71bf23f820b2b926ee11ce7b17836ce6f36bb9cd",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 20:41"
+ },
+ "income|{\"broker\":[\"all\"],\"history_start\":\"all\"}": {
+  "text": "{\"headline\":\"Across Alpine + Harbor, forward yield runs 2.03% on covered market value and 3.13% on cost, with 86.9% of book covered.\",\"bullets\":[\"Covered-MV basis spans 86.9% of book; options, cash, and unfetched tickers sit outside these yields.\",\"SPY is the top payer at 33.6%; the top five payers total 87.1% across 12 payers.\",\"Received income is 84.7% dividends (including return-of-capital, a tax character) and 15.3% interest; withholding drag 0.0%.\",\"Projected-vs-TTM ratio of 0.86 means the model projects less than the trailing year actually paid.\",\"Latest complete calendar year's received income grew 21.7% over the prior full year.\",\"Book dated Jul 31, 2026; dividend history runs through Jun 16, 2026.\"]}",
+  "data_version": "a2b6ad8a9bfa42687c26df22f4455ef7122b1bf5",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 21:58"
+ },
+ "factors|{\"broker\":[\"all\"],\"dims\":{\"model\":\"FF5 + Mom\",\"window\":\"Full history\"},\"history_start\":\"all\"}": {
+  "text": "{\"headline\": \"Over 2023-01 → 2026-07, returns are mostly market beta (0.70) plus T-bills; alpha of +1.9% is not significant (t = 1.04, R² = 0.94).\", \"bullets\": [\"Market factor drives fit: beta 0.70 with t = 22.7; R² of 0.94 leaves little unexplained variation.\", \"Tilts are mild: slight anti-value (HML beta -0.14, t = -1.85) and low-profitability lean (RMW -0.16); size and momentum near zero.\", \"Attribution of the 15.2 pp mean return: 9.6 pp market premium, 4.7 pp risk-free, 1.9 pp unexplained alpha.\", \"Value tilt subtracted about 1.0 pp; size, momentum, profitability, and investment each contributed under 0.25 pp.\", \"No model shows significant alpha: t ranges 0.63 (CAPM) to 1.04 (FF5), all 95% CIs span zero.\", \"Alpha estimates rise from +1.1% (CAPM) to +1.9% (FF5), but confidence intervals of ±3.5-3.7 pp swamp the point estimates.\"], \"caveat\": \"Only 43 aligned months are available (factor data trims to common months), fewer than 10 observations per parameter — treat betas as indicative, not precise.\"}",
+  "data_version": "71bf23f820b2b926ee11ce7b17836ce6f36bb9cd",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 20:41"
+ },
+ "risk|{\"broker\":[\"all\"],\"history_start\":\"all\"}": {
+  "text": "{\"headline\": \"Across Alpine + Harbor, full history, risk is moderate and below SPY: 60d vol 12.0% vs 15.0%, beta 0.76, current drawdown -2.65%.\", \"bullets\": [\"Volatility flat: 60d 12.0% vs 252d 11.8%; SPY sits at 15.0% on both windows.\", \"Tail risk milder than SPY: 1d VaR -1.18% / CVaR -1.44% vs SPY -1.70% / -2.02%; worst day -2.13% vs -2.85%.\", \"Drawdown -2.65% now equals the 1y max; 3y and full-history max -14.41% vs SPY's -24.34%.\", \"Sharpe 1y 1.71 vs SPY 1.97; Sortino 9.14 and Calmar 0.93 beat SPY's 7.91/0.67; beta 0.76 (up 0.81, down 0.77).\", \"Concentrated: effective N 3.4, SPY at 51.9% weight drives 63.2% of risk; MERIV 11.5%, OSPRA 5.0%.\", \"Stress replay 2025-04-01\\to2025-04-30: SPY -1.66%, beta-implied book -0.84%; 0% weight excluded \\to a modelling replay, not a forecast.\"]}",
+  "data_version": "a2b6ad8a9bfa42687c26df22f4455ef7122b1bf5",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 21:58"
+ },
+ "tax|{\"broker\":[\"all\"],\"history_start\":\"all\"}": {
+  "text": "{\"headline\": \"Across Alpine + Harbor taxable accounts, unrealized P&L is 99.1% long-term gains and 0.9% short-term gains; the harvest scan found 0 candidates.\", \"bullets\": [\"Unrealized magnitude split: long-term 99.1% (net gain), short-term 0.9% (net gain), taxable accounts only.\", \"Realized year-to-date by term is unavailable in this dataset.\", \"Harvest scan: 0 candidates, 0 wash-blocked, 0 IRA-blocked.\", \"The 'clear' verdict covers only 12.9% of the wash-sale window; later trades are not in the ledger yet.\", \"2 short-term gain lots are within 60 days of turning long-term.\", \"The ledger is stale, so these numbers may lag until it rebuilds.\"], \"caveat\": \"Realized year-to-date figures are unavailable, and the harvest scan observed only 12.9% of its window, so its 'clear' result is partial.\"}",
+  "data_version": "a2b6ad8a9bfa42687c26df22f4455ef7122b1bf5",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 21:58"
+ },
+ "dip|{\"broker\":[\"all\"],\"history_start\":\"all\"}": {
+  "text": "{\"headline\": \"Whole-market dip statistics, independent of account filters: SPY sits in a neutral band at -5.1% drawdown; GLD is inconclusive at -12.2%.\", \"bullets\": [\"SPY: neutral band; -5.1% drawdown, shallower drawdowns in only 50.2% of history; today's regime calm.\", \"SPY reward-to-risk: omega 11.0 vs baseline 6.2 (CI 3.8-50.0), from 363 in-sample outcomes.\", \"SPY referee (out-of-sample): neutral band validated — 96.3% hit rate, 17.0% median 12-month return, 6 episodes.\", \"GLD: inconclusive band; -12.2% drawdown deeper than 99.9% of history; omega unavailable with 0 outcomes.\", \"Turbulence regime calm at the 61.4th percentile; both tickers have only 3.7 years of history.\", \"Sub-10-year history is too short to trust deep-dip edges for SPY and GLD; all figures in-sample, not forecasts.\"], \"caveat\": \"GLD's 12-month outcome window is unavailable (0 outcomes at this depth), so no reward-to-risk statistics exist; data is current only through 2026-08-21.\"}",
+  "data_version": "a2b6ad8a9bfa42687c26df22f4455ef7122b1bf5",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 21:58"
+ },
+ "riskcontrib|{\"broker\":[\"all\"],\"dims\":{\"benchmark\":\"SPY\",\"estimator\":\"ewma_lw\"},\"history_start\":\"all\"}": {
+  "text": "{\"headline\": \"Alpine + Harbor (EWMA Ledoit-Wolf estimator, benchmark SPY): portfolio volatility of 12.78% runs 2.53 pp below SPY's 15.31%, with SPY driving 64.9% of risk.\", \"bullets\": [\"SPY dominates: 64.9% risk share on 55.5% weight, and its 12.06 pp 1y contribution shows the risk budget paying off.\", \"MERIV's risk share (10.9%) more than doubles its 5.1% weight while contributing -0.88 pp — risk spent without payoff.\", \"NORDA similarly consumes 4.0% of risk on 2.6% weight with a -0.40 pp return contribution.\", \"HALCN (4.1% risk, 3.1% weight, +0.99 pp) and OSPRA (4.7% risk, 2.6% weight, +0.35 pp) round out contributors.\", \"Diversification ratio of 1.34× indicates meaningful volatility reduction from combining holdings.\", \"Total risk is concentrated: the single largest name accounts for nearly two-thirds of portfolio risk.\"], \"caveat\": \"The regime block is unavailable, so no regime headline or asymmetry note can be reported.\"}",
+  "data_version": "71bf23f820b2b926ee11ce7b17836ce6f36bb9cd",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 20:43"
+ },
+ "benchmark|{\"broker\":[\"all\"],\"history_start\":\"all\"}": {
+  "text": "{\"headline\": \"The Alpine + Harbor book trails SPY (S&P 500 TR) across all full-history windows, lagging 3.98pp YTD and 11.43pp over 1Y to date.\", \"bullets\": [\"YTD to Aug 21 (provisional): portfolio 4.88% vs SPY 8.86%, spread -3.98pp; vol 6.33% vs 9.71%.\", \"1Y to date: 21.69% vs 33.13%, spread -11.43pp; vol 10.29% vs 14.33% — less risk, less return.\", \"3Y annualized to date: 12.81% vs 15.89%, spread -3.08pp; vol 12.17% vs 18.06%.\", \"Since inception (Dec 2022) to date: 14.34% vs 19.12% annualized, spread -4.78pp; vol 11.75% vs 18.00%.\", \"Book lagged in every available window, short and long — no disagreement between horizons; consistently lower volatility.\", \"Consistency: 34.4% rolling-12-month hit rate, 7.34% tracking error, -0.67 information ratio — beats only in bursts, not reliably.\"], \"caveat\": \"The 5Y window is not fully covered and is unavailable; latest figures are provisional, marked to live prices and unaudited until the statement lands.\"}",
+  "data_version": "a2b6ad8a9bfa42687c26df22f4455ef7122b1bf5",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 21:58"
+ },
+ "factors|{\"broker\":[\"all\"],\"history_start\":\"all\"}": {
+  "text": "{\"headline\": \"Over 2023-01 → 2026-07, returns come almost entirely from a 0.66 market beta; alpha of +1.9% is not significant (t = 1.04, R² = 0.94).\", \"bullets\": [\"Market beta 0.66 (t = 21.7) is the only decisive loading; R² = 0.94 leaves little unexplained.\", \"Mild anti-value tilt: HML beta -0.14 (t = -1.87), just short of significance; other tilts near zero.\", \"Attribution of the 14.6 pp mean: 9.0 pp market, 4.7 pp risk-free, 1.9 pp unexplained alpha.\", \"Value tilt subtracted -1.0 pp; size, profitability, investment, and momentum each contributed under 0.2 pp.\", \"No model shows significant alpha: t ranges 0.64 (CAPM) to 1.04 (FF5), all CIs span zero.\", \"Alpha rises from +1.1% (CAPM) to +1.9% (FF5) but stays statistically indistinguishable from zero throughout.\"], \"caveat\": \"Only 43 months across 6 factors — fewer than 10 observations per parameter — so betas are indicative rather than precise.\"}",
+  "data_version": "a2b6ad8a9bfa42687c26df22f4455ef7122b1bf5",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 21:58"
+ },
+ "portfolio|{\"broker\":[\"all\"],\"history_start\":\"all\"}": {
+  "text": "{\"verdict\": \"No — the portfolio is less risky than SPY (S&P 500 TR): full-history beta 0.69, volatility 11.75% vs 18.0%, max drawdown -14.41% vs -24.34%, and shorter windows agree (1y beta 0.76, vol 10.29% vs 14.33%).\", \"why\": [\"High correlation (0.96) but muted amplitude: beta stays 0.69-0.77 across all windows.\", \"SPY itself is 51.9% of the book and drives 63.2% of risk.\", \"Cash weight of 7.2% dampens overall swings.\", \"Concentrated book (top 5 at 79.9%, effective N 3.4), yet top contributors track the benchmark closely.\"], \"changes\": \"In July 2026 the portfolio fell 1.54% versus SPY's -1.87%, a +0.33pp spread consistent with its lower-beta profile; the 21-day August stub shows a provisional -0.93%.\", \"watch\": [\"Beta creep: 0.69 full history vs 0.77 YTD — a slow drift toward market risk.\", \"Single-position concentration: SPY at 51.9% weight, 63.2% of risk share.\", \"Return trade-off: full-history 64.41% cumulative vs SPY's 89.59% is the cost of lower risk.\"]}",
+  "data_version": "a2b6ad8a9bfa42687c26df22f4455ef7122b1bf5",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 21:58"
+ },
+ "riskcontrib|{\"broker\":[\"all\"],\"history_start\":\"all\"}": {
+  "text": "{\"headline\": \"Across Alpine + Harbor (ewma_lw estimator, SPY benchmark), portfolio volatility is 12.25%, 3.06 pp below SPY's 15.31%, with SPY driving 63.2% of risk.\", \"bullets\": [\"SPY dominates: 63.2% risk share on 51.9% weight, and its 11.27 pp 1y return contribution rewarded that risk budget.\", \"MERIV's 11.5% risk share far exceeds its 5.2% weight, yet contributed -0.88 pp — risk spent without payoff.\", \"NORDA similarly unrewarded: 4.3% risk share on 2.6% weight with a -0.41 pp return contribution.\", \"OSPRA (5.0% risk, 2.7% weight, +0.35 pp) and HALCN (4.3% risk, 3.2% weight, +1.00 pp) run modest risk premia over weight.\", \"Diversification ratio of 1.36× indicates meaningful but not deep diversification given the single-name risk concentration.\", \"Regime block is unavailable, so no regime headline or volatility-asymmetry note can be reported.\"], \"caveat\": \"The regime block is unavailable in FACTS, so regime headline and asymmetry commentary are omitted rather than estimated.\"}",
+  "data_version": "a2b6ad8a9bfa42687c26df22f4455ef7122b1bf5",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 21:58"
+ },
+ "performance|{\"broker\":[\"all\"],\"history_start\":\"all\"}": {
+  "text": "{\"headline\": \"Alpine + Harbor, full history: 62.88% cumulative TWR to date (14.34% annualized); the final 21-day stub (-0.93%) is provisional, marked to live prices and unaudited.\", \"bullets\": [\"Closed-period figures: 64.41% cumulative TWR (14.88% annualized) over 43 months, with deposits stripped out.\", \"Money-weighted IRR of 15.87% runs 0.99pp ahead of TWR, reflecting timing of 47 deposits and zero withdrawals.\", \"Currently -2.65% below peak; maximum drawdown was -14.41% in Mar 2025.\", \"60.5% of months positive (26 of 43); best month Jun 2025 +11.8%, worst Feb 2025 -3.8%.\", \"Best year 2025 +35.7%, worst 2024 -7.6%; HBR-002 leads accounts at 91.4% cumulative TWR, HBR-001 trails at 31.4%.\", \"YTD leaders: SPY +4.7pp, BRYNT +1.37pp; laggards NORDA -0.59pp, MERIV -0.44pp (approximate, total-return basis, current weights).\"]}",
+  "data_version": "a2b6ad8a9bfa42687c26df22f4455ef7122b1bf5",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 21:58"
+ },
+ "brief|{\"broker\":[\"all\"],\"history_start\":\"all\"}": {
+  "text": "{\"headline\": \"Across Alpine + Harbor (full history), the book is up 62.88% cumulative to-date (provisional), running low-risk at 0.76 beta but trailing SPY.\", \"bullets\": [\"To-date TWR 62.88% (14.34% annualized) through Aug 21, final stub -0.93% provisional; IRR 15.87% edges TWR by 0.99pp; drawdown -2.65%.\", \"Volatility 11.84% annualized vs SPY's 14.98% over 252 days; beta 0.76, down-beta 0.77 — a defensively postured book.\", \"Concentration is high: effective N 3.4 of 15 positions; SPY is 51.9% of weight and 63.2% of risk.\", \"Trails SPY on every window to-date: -3.98pp YTD, -11.43pp 1Y; 12-month hit rate just 34.4% across 32 windows.\", \"SPY led 252-day contribution at +11.27pp; MERIV detracted -0.88pp; worst crash-replay scenario implies a -0.84% drop.\", \"Forward yield 2.03% on covered MV covering 86.9% of book; unrealized gains 99.1% long-term; 2 lots ripen within 60 days; 0 harvest candidates, though the ledger is stale.\"], \"watch\": [\"Over 60 days SPY fell -4.2%, dragging -2.17pp — the biggest short-window divergence from the 1Y trend.\", \"2 taxable lots ripen to long-term within 60 days; harvest checks cover only 12.9% of the window.\", \"SPY concentration: 51.9% weight, 63.2% risk share, and 33.6% of forward income all hinge on one ticker.\", \"The -0.93% 21-day stub is marked to live prices and unaudited until the statement lands.\"]}",
+  "data_version": "a2b6ad8a9bfa42687c26df22f4455ef7122b1bf5",
+  "model": "claude-fable-5",
+  "fmt": 3,
+  "generated_at": "2026-08-27 21:58"
+ }
+}

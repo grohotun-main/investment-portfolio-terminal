@@ -40,11 +40,13 @@ FIRST_TWR_MONTH = "2023-01"
 BROKERS = ("alpine", "harbor")
 
 # account_id, broker, account_type, description, opener_deposit, monthly_contrib
+# Ids deliberately avoid 5+ consecutive digits: the AI facts layer's scrub
+# gate treats such runs as an account-mask shape and refuses the payload.
 ACCOUNTS = [
-    ("ALP-100001", "alpine", "individual",     "Alpine taxable brokerage", 120_000.0, 2_500.0),
-    ("ALP-100002", "alpine", "roth_ira",       "Alpine Roth IRA",           30_000.0,     0.0),
-    ("HBR-200001", "harbor", "brokerage",      "Harbor taxable brokerage",  90_000.0,     0.0),
-    ("HBR-200002", "harbor", "traditional_ira","Harbor traditional IRA",    40_000.0,     0.0),
+    ("ALP-001", "alpine", "individual",      "Alpine taxable brokerage", 120_000.0, 2_500.0),
+    ("ALP-002", "alpine", "roth_ira",        "Alpine Roth IRA",           30_000.0,     0.0),
+    ("HBR-001", "harbor", "brokerage",       "Harbor taxable brokerage",  90_000.0,     0.0),
+    ("HBR-002", "harbor", "traditional_ira", "Harbor traditional IRA",    40_000.0,     0.0),
 ]
 
 # symbol, description, asset_class, beta, ann_drift, ann_vol, div_yield
@@ -75,14 +77,14 @@ START_PRICE = {"SPY": 402.0, "GLD": 168.0, "SGOV": 100.0, "COREB": 47.0,
 # Opening allocation per account: symbol -> target weight of the opener.
 # Harbor taxable is deliberately bond-heavy (the 60/40 auto-benchmark story).
 TARGETS = {
-    "ALP-100001": {"SPY": 0.34, "NORDA": 0.09, "VELTX": 0.08, "QORVA": 0.07,
-                   "MERIV": 0.08, "HALCN": 0.07, "OSPRA": 0.06, "GLD": 0.08,
-                   "SGOV": 0.08},
-    "ALP-100002": {"SPY": 0.55, "TALVI": 0.18, "CRESO": 0.15},
-    "HBR-200001": {"COREB": 0.42, "DURAB": 0.30, "SGOV": 0.16, "SPY": 0.07,
-                   "BRYNT": 0.05},
-    "HBR-200002": {"SPY": 0.24, "ARCLT": 0.06, "BRYNT": 0.10, "COREB": 0.36,
-                   "DURAB": 0.20},
+    "ALP-001": {"SPY": 0.34, "NORDA": 0.09, "VELTX": 0.08, "QORVA": 0.07,
+                "MERIV": 0.08, "HALCN": 0.07, "OSPRA": 0.06, "GLD": 0.08,
+                "SGOV": 0.08},
+    "ALP-002": {"SPY": 0.55, "TALVI": 0.18, "CRESO": 0.15},
+    "HBR-001": {"COREB": 0.42, "DURAB": 0.30, "SGOV": 0.16, "SPY": 0.07,
+                "BRYNT": 0.05},
+    "HBR-002": {"SPY": 0.24, "ARCLT": 0.06, "BRYNT": 0.10, "COREB": 0.36,
+                "DURAB": 0.20},
 }
 
 OPT_LEGS = [  # (occ_symbol, description, underlying, qty, buy_date, buy_px)
@@ -209,7 +211,7 @@ def run_ledger(prices: pd.DataFrame) -> dict[str, Book]:
         m = m_end.to_pydatetime().date()
         # Monthly contribution into the alpine taxable account, invested into
         # SPY on the first business day of the following week.
-        bk = books["ALP-100001"]
+        bk = books["ALP-001"]
         dep_day = date(m.year, m.month, 3)
         bk.deposit(dep_day, 2_500.0, "Recurring monthly deposit")
         px_row = prices.iloc[prices.index.get_indexer(
@@ -233,23 +235,23 @@ def run_ledger(prices: pd.DataFrame) -> dict[str, Book]:
 
     # A couple of story events.
     px = float(prices.loc[:pd.Timestamp(2024, 7, 16), "QORVA"].iloc[-1])
-    books["ALP-100001"].sell(date(2024, 7, 16), "QORVA",
-                             float(int(books["ALP-100001"].shares["QORVA"] * 0.4)),
+    books["ALP-001"].sell(date(2024, 7, 16), "QORVA",
+                             float(int(books["ALP-001"].shares["QORVA"] * 0.4)),
                              px, "Trim Qorva Semiconductor")
     # Internal transfer pair: harbor taxable -> harbor IRA (nets to zero).
-    books["HBR-200001"].deposit(date(2025, 6, 10), -10_000.0,
+    books["HBR-001"].deposit(date(2025, 6, 10), -10_000.0,
                                 "Transfer to Harbor traditional IRA",
                                 scope="internal", pair_id="DEMO-PAIR-1")
-    books["HBR-200002"].deposit(date(2025, 6, 10), 10_000.0,
+    books["HBR-002"].deposit(date(2025, 6, 10), 10_000.0,
                                 "Transfer from Harbor taxable brokerage",
                                 scope="internal", pair_id="DEMO-PAIR-1")
     px = float(prices.loc[:pd.Timestamp(2025, 6, 17), "SPY"].iloc[-1])
-    books["HBR-200002"].buy(date(2025, 6, 17), "SPY",
+    books["HBR-002"].buy(date(2025, 6, 17), "SPY",
                             float(int(10_000.0 / px)), px, names["SPY"])
 
     # Protective puts in the alpine taxable account (display-format legs).
     for occ, desc, _u, qty, d, pxo in OPT_LEGS:
-        bk = books["ALP-100001"]
+        bk = books["ALP-001"]
         bk.cash -= qty * pxo * 100
         bk.shares[occ] = qty
         bk.txn(d, "buy", -(qty * pxo * 100), symbol=occ, desc=desc,
@@ -638,6 +640,13 @@ def self_check(out: Path):
         for w in bad_names:
             assert f"{w}" not in text.replace("purchase", ""), \
                 f"leak scan: {w} in {p.name}"
+    # Mirror the AI facts scrub gate: a 5+ digit run reads as an account-mask
+    # shape and would make the narration layer refuse the whole payload.
+    import re as _re
+    acct = pd.read_csv(out / "accounts.csv")
+    for aid in acct["account_id"]:
+        assert not _re.search(r"\d{5,}", str(aid)), \
+            f"account id {aid} carries a 5+ digit run (scrub-gate shape)"
     twr = pd.read_csv(out / "twr_monthly.csv")
     assert (twr["return_pct"] > -1).all(), "a monthly return <= -100%"
     irr = pd.read_csv(out / "irr_per_account.csv")
@@ -680,6 +689,21 @@ def main() -> None:
     accounts_file(out)
     series_files(out, prices, rng)
     lots_files(out, books)
+    # Pre-baked AI narration cache: generated once against this exact seed's
+    # output (the cache validates against the data files' stat signature, and
+    # the generator is deterministic, so it stays warm on any machine). The
+    # app runs fine without it — AI panels just need a live key then.
+    baked = ROOT / "scripts" / "demo_ai_cache.json"
+    if baked.exists():
+        (out / "ai_cache.json").write_bytes(baked.read_bytes())
+    # Deterministic mtimes: the AI cache validates against a stat signature
+    # (name|mtime|size), so identical bytes alone aren't enough — stamp every
+    # output file with one fixed timestamp and the committed cache stays warm
+    # on any machine that runs this generator.
+    import os
+    stamp_ns = 1_787_616_000 * 10**9
+    for p in out.iterdir():
+        os.utime(p, ns=(stamp_ns, stamp_ns))
     self_check(out)
     print(f"demo dataset -> {out}  "
           f"({len(positions):,} position rows, {len(txns):,} transactions)")
