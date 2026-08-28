@@ -23,8 +23,6 @@ from parser_jobs import resolve_massive_api_key, run_parser_sequence
 _PY = sys.executable
 
 # Step dicts are the run_parser_sequence contract: {label, cmd, timeout, needs_key}.
-_STEP_INTERIM = {"label": "Interim transactions", "needs_key": False, "timeout": 120,
-                 "cmd": [_PY, "parsers/ingest_csv_activity.py", "--write"]}
 _STEP_MARKET = {"label": "Market data", "needs_key": True, "timeout": 1800,
                 "cmd": [_PY, "parsers/refresh_prices.py"]}
 _STEP_OPTION_IV = {"label": "Option IV", "needs_key": True, "timeout": 120,
@@ -37,32 +35,17 @@ _STEP_DIP = {"label": "Dip history", "needs_key": False, "timeout": 600,
 ACTIONS: dict[str, dict] = {
     "refresh_all": {
         "label": "Refresh all data", "group": "rail",
-        "help": "Interim transactions, market data (Polygon + FRED + VIX), "
-                "dip history (Yahoo), option IV, ATM IV history — "
-                "back-to-back. ~10-15 min on a full pull (market data is the "
-                "long pole).",
-        "steps": [_STEP_INTERIM, _STEP_MARKET, _STEP_DIP,
+        "help": "Market data (Polygon + FRED + VIX), dip history (Yahoo), "
+                "option IV, ATM IV history — back-to-back. ~10-15 min on a "
+                "full pull (market data is the long pole).",
+        "steps": [_STEP_MARKET, _STEP_DIP,
                   _STEP_OPTION_IV, _STEP_ATM_IV],
-    },
-    "interim": {
-        "label": "Pull interim transactions", "group": "rail",
-        "help": "Re-runs parsers/ingest_csv_activity.py against the Interim "
-                "Transactions folder. Fast (<10 s).",
-        "steps": [_STEP_INTERIM],
     },
     "market_data": {
         "label": "Refresh market data", "group": "rail",
         "help": "All 3 Polygon fetchers + FRED risk-free rate + CBOE VIX. "
                 "~2-3 min.",
         "steps": [{**_STEP_MARKET, "timeout": 900}],
-    },
-    "ingest_statements": {
-        "label": "Ingest monthly statements", "group": "rail",
-        "help": "Full monthly rebuild from the latest JPM + Fidelity PDF "
-                "statements: parse → combine → pair transfers → recompute "
-                "TWR/IRR → re-ingest interim. ~1-2 min.",
-        "steps": [{"label": "Statement ingest", "needs_key": False, "timeout": 900,
-                   "cmd": [_PY, "parsers/ingest_statements.py"]}],
     },
     "dividends": {
         "label": "Refresh dividend history", "group": "income",

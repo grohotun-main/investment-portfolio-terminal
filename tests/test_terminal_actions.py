@@ -40,8 +40,8 @@ class _SeamTest(unittest.TestCase):
 
 
 class TestRegistry(unittest.TestCase):
-    def test_nine_actions_with_real_scripts(self):
-        self.assertEqual(len(acts.ACTIONS), 9)
+    def test_seven_actions_with_real_scripts(self):
+        self.assertEqual(len(acts.ACTIONS), 7)
         for aid, a in acts.ACTIONS.items():
             self.assertTrue(a["label"] and a["help"] and a["group"], aid)
             for step in a["steps"]:
@@ -55,17 +55,16 @@ class TestRegistry(unittest.TestCase):
         self.assertEqual(keyed, {"refresh_all", "market_data", "dividends",
                                  "option_iv", "atm_iv"})
 
-    def test_refresh_all_is_the_five_step_sequence(self):
+    def test_refresh_all_is_the_four_step_sequence(self):
         labels = [s["label"] for s in acts.ACTIONS["refresh_all"]["steps"]]
-        self.assertEqual(labels, ["Interim transactions", "Market data",
-                                  "Dip history", "Option IV",
+        self.assertEqual(labels, ["Market data", "Dip history", "Option IV",
                                   "ATM IV history"])
 
 
 class TestLifecycle(_SeamTest):
     def test_start_runs_and_finishes_ok(self):
         acts._TEST_STEPS = _STUB_OK
-        ok, why = acts.start("interim")
+        ok, why = acts.start("dip_history")
         self.assertTrue(ok, why)
         _wait_idle()
         st = acts.status()
@@ -81,7 +80,7 @@ class TestLifecycle(_SeamTest):
 
     def test_single_flight(self):
         acts._TEST_STEPS = _STUB_SLOW
-        ok, _ = acts.start("interim")
+        ok, _ = acts.start("dip_history")
         self.assertTrue(ok)
         ok2, why2 = acts.start("market_data")
         self.assertFalse(ok2)
@@ -105,7 +104,7 @@ class TestRoutes(_SeamTest):
         r = self.client.get("/api/actions")
         self.assertEqual(r.status_code, 200)
         body = r.json()
-        self.assertEqual(len(body["actions"]), 9)
+        self.assertEqual(len(body["actions"]), 7)
         for a in body["actions"]:
             for k in ("id", "label", "help", "group", "needs_key"):
                 self.assertIn(k, a)
@@ -117,7 +116,7 @@ class TestRoutes(_SeamTest):
 
     def test_start_and_status_roundtrip(self):
         acts._TEST_STEPS = _STUB_OK
-        r = self.client.post("/api/actions/interim")
+        r = self.client.post("/api/actions/dip_history")
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.json(), {"started": True})
         _wait_idle()
@@ -127,7 +126,7 @@ class TestRoutes(_SeamTest):
 
     def test_busy_is_409(self):
         acts._TEST_STEPS = _STUB_SLOW
-        r1 = self.client.post("/api/actions/interim")
+        r1 = self.client.post("/api/actions/dip_history")
         self.assertEqual(r1.status_code, 200)
         r2 = self.client.post("/api/actions/market_data")
         self.assertEqual(r2.status_code, 409)
