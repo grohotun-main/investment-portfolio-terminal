@@ -137,6 +137,7 @@ class Book:
         self.cash = 0.0
         self.lots: list[dict] = []      # FIFO open lots
         self.txns: list[dict] = []
+        self.realized: list[dict] = []  # FIFO closes (date, term, net)
 
     def txn(self, d: date, ttype: str, amount: float, *, symbol: str = "",
             desc: str = "", qty: float = 0.0, price: float = 0.0,
@@ -173,7 +174,12 @@ class Book:
             if lot["symbol"] != sym or lot["qty"] <= 0 or left <= 0:
                 continue
             take = min(lot["qty"], left)
-            lot["basis"] *= (lot["qty"] - take) / lot["qty"]
+            relieved = lot["basis"] * take / lot["qty"]
+            held = (d - date.fromisoformat(lot["open_date"])).days
+            self.realized.append({
+                "year": d.year, "term": "long" if held > 365 else "short",
+                "net": round(take * px - relieved, 2)})
+            lot["basis"] -= relieved
             lot["qty"] -= take
             left -= take
         self.txn(d, "sell", proceeds, symbol=sym, desc=desc, qty=-qty, price=px)
@@ -233,11 +239,18 @@ def run_ledger(prices: pd.DataFrame) -> dict[str, Book]:
             if bk2.cash > 100:
                 bk2.interest(m, round(bk2.cash * 0.04 / 12, 2))
 
-    # A couple of story events.
+    # A few story events (the 2026 sells feed the realized-YTD surface).
     px = float(prices.loc[:pd.Timestamp(2024, 7, 16), "QORVA"].iloc[-1])
     books["ALP-001"].sell(date(2024, 7, 16), "QORVA",
                              float(int(books["ALP-001"].shares["QORVA"] * 0.4)),
                              px, "Trim Qorva Semiconductor")
+    px = float(prices.loc[:pd.Timestamp(2026, 3, 12), "NORDA"].iloc[-1])
+    books["ALP-001"].sell(date(2026, 3, 12), "NORDA",
+                          float(int(books["ALP-001"].shares["NORDA"] * 0.3)),
+                          px, "Trim Norda Industrial Group")
+    px = float(prices.loc[:pd.Timestamp(2026, 5, 20), "DURAB"].iloc[-1])
+    books["HBR-001"].sell(date(2026, 5, 20), "DURAB", 60.0, px,
+                          "Reduce Duracap Intermediate Bond")
     # Internal transfer pair: harbor taxable -> harbor IRA (nets to zero).
     books["HBR-001"].deposit(date(2025, 6, 10), -10_000.0,
                                 "Transfer to Harbor traditional IRA",
@@ -586,7 +599,7 @@ def series_files(out: Path, prices: pd.DataFrame, rng: np.random.Generator):
     pd.DataFrame(snap).to_csv(out / "option_position_snapshot.csv", index=False)
 
 
-def lots_files(out: Path, books):
+def lots_files(out: Path, books, positions: pd.DataFrame):
     rows = []
     i = 0
     for aid, bk in books.items():
@@ -606,17 +619,49 @@ def lots_files(out: Path, books):
             })
     df = pd.DataFrame(rows)
     df.to_csv(out / "lots.csv", index=False)
+
+    # Mirror the schema tax_service reads: inputs.positions_max_month keeps
+    # the staleness probe green, and realized_ytd carries the by-account
+    # FIFO closes the Book tracker recorded for the current year.
+    year = 2026
+    by_account: dict[str, dict] = {}
+    n_txns = sum(len(b.txns) for b in books.values())
+    for aid, bk in books.items():
+        terms: dict[str, dict] = {}
+        for ev in bk.realized:
+            if ev["year"] != year:
+                continue
+            t = terms.setdefault(ev["term"],
+                                 {"gains": 0.0, "losses": 0.0,
+                                  "net": 0.0, "closes": 0})
+            if ev["net"] >= 0:
+                t["gains"] = round(t["gains"] + ev["net"], 2)
+            else:
+                t["losses"] = round(t["losses"] + ev["net"], 2)
+            t["net"] = round(t["net"] + ev["net"], 2)
+            t["closes"] += 1
+        if terms:
+            by_account[aid] = terms
     meta = {
-        "built_at": "2026-08-21T00:00:00Z", "n_lots": int(len(df)),
-        "n_accounts": len(books),
-        "coverage": {"basis_pct": 100.0, "quantity_pct": 100.0},
-        "gate": {"passed": True, "accuracy_pct": 100.0},
-        "realized": {
+        "built_at": "2026-08-21T00:00:00Z",
+        "open_lots": int(len(df)),
+        "gate": {"passed": True, "accuracy_pct": 100.0,
+                 "accuracy_threshold_pct": 99.0,
+                 "coverage_pct": 100.0, "coverage_threshold_pct": 60.0},
+        "joined_bands": {"ok": int(len(df))},
+        "exit_band_health": 0,
+        "inputs": {
+            "transactions_rows": n_txns,
+            "positions_max_month":
+                str(positions["statement_date"].max())[:7],
+        },
+        "realized_ytd": {
+            "year": year,
+            "by_account": by_account,
             "notes": {"excludes_alpine_options": True,
                       "options_source": "harbor_printed_confirms",
-                      "method": "fifo"},
+                      "broker_unresolved": 0},
         },
-        "source": "scripts/generate_demo_data.py (synthetic)",
     }
     import json
     (out / "lots_meta.json").write_text(json.dumps(meta, indent=2) + "\n",
@@ -688,7 +733,7 @@ def main() -> None:
     irr.to_csv(out / "irr_per_account.csv", index=False)
     accounts_file(out)
     series_files(out, prices, rng)
-    lots_files(out, books)
+    lots_files(out, books, positions)
     # Pre-baked AI narration cache: generated once against this exact seed's
     # output (the cache validates against the data files' stat signature, and
     # the generator is deterministic, so it stays warm on any machine). The
