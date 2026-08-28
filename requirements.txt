@@ -5,6 +5,11 @@
 # Math / data
 pandas==3.0.5
 numpy==2.4.6
+# pandas 3 backs its default string dtype with pyarrow when importable, and
+# falls back to a different storage/NA-semantics without it. The engines are
+# developed and verified under the arrow backend — declare it explicitly
+# (it used to arrive transitively and its absence flips six hedge tests).
+pyarrow==25.0.1
 # EVT/GPD tail model on the Buy-the-Dip tab (parsers/tail_risk.py)
 scipy==1.17.1
 
