@@ -146,6 +146,7 @@ real deployment.
 
 ## About
 
-Built by [@grohotun-main](https://github.com/grohotun-main). The production
-instance runs daily against a real multi-broker portfolio; the statement
-parsers and all personal data stay private.
+Built by [Tilek Kombarov](https://www.linkedin.com/in/tilekkombarov/)
+([@grohotun-main](https://github.com/grohotun-main)). The production instance
+runs daily against a real multi-broker portfolio; the statement parsers and
+all personal data stay private.
