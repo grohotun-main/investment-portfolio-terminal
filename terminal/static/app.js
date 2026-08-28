@@ -1160,7 +1160,7 @@ function renderAiAnalysis(data) {
   const bcap = $('ai-benchmark-cap');
   if (bcap) {
     if (_benchState.bench === 'auto' && bm.id === '60_40') {
-      bcap.textContent = 'Auto → 60/40 · the Harbor book resembles a 60/40 mix';
+      bcap.textContent = 'Auto → 60/40 · this scope is majority fixed income';
     } else if (bm.unavailable_fallback) {
       bcap.textContent = '60/40 unavailable (AGG data not loaded) — showing SPY';
     } else {
@@ -2869,7 +2869,7 @@ function renderBenchmark(data) {
   const cap = $('bench-benchmark-cap');
   if (cap) {
     if (_benchState.bench === 'auto' && bm.id === '60_40') {
-      cap.textContent = 'Auto → 60/40 · the Harbor book resembles a 60/40 mix';
+      cap.textContent = 'Auto → 60/40 · this scope is majority fixed income';
     } else if (bm.unavailable_fallback) {
       cap.textContent = '60/40 unavailable (AGG data not loaded) — showing SPY';
     } else {

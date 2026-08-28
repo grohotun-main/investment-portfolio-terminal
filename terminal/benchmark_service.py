@@ -396,7 +396,8 @@ def build_benchmark_view(frames: hs.Frames, *, account: str | list[str] = "all",
     class-tagged).
     """
     port = ps._prepare_portfolio_twr(frames.twr_portfolio)
-    resolved = hs.resolve_benchmark(benchmark, frames.broker_scope)
+    resolved = hs.resolve_benchmark(benchmark, frames.broker_scope,
+                                    frames=frames)
     unavailable_fallback = False
     tr_lookup = hs._bench_tr_series(frames, resolved)
     if resolved == "60_40" and (tr_lookup is None or tr_lookup.empty):

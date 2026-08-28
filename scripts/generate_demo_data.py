@@ -79,9 +79,10 @@ TARGETS = {
                    "MERIV": 0.08, "HALCN": 0.07, "OSPRA": 0.06, "GLD": 0.08,
                    "SGOV": 0.08},
     "ALP-100002": {"SPY": 0.55, "TALVI": 0.18, "CRESO": 0.15},
-    "HBR-200001": {"COREB": 0.36, "DURAB": 0.26, "SGOV": 0.14, "SPY": 0.12,
-                   "BRYNT": 0.07},
-    "HBR-200002": {"SPY": 0.44, "ARCLT": 0.14, "BRYNT": 0.16, "COREB": 0.16},
+    "HBR-200001": {"COREB": 0.42, "DURAB": 0.30, "SGOV": 0.16, "SPY": 0.07,
+                   "BRYNT": 0.05},
+    "HBR-200002": {"SPY": 0.24, "ARCLT": 0.06, "BRYNT": 0.10, "COREB": 0.36,
+                   "DURAB": 0.20},
 }
 
 OPT_LEGS = [  # (occ_symbol, description, underlying, qty, buy_date, buy_px)

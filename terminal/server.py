@@ -877,9 +877,10 @@ def ai_portfolio(broker: list[str] = Query(["all"]),
                          "history_start")
     meta = ai.portfolio_meta(frames)
     frames_f = hs.apply_global_filters(frames, broker, history_start)
-    # Resolve auto -> concrete from the broker scope; 60/40 with no AGG data
-    # degrades to SPY (state stays ok) — mirrors benchmark_service.
-    resolved = hs.resolve_benchmark(benchmark, frames_f.broker_scope)
+    # Resolve auto -> concrete from the scoped book's composition; 60/40 with
+    # no AGG data degrades to SPY (state stays ok) — mirrors benchmark_service.
+    resolved = hs.resolve_benchmark(benchmark, frames_f.broker_scope,
+                                    frames=frames_f)
     unavailable_fallback = False
     if resolved == "60_40" and not hs._agg_available(frames_f):
         resolved, unavailable_fallback = "spy", True

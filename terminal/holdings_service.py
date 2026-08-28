@@ -926,13 +926,29 @@ BENCHMARKS = {"spy": "SPY (S&P 500 TR)", "60_40": "60/40 SPY/AGG blend"}
 BENCH_SHORT = {"spy": "SPY", "60_40": "60/40"}
 
 
-def resolve_benchmark(requested: str, broker_scope: tuple[str, ...] | None) -> str:
-    """Map the request sentinel 'auto' to a concrete benchmark id from the
-    broker scope: a Harbor-only book resembles a 60/40 mix, so it defaults to the
-    blend; every other scope defaults to SPY. Explicit ids pass through."""
+# A scoped book at or above this fixed-income share is judged against the
+# 60/40 blend by default — pure-equity SPY flatters nothing there.
+BOND_HEAVY_BENCH_THRESHOLD = 0.5
+
+
+def resolve_benchmark(requested: str, broker_scope: tuple[str, ...] | None,
+                      *, frames: "Frames | None" = None) -> str:
+    """Map the request sentinel 'auto' to a concrete benchmark id FROM THE
+    DATA: a broker-scoped view whose current snapshot is majority
+    fixed-income defaults to the 60/40 blend; every other scope defaults to
+    SPY. The canonical (unscoped) view always defaults to SPY. Explicit ids
+    pass through."""
     if requested in BENCHMARKS:
         return requested
-    return "60_40" if broker_scope == ("Harbor",) else "spy"
+    if broker_scope and frames is not None and frames.available_dates:
+        snap = _current_snap(frames)
+        if not snap.empty and "asset_class" in snap.columns:
+            mv = float(snap["market_value"].sum())
+            fi = float(snap.loc[snap["asset_class"] == "fixed_income",
+                                "market_value"].sum())
+            if mv > 0 and fi / mv >= BOND_HEAVY_BENCH_THRESHOLD:
+                return "60_40"
+    return "spy"
 
 
 def _bench_tr_series(frames: Frames, benchmark: str = "spy") -> pd.Series:

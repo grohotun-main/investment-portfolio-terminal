@@ -3575,15 +3575,17 @@ class TestPortfolioRouteBenchmark(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.json()["meta"]["benchmark"]["id"], "60_40")
 
-    def test_auto_resolves_to_60_40_for_harbor_only(self):
-        # discover the raw Harbor broker id from meta, then request it alone
+    def test_auto_stays_spy_for_non_bond_heavy_harbor_scope(self):
+        # auto is composition-driven (majority-fixed-income scopes pull the
+        # blend); the fixture's harbor book is ~35% fixed income, so its
+        # scoped auto still compares against SPY.
         with self._fake():
             j = self.client.get("/api/ai/portfolio").json()
             harbor = next(o["id"] for o in j["meta"]["brokers"]
                        if o["id"].lower() == "harbor")
             r = self.client.get(
                 f"/api/ai/portfolio?broker={harbor}&benchmark=auto")
-        self.assertEqual(r.json()["meta"]["benchmark"]["id"], "60_40")
+        self.assertEqual(r.json()["meta"]["benchmark"]["id"], "spy")
 
     def test_scope_key_separates_spy_and_60_40(self):
         self.assertNotEqual(

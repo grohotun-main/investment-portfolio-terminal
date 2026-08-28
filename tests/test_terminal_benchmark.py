@@ -385,10 +385,13 @@ class TestServer(unittest.TestCase):
         r = self.client.get("/api/benchmark", params={"benchmark": "all"})
         self.assertEqual(r.status_code, 422)
 
-    def test_harbor_broker_auto_6040(self):
+    def test_harbor_broker_auto_stays_spy_when_not_bond_heavy(self):
+        # auto is composition-driven: the fixture's harbor book is ~35%
+        # fixed income (below the majority threshold), so a scoped auto
+        # still compares against SPY.
         r = self.client.get("/api/benchmark", params={"broker": "harbor"})
         self.assertEqual(r.status_code, 200)
-        self.assertEqual(r.json()["meta"]["benchmark"]["id"], "60_40")
+        self.assertEqual(r.json()["meta"]["benchmark"]["id"], "spy")
 
 
 class TestGolden(unittest.TestCase):
@@ -482,14 +485,45 @@ class TestBenchmarkResolve(unittest.TestCase):
     def test_registry_ids(self):
         self.assertEqual(set(hs.BENCHMARKS), {"spy", "60_40"})
 
-    def test_auto_harbor_only_picks_6040(self):
-        self.assertEqual(hs.resolve_benchmark("auto", ("Harbor",)), "60_40")
+    def _scoped_frames(self, fi_share: float):
+        """Minimal broker-scoped Frames whose current snapshot (the sliced
+        ``positions_monthly``) holds ``fi_share`` of MV in fixed income."""
+        from dataclasses import replace
+        pm = pd.DataFrame([
+            {"month": "2026-04", "statement_date": pd.Timestamp("2026-04-30"),
+             "broker": "harbor", "account_id": "H-1", "symbol": "COREB",
+             "asset_class": "fixed_income",
+             "market_value": fi_share * 100.0},
+            {"month": "2026-04", "statement_date": pd.Timestamp("2026-04-30"),
+             "broker": "harbor", "account_id": "H-1", "symbol": "SPY",
+             "asset_class": "equity_etf",
+             "market_value": (1.0 - fi_share) * 100.0},
+        ])
+        return replace(self.frames, positions_monthly=pm,
+                       available_dates=["2026-04-30"],
+                       broker_scope=("Harbor",))
+
+    def test_auto_bond_heavy_scope_picks_6040(self):
+        f = self._scoped_frames(0.65)
+        self.assertEqual(
+            hs.resolve_benchmark("auto", f.broker_scope, frames=f), "60_40")
+
+    def test_auto_equity_scope_picks_spy(self):
+        f = self._scoped_frames(0.30)
+        self.assertEqual(
+            hs.resolve_benchmark("auto", f.broker_scope, frames=f), "spy")
+
+    def test_auto_fixture_harbor_scope_is_not_bond_heavy(self):
+        # The committed fixture's harbor book is ~35% fixed income — below
+        # the threshold, so a scoped auto still compares against SPY.
+        f = hs.apply_global_filters(hs.load_frames(FIXTURE), ["harbor"], "all")
+        self.assertEqual(f.broker_scope, ("Harbor",))
+        self.assertEqual(
+            hs.resolve_benchmark("auto", f.broker_scope, frames=f), "spy")
 
     def test_auto_whole_book_picks_spy(self):
-        self.assertEqual(hs.resolve_benchmark("auto", None), "spy")
-
-    def test_auto_alpine_only_picks_spy(self):
-        self.assertEqual(hs.resolve_benchmark("auto", ("Alpine",)), "spy")
+        self.assertEqual(
+            hs.resolve_benchmark("auto", None, frames=self.frames), "spy")
 
     def test_explicit_ids_pass_through(self):
         self.assertEqual(hs.resolve_benchmark("spy", ("Harbor",)), "spy")
@@ -551,8 +585,15 @@ class TestBenchmarkSwitch(unittest.TestCase):
         self.assertNotAlmostEqual(spy_rows["itd"]["bench"],
                                   blend_rows["itd"]["bench"])
 
-    def test_auto_resolves_6040_under_harbor_scope(self):
-        harbor = dataclasses.replace(self.frames, broker_scope=("Harbor",))
+    def test_auto_resolves_6040_under_bond_heavy_scope(self):
+        # auto keys on the scoped snapshot's composition, not the broker
+        # name: scale the fixture's harbor fixed-income sleeve up until it
+        # is the majority of the scoped book and the blend takes over.
+        pm = self.frames.positions_monthly
+        pm = pm[pm["broker"] == "harbor"].copy()
+        pm.loc[pm["asset_class"] == "fixed_income", "market_value"] *= 10.0
+        harbor = dataclasses.replace(self.frames, positions_monthly=pm,
+                                     broker_scope=("Harbor",))
         v = bs.build_benchmark_view(harbor, benchmark="auto")
         self.assertEqual(v["meta"]["benchmark"]["id"], "60_40")
 
