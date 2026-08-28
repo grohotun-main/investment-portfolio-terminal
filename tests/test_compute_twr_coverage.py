@@ -1,6 +1,6 @@
-"""Tests for the Fidelity coverage helpers in parsers/compute_twr.py.
+"""Tests for the Alpine coverage helpers in parsers/compute_twr.py.
 
-`_load_fidelity_coverage` and `_account_covered_in_month` are the load-bearing
+`_load_alpine_coverage` and `_account_covered_in_month` are the load-bearing
 helpers behind the "is this gap month genuinely missing, or just rolled into
 the next PDF?" distinction surfaced on the Performance tab. They shipped in
 PR #31 without dedicated coverage; this file fills that gap.
@@ -25,27 +25,27 @@ sys.path.insert(0, str(ROOT / "parsers"))
 import compute_twr  # noqa: E402
 from compute_twr import (  # noqa: E402
     _account_covered_in_month,
-    _load_fidelity_coverage,
+    _load_alpine_coverage,
 )
 
 
 def _coverage(rows: list[tuple[str, str, str]]) -> pd.DataFrame:
     """Build a coverage frame from (account_id, period_start, period_end)
-    triples. Mirrors the schema written by fidelity_txn_parser."""
+    triples. Mirrors the schema written by alpine_txn_parser."""
     return pd.DataFrame(
-        [{"broker": "fidelity", "account_id": acct,
+        [{"broker": "alpine", "account_id": acct,
           "period_start": pd.Timestamp(ps), "period_end": pd.Timestamp(pe),
           "source_file": "Statement.pdf"}
          for acct, ps, pe in rows]
     )
 
 
-class TestLoadFidelityCoverage(unittest.TestCase):
+class TestLoadAlpineCoverage(unittest.TestCase):
     def test_returns_empty_frame_when_csv_missing(self) -> None:
         with TemporaryDirectory() as td:
             missing = Path(td) / "no_such_file.csv"
-            with patch.object(compute_twr, "FIDELITY_COVERAGE_CSV", missing):
-                df = _load_fidelity_coverage()
+            with patch.object(compute_twr, "ALPINE_COVERAGE_CSV", missing):
+                df = _load_alpine_coverage()
         self.assertTrue(df.empty)
         self.assertEqual(
             list(df.columns),
@@ -56,12 +56,12 @@ class TestLoadFidelityCoverage(unittest.TestCase):
         with TemporaryDirectory() as td:
             csv = Path(td) / "coverage.csv"
             pd.DataFrame([
-                {"broker": "fidelity", "account_id": "X10-000007",
+                {"broker": "alpine", "account_id": "X10-000007",
                  "period_start": "2026-02-01", "period_end": "2026-03-31",
                  "source_file": "Statement3312026.pdf"},
             ]).to_csv(csv, index=False)
-            with patch.object(compute_twr, "FIDELITY_COVERAGE_CSV", csv):
-                df = _load_fidelity_coverage()
+            with patch.object(compute_twr, "ALPINE_COVERAGE_CSV", csv):
+                df = _load_alpine_coverage()
         self.assertEqual(len(df), 1)
         self.assertEqual(df.iloc[0]["account_id"], "X10-000007")
 
@@ -71,12 +71,12 @@ class TestLoadFidelityCoverage(unittest.TestCase):
         with TemporaryDirectory() as td:
             csv = Path(td) / "coverage.csv"
             pd.DataFrame([
-                {"broker": "fidelity", "account_id": "X10-000007",
+                {"broker": "alpine", "account_id": "X10-000007",
                  "period_start": "2026-02-01", "period_end": "2026-02-28",
                  "source_file": "Statement2282026.pdf"},
             ]).to_csv(csv, index=False)
-            with patch.object(compute_twr, "FIDELITY_COVERAGE_CSV", csv):
-                df = _load_fidelity_coverage()
+            with patch.object(compute_twr, "ALPINE_COVERAGE_CSV", csv):
+                df = _load_alpine_coverage()
         self.assertTrue(pd.api.types.is_datetime64_any_dtype(df["period_start"]))
         self.assertTrue(pd.api.types.is_datetime64_any_dtype(df["period_end"]))
 

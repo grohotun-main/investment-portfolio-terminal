@@ -24,7 +24,7 @@ class HoldingClass(str, Enum):
 _CASH_EQUIVALENT_TICKERS = {
     # ultra-short Treasury ETFs
     "SGOV", "BIL", "SHV", "GOVT", "TLH",
-    # Fidelity money-market sweep symbols
+    # Alpine money-market sweep symbols
     "SPAXX", "FZDXX", "FDRXX",
     # CDs / treasuries appear as multi-character strings in some statements;
     # those rows are excluded from the equity slice upstream in the

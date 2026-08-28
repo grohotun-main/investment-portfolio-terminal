@@ -136,13 +136,13 @@ def stmt_price_map(raw_positions: pd.DataFrame | None
 
 # asset_class -> instrument type, AFTER the same reclass the Holdings tab
 # applies. positions.csv carries the broker's RAW tag, and brokers misfile
-# ETFs (Fidelity's 2026 format lists SPY/SGOV under Common Stock — PR #131),
+# ETFs (a statement format that lists SPY/SGOV under Common Stock — PR #131),
 # so raw asset_class alone types a real book's ETF lots "stock"/"other"
-# (2026-07-31 live smoke: the ETFs view was empty on 678 real lots). The
+# (caught on a live book where the ETFs view rendered empty). The
 # corrections are all existing, derived sources — parsers.asset_reclass
 # (its account-scoped tax_loss_harvesting display rule disabled via a
 # sentinel: type is an instrument fact, not an account fact) plus the
-# config ETF sets (ETF_TICKER_CLASS / FIDELITY_CORE_ETF_SYMBOLS) already
+# config ETF sets (ETF_TICKER_CLASS / TOD_CORE_ETF_SYMBOLS) already
 # bound by holdings_service. No ticker lists in code (the Sage rule).
 _CLASS_TYPE = {"equity_stock": "stock", "equity_etf": "etf"}
 _ETF_CLASSES = frozenset({"equity_etf", "gold"})
@@ -759,7 +759,7 @@ def build_tax_view(frames, data_dir: str | Path, *,
         raw_positions,
         etf_class=dict(getattr(hs, "ETF_TICKER_CLASS", {}) or {}),
         core_etf_symbols=frozenset(
-            getattr(hs, "FIDELITY_CORE_ETF_SYMBOLS", None) or ()))
+            getattr(hs, "TOD_CORE_ETF_SYMBOLS", None) or ()))
     tlh_id = _tlh_account_id()
     labels = getattr(hs, "ACCOUNT_DISPLAY", {}) or {}
     # The route validates broker OPTION IDS (slugs); positions carries raw
@@ -1182,7 +1182,7 @@ def build_tax_estimate(frames, data_dir: str | Path, *,
     meta = view.get("meta") or {}
     assumptions = list(baseline["assumptions"]) + [
         "whole taxable book (broker filter not applied)",
-        "realized YTD excludes Fidelity option confirms",
+        "realized YTD excludes Alpine option confirms",
         "wash flags cover only the observable window — zero flags is "
         "not safety",
         "wash flags cover replacement purchases OTHER than the lot's own "

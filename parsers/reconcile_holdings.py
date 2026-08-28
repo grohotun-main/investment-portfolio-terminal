@@ -9,9 +9,9 @@ Why band-based and not exact-match
 ----------------------------------
 Extracted Σ(market_value) does NOT equal the reported "Total Account Value" even
 when extraction is perfect — the reported total includes accrued income and
-occasionally unpriced positions (e.g. the JPM May -$2,602 residual = accrued
+occasionally unpriced positions (e.g. the Harbor May -$2,602 residual = accrued
 income + an unpriced call). On top of that, the Parametric TLH account (300+
-direct-index lots) carries genuine ~0.2-0.5% lot-rounding noise. The +$234K JPM
+direct-index lots) carries genuine ~0.2-0.5% lot-rounding noise. The +$234K Harbor
 May phantom, by contrast, was +15%. So:
 
   * WATCH  |diff%| > 0.30%                         — surfaced, not blocking

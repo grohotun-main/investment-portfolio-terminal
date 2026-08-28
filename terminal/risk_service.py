@@ -414,7 +414,7 @@ def _concentration(b: dict) -> dict:
     is_option = snap["asset_class"].astype(str).str.startswith("option")
     snap = snap[(snap["asset_class"] != "cash") & (~is_option)].copy()
     tlh_mask = snap["asset_class"] == "tax_loss_harvesting"
-    tlad_mask = snap["bucket"] == "JPM Treasury Ladder"
+    tlad_mask = snap["bucket"] == "Treasury Ladder"
     snap.loc[tlh_mask, "symbol"] = "SPY"
     snap.loc[tlad_mask, "symbol"] = "SGOV"
     snap = snap.dropna(subset=["symbol"])

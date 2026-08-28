@@ -24,7 +24,7 @@ class NormalizeHoldingsFrameTests(unittest.TestCase):
         self.assertNotIn("USD", out["ticker"].tolist())
         self.assertNotIn("CASH_USD", out["ticker"].tolist())
         # Weights remain on a 0-100 scale (no renormalization — SPY is
-        # never exactly 100% due to cash drag; preserve audit fidelity).
+        # never exactly 100% due to cash drag; preserve audit alpine).
         self.assertAlmostEqual(out["weight_pct"].sum(), 7.5 + 6.8 + 6.2, places=2)
 
     def test_uppercases_ticker(self):

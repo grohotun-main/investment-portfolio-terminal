@@ -1,7 +1,7 @@
 """Tests for parsers/protection_cost.py.
 
 Locks down: identity (paid - recv - mv == cost), snapshot anchor handling,
-history_start rebase + anchor row, JPM/Fidelity month-end-quirk aggregation,
+history_start rebase + anchor row, Harbor/Alpine month-end-quirk aggregation,
 empty inputs.
 """
 import sys
@@ -49,15 +49,15 @@ class IdentityTests(unittest.TestCase):
 
     def test_identity_holds_lifetime(self):
         txn = _mk_txn([
-            ("2025-01-15", "jpm", -5000, "PUT SPY 03/21/25 580 OPEN"),
-            ("2025-03-21", "jpm", +1200, "PUT SPY 03/21/25 580 CLOSE EXPIRE"),
-            ("2025-06-10", "jpm", -8000, "PUT SPY 09/19/25 540 OPEN"),
+            ("2025-01-15", "harbor", -5000, "PUT SPY 03/21/25 580 OPEN"),
+            ("2025-03-21", "harbor", +1200, "PUT SPY 03/21/25 580 CLOSE EXPIRE"),
+            ("2025-06-10", "harbor", -8000, "PUT SPY 09/19/25 540 OPEN"),
         ])
         pos = _mk_pos([
-            ("2025-01-31", "jpm", "option_put", 4900),
-            ("2025-02-28", "jpm", "option_put", 4200),
-            ("2025-03-31", "jpm", "option_put", 0),
-            ("2025-06-30", "jpm", "option_put", 7800),
+            ("2025-01-31", "harbor", "option_put", 4900),
+            ("2025-02-28", "harbor", "option_put", 4200),
+            ("2025-03-31", "harbor", "option_put", 0),
+            ("2025-06-30", "harbor", "option_put", 7800),
         ])
         df = build_protection_cost_timeline(txn, pos)
         for _, r in df.iterrows():
@@ -70,9 +70,9 @@ class IdentityTests(unittest.TestCase):
 
     def test_identity_with_snapshot(self):
         txn = _mk_txn([
-            ("2025-01-15", "jpm", -5000, "PUT SPY 03/21/25 580 OPEN"),
+            ("2025-01-15", "harbor", -5000, "PUT SPY 03/21/25 580 OPEN"),
         ])
-        pos = _mk_pos([("2025-01-31", "jpm", "option_put", 4800)])
+        pos = _mk_pos([("2025-01-31", "harbor", "option_put", 4800)])
         df = build_protection_cost_timeline(
             txn, pos,
             snapshot_today_mv=4500.0, today=pd.Timestamp("2025-02-15"),
@@ -90,8 +90,8 @@ class IdentityTests(unittest.TestCase):
 class SnapshotAnchorTests(unittest.TestCase):
 
     def test_snapshot_added_when_today_past_latest_statement(self):
-        txn = _mk_txn([("2025-01-15", "jpm", -5000, "PUT OPEN")])
-        pos = _mk_pos([("2025-01-31", "jpm", "option_put", 4800)])
+        txn = _mk_txn([("2025-01-15", "harbor", -5000, "PUT OPEN")])
+        pos = _mk_pos([("2025-01-31", "harbor", "option_put", 4800)])
         df = build_protection_cost_timeline(
             txn, pos,
             snapshot_today_mv=4200.0, today=pd.Timestamp("2025-02-15"),
@@ -102,8 +102,8 @@ class SnapshotAnchorTests(unittest.TestCase):
     def test_snapshot_skipped_when_today_at_or_before_latest_statement(self):
         # Equal case — today == latest statement date, should NOT append a
         # row (would create a duplicate / contradictory point).
-        txn = _mk_txn([("2025-01-15", "jpm", -5000, "PUT OPEN")])
-        pos = _mk_pos([("2025-01-31", "jpm", "option_put", 4800)])
+        txn = _mk_txn([("2025-01-15", "harbor", -5000, "PUT OPEN")])
+        pos = _mk_pos([("2025-01-31", "harbor", "option_put", 4800)])
         df = build_protection_cost_timeline(
             txn, pos,
             snapshot_today_mv=4200.0, today=pd.Timestamp("2025-01-31"),
@@ -118,14 +118,14 @@ class HistoryStartRebaseTests(unittest.TestCase):
 
     def test_rebase_starts_at_zero(self):
         txn = _mk_txn([
-            ("2025-01-15", "jpm", -5000, "PUT OPEN"),
-            ("2025-06-10", "jpm", -8000, "PUT OPEN"),
+            ("2025-01-15", "harbor", -5000, "PUT OPEN"),
+            ("2025-06-10", "harbor", -8000, "PUT OPEN"),
         ])
         pos = _mk_pos([
-            ("2025-01-31", "jpm", "option_put", 4500),  # cost = $500
-            ("2025-03-31", "jpm", "option_put", 3200),  # cost = $1800
-            ("2025-06-30", "jpm", "option_put", 10800), # cost = $2200
-            ("2025-12-31", "jpm", "option_put", 8000),  # cost = $5000
+            ("2025-01-31", "harbor", "option_put", 4500),  # cost = $500
+            ("2025-03-31", "harbor", "option_put", 3200),  # cost = $1800
+            ("2025-06-30", "harbor", "option_put", 10800), # cost = $2200
+            ("2025-12-31", "harbor", "option_put", 8000),  # cost = $5000
         ])
         df = build_protection_cost_timeline(
             txn, pos, history_start=pd.Timestamp("2025-06-01"),
@@ -146,9 +146,9 @@ class HistoryStartRebaseTests(unittest.TestCase):
     def test_rebase_with_no_prior_activity(self):
         # history_start before first put activity → baseline is 0,
         # series unchanged except for an anchor at the cutoff with cost 0.
-        txn = _mk_txn([("2025-06-10", "jpm", -8000, "PUT OPEN")])
+        txn = _mk_txn([("2025-06-10", "harbor", -8000, "PUT OPEN")])
         pos = _mk_pos([
-            ("2025-06-30", "jpm", "option_put", 7500),
+            ("2025-06-30", "harbor", "option_put", 7500),
         ])
         df = build_protection_cost_timeline(
             txn, pos, history_start=pd.Timestamp("2025-01-01"),
@@ -160,18 +160,18 @@ class HistoryStartRebaseTests(unittest.TestCase):
 
 
 class MonthEndAggregationTests(unittest.TestCase):
-    """JPM (business-day) + Fidelity (calendar-day) end-of-month quirk."""
+    """Harbor (business-day) + Alpine (calendar-day) end-of-month quirk."""
 
     def test_two_statement_dates_in_one_month_combine(self):
-        # May 2025: JPM books 2025-05-30, Fidelity books 2025-05-31.
+        # May 2025: Harbor books 2025-05-30, Alpine books 2025-05-31.
         # The function must take both into the May month-end MV.
         txn = _mk_txn([
-            ("2025-05-01", "jpm",      -3000, "PUT OPEN"),
-            ("2025-05-02", "fidelity", -2000, "PUT OPEN"),
+            ("2025-05-01", "harbor",      -3000, "PUT OPEN"),
+            ("2025-05-02", "alpine", -2000, "PUT OPEN"),
         ])
         pos = _mk_pos([
-            ("2025-05-30", "jpm",      "option_put", 2800),
-            ("2025-05-31", "fidelity", "option_put", 1900),
+            ("2025-05-30", "harbor",      "option_put", 2800),
+            ("2025-05-31", "alpine", "option_put", 1900),
         ])
         df = build_protection_cost_timeline(txn, pos)
         self.assertEqual(len(df), 1)
@@ -182,12 +182,12 @@ class MonthEndAggregationTests(unittest.TestCase):
         self.assertAlmostEqual(row["cost_to_date"], 300.0)  # 5000 - 0 - 4700
 
     def test_latest_per_broker_within_month_wins(self):
-        # If JPM has two statements in a single month (unusual but possible
+        # If Harbor has two statements in a single month (unusual but possible
         # during onboarding), use the latest one only.
-        txn = _mk_txn([("2025-04-01", "jpm", -1000, "PUT OPEN")])
+        txn = _mk_txn([("2025-04-01", "harbor", -1000, "PUT OPEN")])
         pos = _mk_pos([
-            ("2025-04-15", "jpm", "option_put", 800),  # mid-month: ignored
-            ("2025-04-30", "jpm", "option_put", 700),  # latest: used
+            ("2025-04-15", "harbor", "option_put", 800),  # mid-month: ignored
+            ("2025-04-30", "harbor", "option_put", 700),  # latest: used
         ])
         df = build_protection_cost_timeline(txn, pos)
         row = df.iloc[0]
@@ -201,9 +201,9 @@ class MonthEndAggregationTests(unittest.TestCase):
         # by synthesize_interim_positions) get bucketed under 5/31, and the
         # today=5/25 snapshot append silently doesn't fire because
         # `today > last_date` is false for last_date=5/31.
-        txn = _mk_txn([("2025-05-15", "jpm", -1000, "PUT OPEN")])
+        txn = _mk_txn([("2025-05-15", "harbor", -1000, "PUT OPEN")])
         pos = _mk_pos([
-            ("2025-05-15", "jpm", "option_put", 950),  # synth-rolled date
+            ("2025-05-15", "harbor", "option_put", 950),  # synth-rolled date
         ])
         df = build_protection_cost_timeline(
             txn, pos,
@@ -222,9 +222,9 @@ class EmptyAndEdgeCaseTests(unittest.TestCase):
     def test_no_put_transactions(self):
         # Stock-only universe — function returns empty
         txn = _mk_txn([
-            ("2025-01-15", "jpm", -5000, "BOUGHT SPY ETF"),
+            ("2025-01-15", "harbor", -5000, "BOUGHT SPY ETF"),
         ])
-        pos = _mk_pos([("2025-01-31", "jpm", "etf", 5100)])
+        pos = _mk_pos([("2025-01-31", "harbor", "etf", 5100)])
         df = build_protection_cost_timeline(txn, pos)
         self.assertTrue(df.empty)
         self.assertEqual(list(df.columns), [
@@ -245,12 +245,12 @@ class EmptyAndEdgeCaseTests(unittest.TestCase):
         # CALL rows in description must be filtered out — only PUTs count
         # toward "cost of PROTECTION".
         txn = _mk_txn([
-            ("2025-01-15", "jpm", -5000, "CALL TSLA 03/21/25 OPEN"),
-            ("2025-02-10", "jpm", -3000, "PUT SPY 03/21/25 OPEN"),
+            ("2025-01-15", "harbor", -5000, "CALL TSLA 03/21/25 OPEN"),
+            ("2025-02-10", "harbor", -3000, "PUT SPY 03/21/25 OPEN"),
         ])
         pos = _mk_pos([
-            ("2025-02-28", "jpm", "option_put",  2800),
-            ("2025-02-28", "jpm", "option_call", 4500),
+            ("2025-02-28", "harbor", "option_put",  2800),
+            ("2025-02-28", "harbor", "option_call", 4500),
         ])
         df = build_protection_cost_timeline(txn, pos)
         # CALL txn ignored on gross_paid; CALL position ignored on sleeve_mv

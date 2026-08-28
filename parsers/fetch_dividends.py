@@ -21,7 +21,7 @@ import requests
 
 from _config import get_massive_key, get_massive_base
 # Shared with the income engine: anything symbol-bearing outside these
-# classes is fetchable (JPM files SGOV under fixed_income and GLD under
+# classes is fetchable (Harbor files SGOV under fixed_income and GLD under
 # other — class is not a reliable "listed" signal). Polygon returns zero
 # rows for unlisted symbols, which the allow_empty path records as a
 # header-only known-non-payer file.

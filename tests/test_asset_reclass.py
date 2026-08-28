@@ -5,10 +5,10 @@ section-header classification. Two reasons the broker tag can't be trusted
 verbatim:
 
   * Commodity tickers (GLD, IAU, ...) are tagged inconsistently across sources
-    (JPM "other", Fidelity "fixed_income"); they collapse to ``gold``.
-  * Fidelity's May-2026 statement format dropped its "Exchange Traded Products"
-    section and listed ETFs (SPY, SGOV) under "Stocks / Common Stock", so the
-    holdings parser tagged them ``equity_stock``. A ticker->class override map
+    (Harbor "other", Alpine "fixed_income"); they collapse to ``gold``.
+  * Some statement formats have no dedicated "Exchange Traded Products"
+    section and list ETFs (SPY, SGOV) under "Stocks / Common Stock", so the
+    holdings pipeline tags them ``equity_stock``. A ticker->class override map
     (``etf_class``) restores the right class regardless of which section a given
     month's statement happened to file the security under.
 
@@ -93,7 +93,7 @@ class TestReclassAsset(unittest.TestCase):
         self.assertEqual(self._r("X10-000007", float("nan"), "cash"), "cash")
 
     # --- WSD-3: broker display-format option legs --------------------------
-    # Interim JPM option activity arrives as e.g. "SPY DEC 26 PUT 650.00" — not
+    # Interim Harbor option activity arrives as e.g. "SPY DEC 26 PUT 650.00" — not
     # OCC format — so the synthesizer's OCC regex misses it and books the leg
     # asset_class 'other', which then slips into the income dividend universe.
     # reclass_asset must map these to option_put/option_call so the engine's

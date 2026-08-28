@@ -27,8 +27,8 @@ account and net to zero in NAV change):
   buy, sell, reinvestment, dividend, interest, redemption, principal_pmt,
   withholding, merger, stock_split, exchange, option_expire, other
 
-Note (historical): in early versions the JPM Cash Flow Summary parser was
-not yet in place, so JPM cross-account journals showed up as un-classified
+Note (historical): in early versions the Harbor Cash Flow Summary parser was
+not yet in place, so Harbor cross-account journals showed up as un-classified
 gaps in the originating account's portfolio-level TWR. The CFS parser now
 captures them.
 """
@@ -76,27 +76,27 @@ ACCOUNT_FLOW_SCOPES = {"external", "internal"}
 PORTFOLIO_FLOW_SCOPES = {"external"}
 
 
-FIDELITY_COVERAGE_CSV = DATA_DIR / "fidelity_statement_periods.csv"
+ALPINE_COVERAGE_CSV = DATA_DIR / "alpine_statement_periods.csv"
 
 
-def _load_fidelity_coverage() -> pd.DataFrame:
-    """Read fidelity_statement_periods.csv if present. Empty frame if not.
+def _load_alpine_coverage() -> pd.DataFrame:
+    """Read alpine_statement_periods.csv if present. Empty frame if not.
 
-    Sidecar written by fidelity_txn_parser.py with columns:
+    Sidecar written by alpine_txn_parser.py with columns:
         broker, account_id, period_start, period_end, source_file
     """
-    if not FIDELITY_COVERAGE_CSV.exists():
+    if not ALPINE_COVERAGE_CSV.exists():
         return pd.DataFrame(columns=[
             "broker", "account_id", "period_start", "period_end", "source_file",
         ])
-    df = pd.read_csv(FIDELITY_COVERAGE_CSV,
+    df = pd.read_csv(ALPINE_COVERAGE_CSV,
                      parse_dates=["period_start", "period_end"])
     return df
 
 
 def _account_covered_in_month(account_id: str, month: pd.Period,
                               coverage: pd.DataFrame) -> bool:
-    """True iff some Fidelity statement period for `account_id` spans
+    """True iff some Alpine statement period for `account_id` spans
     `month` end-to-end. A normal single-month statement that *is* the
     month also returns True, but the caller only consults this for
     forward-filled months (which by definition have no positions row),
@@ -363,16 +363,16 @@ def compute_portfolio_twr(positions: pd.DataFrame,
 
     # Coverage tripwire: per month, which accounts were forward-filled
     # because no statement landed at that month-end. Two flavors:
-    #   - "combined"  — Fidelity issued one PDF covering Feb 1 → Mar 31
+    #   - "combined"  — Alpine issued one PDF covering Feb 1 → Mar 31
     #                   (so Mar 31 positions row exists; Feb 28 doesn't).
-    #                   The parser writes fidelity_statement_periods.csv;
+    #                   The parser writes alpine_statement_periods.csv;
     #                   we cross-reference that here to recognize the
     #                   month was intentionally rolled into a later
     #                   statement rather than silently dropped.
     #   - "missing"   — no statement at all. The genuine gap. The
     #                   dashboard warning only fires for this set.
     filled = navs[~navs["is_real_statement"]]
-    coverage = _load_fidelity_coverage()
+    coverage = _load_alpine_coverage()
     filled_by_month: dict[pd.Period, str] = {}
     missing_by_month: dict[pd.Period, str] = {}
     combined_by_month: dict[pd.Period, str] = {}
@@ -855,7 +855,7 @@ def compute_portfolio_irr(positions: pd.DataFrame,
 # Bands each account's computed IRR so derived-metric corruption fails loud at
 # ingest instead of silently reaching the dashboard — the same role
 # reconcile_holdings (PR #129) plays for NAV. PR #147's NaN-amount in-kind flows
-# floored the portfolio + two JPM accounts' IRR at xirr's -0.9999 bisection
+# floored the portfolio + two Harbor accounts' IRR at xirr's -0.9999 bisection
 # bound (shown as -99.99%); that was fixed at the source, but nothing validated
 # the IRR step the way NAV is validated pre-write. This is that missing gate.
 #

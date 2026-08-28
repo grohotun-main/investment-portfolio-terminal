@@ -466,8 +466,8 @@ def weights_per_snap_monthly(positions: pd.DataFrame, build_weights) -> dict:
     """Build one weight snapshot per CALENDAR MONTH for the historical daily
     synthesis, keyed by the month's latest ``statement_date``.
 
-    A single month-end snapshot is often split across two filing dates — JPM
-    stamps the last business day, Fidelity stamps month-end — so keying the
+    A single month-end snapshot is often split across two filing dates — Harbor
+    stamps the last business day, Alpine stamps month-end — so keying the
     synthesis by exact statement_date yields two one-broker snapshots per
     dual-date month, each owning a sub-segment of the daily return series with
     only half the portfolio's weights (WSF-1: ~30% of the post-2022 series ran

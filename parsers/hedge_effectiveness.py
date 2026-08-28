@@ -51,8 +51,8 @@ _sys.path.insert(0, str(_Path(__file__).resolve().parent))
 
 from option_positions import (  # noqa: E402
     _parse_full_option_txn,
-    parse_jpm_buy_desc,
-    parse_jpm_option_desc,
+    parse_harbor_buy_desc,
+    parse_harbor_option_desc,
 )
 
 CONTRACT_MULT = 100
@@ -68,10 +68,10 @@ class Lot:
 
     For sleeve aggregation we treat each (opt_type, underlying, expiry,
     strike) key as a single rolling book-level position, aggregating across
-    accounts. Account is dropped because JPM occasionally records a BUY in
+    accounts. Account is dropped because Harbor occasionally records a BUY in
     one account and the resulting position in another, and because two real
     accounts can hold the same put for the same expiry+strike (e.g. SPY
-    575P 12/18/26 is in both JPM and Fidelity). The sleeve back-test is
+    575P 12/18/26 is in both Harbor and Alpine). The sleeve back-test is
     about total exposure, not per-account books.
 
     open_premium is the first BUY's per-share premium (audit-trail only;
@@ -123,14 +123,14 @@ def build_strike_resolver(positions: pd.DataFrame) -> dict[tuple, set]:
     """Build a (opt_type, underlying, expiry) -> set of strikes map from
     option_put positions.csv.
 
-    Used to recover strikes for JPM PDF-parsed BUY/SELL transaction
+    Used to recover strikes for Harbor PDF-parsed BUY/SELL transaction
     descriptions that omit the strike (e.g. ``PUT SPY 12/18/26 ETF OPEN
-    CONTRACT``). Statement positions DO carry the strike (JPM puts it in
+    CONTRACT``). Statement positions DO carry the strike (Harbor puts it in
     the position description), so historical sleeve members were always
     on at least one statement before close — we can recover the strike
     by matching on (type, underlying, expiry).
 
-    Account is intentionally dropped from the key: JPM occasionally
+    Account is intentionally dropped from the key: Harbor occasionally
     records a BUY in one account and the resulting position in another
     (book-and-allocate), so requiring account match would orphan those
     rows. The sleeve doesn't trade spreads, so (type, ul, expiry) is
@@ -155,7 +155,7 @@ def build_strike_resolver(positions: pd.DataFrame) -> dict[tuple, set]:
         return {}
     resolver: dict[tuple, set] = {}
     for _, r in pos.iterrows():
-        p = parse_jpm_option_desc(r.get("description"))
+        p = parse_harbor_option_desc(r.get("description"))
         if p is None or not (p.strike > 0):
             continue
         key = (p.opt_type, p.underlying, p.expiry)
@@ -169,8 +169,8 @@ def _resolve_txn_to_option(
     """Best-effort resolve a BUY/SELL txn to (opt_type, ul, expiry, strike).
 
     Tries:
-      1. _parse_full_option_txn (Fidelity BUY or JPM with inline strike)
-      2. parse_jpm_buy_desc (no strike) + resolver lookup by
+      1. _parse_full_option_txn (Alpine BUY or Harbor with inline strike)
+      2. parse_harbor_buy_desc (no strike) + resolver lookup by
          (opt_type, ul, expiry)
 
     Returns None if unresolvable (ambiguous strike, no positions match,
@@ -182,7 +182,7 @@ def _resolve_txn_to_option(
     full = _parse_full_option_txn(row)
     if full is not None and full.strike > 0:
         return (full.opt_type, full.underlying, full.expiry, float(full.strike))
-    partial = parse_jpm_buy_desc(desc)
+    partial = parse_harbor_buy_desc(desc)
     if partial is None:
         return None
     key = (partial.opt_type, partial.underlying, partial.expiry)
@@ -424,7 +424,7 @@ def build_daily_sleeve_mv(
         transactions: union of statement + interim transactions.
         option_history: DataFrame produced by ``fetch_option_history`` —
             columns include underlying, opt_type, expiry, strike, date, close.
-        positions: optional. When supplied, used to recover strikes for JPM
+        positions: optional. When supplied, used to recover strikes for Harbor
             PDF-parsed BUY/SELL txns that omit the strike.
         start_date: lower bound for the returned series. Default = first
             sleeve BUY date.
@@ -677,7 +677,7 @@ def compare_to_statement_mv(
     MV to the actual statement MV (sum of option_put rows).
 
     Residual error sources are (a) broker mid-vs-close marking conventions
-    (JPM/Fidelity may book MV off the bid or an earlier snapshot than
+    (Harbor/Alpine may book MV off the bid or an earlier snapshot than
     Polygon's official close) and (b) low-volume days where the Polygon
     close is stale. Large divergences (>30%) on a fresh-close day indicate
     a strike/expiry mismatch or a broker that revalued mid-month — flag

@@ -34,7 +34,7 @@ from collections.abc import Iterable
 
 import pandas as pd
 
-# A JPM Treasury rung's maturity is the LAST mm/dd/yyyy date appearing
+# A Harbor Treasury rung's maturity is the LAST mm/dd/yyyy date appearing
 # after the word "TREASURY" in the description. Two statement formats exist:
 #   old:  "UNITED STATES TREASURY 01/31/2028 JJ 31"          (single date)
 #   new:  "UNITED STATES TREASURY NOTE DATED DATE 01/31/2021 01/31/2028"
@@ -62,7 +62,7 @@ def _maturity_token(description: str) -> str | None:
     dates = _DATE_RE.findall(description, tm.end())
     return dates[-1] if dates else None
 
-# Duration-matched proxy for a JPM Treasury rung. The thresholds reflect
+# Duration-matched proxy for a Harbor Treasury rung. The thresholds reflect
 # the ETFs' modified duration (rough): SGOV ~0.1y, SCHO ~1.8y, IEI ~4.5y,
 # IEF ~7.5y, TLT ~17y. A 100bp rate move on an in-bucket rung therefore
 # shows up at roughly the right magnitude in vol / VaR / DR tiles.
@@ -82,12 +82,12 @@ _TREASURY_PROXY_LONG = "TLT"  # ≥ 12y → 20+y Treasury ETF
 
 
 def treasury_proxy(description: str | float, as_of: pd.Timestamp) -> str:
-    """Return the duration-matched Treasury ETF symbol for a JPM Treasury
+    """Return the duration-matched Treasury ETF symbol for a Harbor Treasury
     rung described by ``description``, evaluated as of ``as_of``.
 
     Falls back to SGOV when the maturity date can't be parsed — preserves
     the prior behavior on rows that don't expose a maturity in their
-    description (TIPS, STRIPS, agency notes that don't follow the JPM
+    description (TIPS, STRIPS, agency notes that don't follow the Harbor
     "TREASURY MM/DD/YYYY" convention).
     """
     if not isinstance(description, str):

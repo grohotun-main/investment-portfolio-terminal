@@ -9,12 +9,12 @@ came from or went. But portfolio-level TWR needs to wash internal transfers
 to zero — when money leaves one of my accounts and lands in another, that's
 a re-shuffle of existing money, not new investment activity.
 
-Detection rule (Fidelity only — JPM doesn't put the counterparty in the
+Detection rule (Alpine only — Harbor doesn't put the counterparty in the
 description; that work waits on the Cash Flow Summary parser):
 
   1. The description contains an account-number-shaped token that ISN'T
      the account_id of the row itself. Pattern: ``[A-Z0-9]{3}-\d{5,6}``,
-     optionally followed by ``-1`` / ``-2`` (a Fidelity sub-account suffix
+     optionally followed by ``-1`` / ``-2`` (a Alpine sub-account suffix
      for TOD vs IRA legs).
   2. There exists a matching row in the *other* account on the same or
      adjacent settle_date with the same |amount| and opposite sign.
@@ -83,7 +83,7 @@ COUNTERPARTY_RE = re.compile(r"\b([A-Z0-9]{3}-\d{5,6})(?:-\d)?\b")
 SWEEP_PATTERNS = [
     re.compile(r"CASH\s+Transferred", re.I),       # "CASH Transferred ..."
     re.compile(r"FCASH\s+IS\s+LIQUI", re.I),       # FCASH sweep core
-    re.compile(r"FIDELITY\s+GOVERNMENT\s+MONEY",   # FGMM (sweep MMF)
+    re.compile(r"ALPINE\s+GOVERNMENT\s+MONEY",   # FGMM (sweep MMF)
                re.I),
     re.compile(r"MARGIN\s+TO\s+CASH", re.I),       # same-account margin<->cash
                                                    # journal (WSF-8)
@@ -122,7 +122,7 @@ def pair_transfers(df: pd.DataFrame, date_window: int = 5) -> pd.DataFrame:
     Mutate df in place: add `flow_scope` and `pair_id` columns.
 
     `date_window`: how many days apart the two sides of a pair may be (in
-    practice Fidelity settles both sides on the same calendar day, but
+    practice Alpine settles both sides on the same calendar day, but
     cross-broker journals can lag by 1-2 days — we leave headroom).
     """
     df = df.copy()
@@ -195,7 +195,7 @@ def pair_transfers(df: pd.DataFrame, date_window: int = 5) -> pd.DataFrame:
     leftover = is_flow & (df["flow_scope"] == "")
     df.loc[leftover, "flow_scope"] = "external"
 
-    # Fourth pass: same-broker same-day +/- pairing. JPM Cash Flow Summary
+    # Fourth pass: same-broker same-day +/- pairing. Harbor Cash Flow Summary
     # entries don't name a counterparty in the description, so pass 2 misses
     # them. Match positive vs negative flows on the same day, within the same
     # broker, across distinct accounts. Exact-amount matches first; residuals
@@ -203,7 +203,7 @@ def pair_transfers(df: pd.DataFrame, date_window: int = 5) -> pd.DataFrame:
     # external residual (the leftover that's a real bank wire) are handled
     # cleanly. Partial matches split the larger flow at the smaller flow's
     # amount; the remainder stays external.
-    df, new_rows, sameday_pairs = _pair_within_broker_same_day(df, broker="jpm")
+    df, new_rows, sameday_pairs = _pair_within_broker_same_day(df, broker="harbor")
     if new_rows:
         df = pd.concat([df, pd.DataFrame(new_rows)], ignore_index=True)
     # Recompute leftover-external count post-pairing.
@@ -214,7 +214,7 @@ def pair_transfers(df: pd.DataFrame, date_window: int = 5) -> pd.DataFrame:
     print(f"  Paired {internal_pairs} internal cross-account transfers "
           f"(counterparty-named, {internal_pairs*2} rows)")
     print(f"  Paired {sameday_pairs} same-day intra-broker transfers "
-          f"(JPM Cash Flow Summary)")
+          f"(Harbor Cash Flow Summary)")
     print(f"  Remaining external flows: {int(final_external)}")
     return df
 
@@ -347,8 +347,8 @@ def synthesize_in_kind_flows(
 ) -> tuple[pd.DataFrame, int]:
     """Detect & inject internal flow pairs for in-kind cross-account transfers.
 
-    Some securities moves between my accounts (in-kind journals at JPM or
-    Fidelity) leave no `transfer_in` / `transfer_out`
+    Some securities moves between my accounts (in-kind journals at Harbor or
+    Alpine) leave no `transfer_in` / `transfer_out`
     row in `transactions.csv` — only a NAV shift in `positions.csv`. Without
     a synthetic flow, the donor account's TWR shows a fake huge loss and the
     receiver's TWR shows a fake huge gain.

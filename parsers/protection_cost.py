@@ -10,7 +10,7 @@ Positive values mean hedging has lost money to date (the typical state
 on a calm tape; theta bleeds the open sleeve, realized losses bleed from
 closures).
 
-Statement-date quirk: JPM books on the last *business* day, Fidelity on
+Statement-date quirk: Harbor books on the last *business* day, Alpine on
 the last *calendar* day. For some months both fall in the same calendar
 month with different statement_date values. We bin by month_end and take
 the latest statement_date per broker per month, then sum across brokers
@@ -54,7 +54,7 @@ def _monthly_sleeve_mv(positions: pd.DataFrame) -> pd.DataFrame:
     appearing in `positions`. The `date` is the actual latest statement
     date within that month across all brokers — NOT the month-end calendar
     date. This matters when:
-      - JPM books on the last business day (e.g. 5/30) and Fidelity on
+      - Harbor books on the last business day (e.g. 5/30) and Alpine on
         the last calendar day (5/31): row dated 5/31 (the later one).
       - synthesize_interim_positions has rolled positions forward to a
         non-month-end date (e.g. 5/15): row dated 5/15, not 5/31. Critical
@@ -66,9 +66,9 @@ def _monthly_sleeve_mv(positions: pd.DataFrame) -> pd.DataFrame:
         return pd.DataFrame(columns=["date", "sleeve_mv"])
     p = positions.copy()
     p["month_end"] = p["statement_date"] + pd.offsets.MonthEnd(0)
-    # Latest statement_date per (broker, month_end). Some months JPM and
-    # Fidelity both report at month-end, others split (e.g. JPM 5/30 vs
-    # Fidelity 5/31, or both synth-rolled to 5/15) — keep the latest per
+    # Latest statement_date per (broker, month_end). Some months Harbor and
+    # Alpine both report at month-end, others split (e.g. Harbor 5/30 vs
+    # Alpine 5/31, or both synth-rolled to 5/15) — keep the latest per
     # broker within each month.
     latest = (p.groupby(["broker", "month_end"])["statement_date"]
                .max().reset_index()

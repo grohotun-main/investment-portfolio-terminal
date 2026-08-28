@@ -37,8 +37,8 @@
       }
     },
     "notes": {
-      "excludes_fidelity_options": true,
-      "options_source": "jpm_printed_confirms",
+      "excludes_alpine_options": true,
+      "options_source": "harbor_printed_confirms",
       "broker_unresolved": 0
     }
   }

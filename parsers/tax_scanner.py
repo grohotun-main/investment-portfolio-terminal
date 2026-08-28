@@ -361,8 +361,8 @@ def wash_check(realizations: pd.DataFrame, transactions: pd.DataFrame,
                fold: Optional[dict[str, str]] = None,
                *, window_days: int = WINDOW_DAYS
                ) -> Optional[pd.DataFrame]:
-    """Judge the detector against JPM's printed W flag, one row per
-    historical JPM loss sell (realizations reference their sell row via
+    """Judge the detector against Harbor's printed W flag, one row per
+    historical Harbor loss sell (realizations reference their sell row via
     source_row — the relief_check join). None means the tax_flag column
     itself is absent (a pre-S3 book: the report says so instead of scoring
     air) — an empty-but-columned book (nothing to judge) returns an empty
@@ -378,8 +378,8 @@ def wash_check(realizations: pd.DataFrame, transactions: pd.DataFrame,
     detector_only is exactly what no single broker statement can see; the
     rest is same-account, a case the broker saw and still didn't flag.
 
-    Denominator: JPM rows only (spec §5.3) — every other broker's loss
-    sells (Fidelity prints no wash flag) sit outside the judged universe.
+    Denominator: Harbor rows only (spec §5.3) — every other broker's loss
+    sells (Alpine prints no wash flag) sit outside the judged universe.
     That exclusion count, plus the judged sells whose forward half-window
     (close_date + window_days) runs past the transactions frontier — an
     `agree_clean` verdict there is under-informed, since a wash-triggering
@@ -388,7 +388,7 @@ def wash_check(realizations: pd.DataFrame, transactions: pd.DataFrame,
     `tx_frontier`, `broker_frontiers`) rather than a column: all describe
     the whole judged run, not any one row. The frontier itself is derived
     the same way `main()` derives it: trade_date falling back to
-    settlement_date, max over the WHOLE transactions frame (not just JPM
+    settlement_date, max over the WHOLE transactions frame (not just Harbor
     rows) — i.e. the single LATEST-reporting broker's own frontier. A
     replacement buy can sit in any broker's book, so the true limit on
     "could a buy be invisible" is the EARLIEST broker's frontier, not this
@@ -431,7 +431,7 @@ def wash_check(realizations: pd.DataFrame, transactions: pd.DataFrame,
     for src, grp in sold.groupby("source_row"):
         if src not in transactions.index:
             continue
-        if broker.loc[src] != "jpm":
+        if broker.loc[src] != "harbor":
             excluded_other_broker += 1
             continue
         close = pd.to_datetime(grp["close_date"].iloc[0], errors="coerce")

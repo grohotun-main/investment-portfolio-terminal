@@ -1,5 +1,5 @@
 """
-Tests for parsers/treasury_proxy.py — duration-bucket mapping for the JPM
+Tests for parsers/treasury_proxy.py — duration-bucket mapping for the Harbor
 bare-CUSIP Treasury ladder.
 
 This is the regression spot-check that PR #26 (the May 2026 audit fix for
@@ -66,7 +66,7 @@ class TestTreasuryProxyBuckets(unittest.TestCase):
 
     def test_unparseable_description_falls_back_to_sgov(self) -> None:
         # Descriptions that don't expose a maturity (TIPS, STRIPS, agency
-        # notes that don't follow the JPM "TREASURY MM/DD/YYYY" convention)
+        # notes that don't follow the Harbor "TREASURY MM/DD/YYYY" convention)
         # quietly fall back to SGOV.
         self.assertEqual(treasury_proxy("FOO BAR", self.as_of), "SGOV")
         self.assertEqual(
@@ -80,15 +80,15 @@ class TestTreasuryProxyBuckets(unittest.TestCase):
 
 
 class TestTreasuryProxyNewStatementFormat(unittest.TestCase):
-    """WSB-1 (2026-06 audit). JPM's statement format changed to
+    """Newer statement formats print
     ``UNITED STATES TREASURY NOTE DATED DATE <issue> <maturity>`` — the
-    maturity is now the LAST date in the description, not the token
+    maturity is the LAST date in the description, not the token
     immediately after TREASURY. The prior regex anchored the date right
     after TREASURY, found the word NOTE instead, and silently fell back to
-    SGOV for every rung (~20x duration understatement; all 18 ladder rungs
+    SGOV for every rung (~20x duration understatement; every ladder rung
     mis-bucketed, SCHO/IEI rows missing from the Risk Contribution
-    decomposition). These are verbatim live ladder descriptions from the
-    2026-05-31 snapshot (see scratch/audit_2026_06/ws_b_ladder_proxy_check.py)."""
+    decomposition). The fixtures below reproduce that description
+    geometry."""
 
     # Live snapshot date the repro ran at.
     as_of = pd.Timestamp("2026-05-31")
@@ -142,7 +142,7 @@ class TestTreasuryProxyBreakdown(unittest.TestCase):
             "UNITED STATES TREASURY NOTE DATED DATE 05/31/2022 05/31/2029",
             "UNITED STATES TREASURY NOTE DATED DATE 07/15/2023 07/15/2026",
             # Money-market fund — not a Treasury note, SGOV, NOT a parse fail.
-            "JPMORGAN TR II U S GOVT MONEY MARKET FD CL IM",
+            "HarborORGAN TR II U S GOVT MONEY MARKET FD CL IM",
             # Looks like a Treasury but exposes no maturity → SGOV + unparsed.
             "UNITED STATES TREASURY NOTE DATED DATE",
         ]

@@ -513,20 +513,20 @@ class TestScopedIrrHeadline(unittest.TestCase):
     def test_holdings_filter_still_wins(self):
         cards = self.ps._headline(self._twr_view(self.frames),
                                   self.frames.irr_table, True,
-                                  broker_scope=("Fidelity",))
+                                  broker_scope=("Alpine",))
         self.assertEqual(self._irr_card(cards)["sub"], "Holdings filter active")
 
     def test_scoped_sub_matrix(self):
         import pandas as pd
         finite = pd.DataFrame([{"account_id": "PORTFOLIO", "irr": 0.12}])
         cards = self.ps._headline(self._twr_view(self.frames), finite, False,
-                                  broker_scope=("Fidelity",))
+                                  broker_scope=("Alpine",))
         card = self._irr_card(cards)
-        self.assertEqual(card["sub"], "Money-weighted · Fidelity")
+        self.assertEqual(card["sub"], "Money-weighted · Alpine")
         self.assertNotEqual(card["value"], "—")
         empty = pd.DataFrame(columns=["account_id", "irr"])
         cards = self.ps._headline(self._twr_view(self.frames), empty, False,
-                                  broker_scope=("Fidelity", "JPM"))
+                                  broker_scope=("Alpine", "Harbor"))
         card = self._irr_card(cards)
         self.assertEqual(card["sub"], "Money-weighted · n/a for this selection")
         self.assertEqual(card["value"], "—")

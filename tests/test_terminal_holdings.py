@@ -687,7 +687,7 @@ class TestInterimRollforward(unittest.TestCase):
             interim = pd.DataFrame([{
                 "settlement_date": interim_settle,
                 "trade_date":      interim_settle,
-                "broker":          "fidelity",
+                "broker":          "alpine",
                 "account_id":      "TEST-A",
                 "transaction_type": "buy",
                 "symbol":          "AAA",
@@ -1026,7 +1026,7 @@ class TestApplyGlobalFilters(unittest.TestCase):
         raw = self.broker_by_id[self.ids[0]]
         # broker_scope carries the DISPLAY label of the raw broker value, not
         # the raw value itself (2026-08-07 live-smoke finding: on real data
-        # positions.broker is lowercase "fidelity"/"jpm", which must not leak
+        # positions.broker is lowercase "alpine"/"harbor", which must not leak
         # into the KPI-tape/headline prose). This fixture's raw value happens
         # to equal what _broker_options' (raw, golden-pinned) label already
         # is, so go through the SAME display-casing helper the fix uses
@@ -1037,7 +1037,7 @@ class TestApplyGlobalFilters(unittest.TestCase):
 
     def test_broker_scope_uses_display_labels_not_raw(self):
         """The fixture-from-the-model trap: this fixture's raw broker values
-        ("fidelity"/"jpm") already equal what _broker_options' (raw,
+        ("alpine"/"harbor") already equal what _broker_options' (raw,
         golden-pinned — see _broker_display_label's docstring) label
         returns, so a test that only reaches for _broker_options' label as
         its oracle could never distinguish a correctly display-cased
@@ -1064,7 +1064,7 @@ class TestApplyGlobalFilters(unittest.TestCase):
             transactions=_lower_broker(self.frames.transactions),
             summaries=_lower_broker(self.frames.summaries),
         )
-        expected_label = {"fidelity": "Fidelity", "jpm": "JPM"}
+        expected_label = {"alpine": "Alpine", "harbor": "Harbor"}
         exercised = False
         for bid in self.ids:
             raw = self.broker_by_id[bid].lower()
@@ -1075,7 +1075,7 @@ class TestApplyGlobalFilters(unittest.TestCase):
             self.assertEqual(out.broker_scope, (expected_label[raw],))
             self.assertNotIn(raw, out.broker_scope)
         if not exercised:
-            self.skipTest("fixture has no fidelity/jpm broker to pin")
+            self.skipTest("fixture has no alpine/harbor broker to pin")
 
     def test_floor_banded_scoped_irr_suppressed(self):
         # A scoped recompute pinned at the xirr floor is the PR #147
@@ -1096,7 +1096,7 @@ class TestApplyGlobalFilters(unittest.TestCase):
                              set(out.irr_table["account_id"].astype(str)))
 
     def _inject_demo_broker(self):
-        """Return a frames with a demo-broker ("Fidelity Test") position spliced
+        """Return a frames with a demo-broker ("Alpine Test") position spliced
         into the LATEST snapshot month of BOTH positions and positions_monthly,
         mirroring what load_frames produces on real data (it overlays demo into
         positions, then rebuilds positions_monthly FROM the overlaid positions —
@@ -1107,7 +1107,7 @@ class TestApplyGlobalFilters(unittest.TestCase):
         base = self.frames.positions
         latest = base["statement_date"].max()
         row = base[base["statement_date"] == latest].iloc[[0]].copy()
-        row["broker"] = "Fidelity Test"
+        row["broker"] = "Alpine Test"
         row["account_id"] = "TEST-FID"
         pos = pd.concat([base, row], ignore_index=True)
         # Rebuild positions_monthly from the overlaid positions (as load_frames
@@ -1122,10 +1122,10 @@ class TestApplyGlobalFilters(unittest.TestCase):
         frames = self._inject_demo_broker()
         snap = self.hs._current_snap(frames)
         _, by_id = self.hs._broker_options(snap)
-        demo_id = next(i for i, name in by_id.items() if name == "Fidelity Test")
+        demo_id = next(i for i, name in by_id.items() if name == "Alpine Test")
         out = self.hs.apply_global_filters(frames, [demo_id])
         self.assertEqual(set(out.positions["broker"].astype(str)),
-                         {"Fidelity Test"})       # demo only
+                         {"Alpine Test"})       # demo only
         # S2b: the recompute runs on the NARROWED twr_account. The injected
         # demo broker has positions but NO twr_account rows, so the narrowed
         # per-account frame is empty and the recompute yields an empty
@@ -1159,7 +1159,7 @@ class TestApplyGlobalFilters(unittest.TestCase):
         frames = replace(demo_frames, twr_account=twr_acct, summaries=summ)
         snap = self.hs._current_snap(frames)
         _, by_id = self.hs._broker_options(snap)
-        demo_id = next(i for i, n in by_id.items() if n == "Fidelity Test")
+        demo_id = next(i for i, n in by_id.items() if n == "Alpine Test")
         out = self.hs.apply_global_filters(frames, [demo_id])
         self.assertNotIn(real_acct, set(out.twr_account["account_id"].astype(str)))   # real per-account $ gone
         self.assertTrue(out.summaries.empty)                                          # real summaries gone
@@ -1182,7 +1182,7 @@ class TestApplyGlobalFilters(unittest.TestCase):
         frames = replace(demo_frames, twr_account=twr_acct)
         snap = self.hs._current_snap(frames)
         _, by_id = self.hs._broker_options(snap)
-        demo_id = next(i for i, n in by_id.items() if n == "Fidelity Test")
+        demo_id = next(i for i, n in by_id.items() if n == "Alpine Test")
         out = self.hs.apply_global_filters(frames, [demo_id])
         self.assertFalse(out.twr_portfolio.empty)                    # recomputed
         # the recompute saw ONLY the demo account (real row narrowed out first)
@@ -1207,7 +1207,7 @@ class TestApplyGlobalFilters(unittest.TestCase):
         frames = replace(self._inject_demo_broker(), twr_account=pd.DataFrame())
         snap = self.hs._current_snap(frames)
         _, by_id = self.hs._broker_options(snap)
-        demo_id = next(i for i, n in by_id.items() if n == "Fidelity Test")
+        demo_id = next(i for i, n in by_id.items() if n == "Alpine Test")
         out = self.hs.apply_global_filters(frames, [demo_id])   # must not raise
         self.assertTrue(out.twr_portfolio.empty)
 

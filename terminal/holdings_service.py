@@ -94,8 +94,8 @@ CLASS_LABELS = {
 }
 
 ACCOUNT_BUCKETS_FIXED     = cfg.ACCOUNT_BUCKETS_FIXED
-FIDELITY_TOD_ACCOUNTS     = cfg.FIDELITY_TOD_ACCOUNTS
-FIDELITY_CORE_ETF_SYMBOLS = cfg.FIDELITY_CORE_ETF_SYMBOLS
+TOD_SPLIT_ACCOUNTS     = cfg.TOD_SPLIT_ACCOUNTS
+TOD_CORE_ETF_SYMBOLS = cfg.TOD_CORE_ETF_SYMBOLS
 ACCOUNT_DISPLAY           = cfg.ACCOUNT_DISPLAY
 ETF_TICKER_CLASS          = getattr(cfg, "ETF_TICKER_CLASS", {})
 _NAME_TO_TICKER           = cfg.NAME_TO_TICKER
@@ -153,11 +153,11 @@ def _account_bucket(account_id: str, symbol: str | float) -> str:
     fixed = ACCOUNT_BUCKETS_FIXED.get(account_id)
     if fixed is not None:
         return fixed
-    if account_id in FIDELITY_TOD_ACCOUNTS:
+    if account_id in TOD_SPLIT_ACCOUNTS:
         sym = symbol.strip().upper() if isinstance(symbol, str) else ""
-        if sym in FIDELITY_CORE_ETF_SYMBOLS:
-            return "Fidelity Core ETFs"
-        return "Fidelity Individual Stocks"
+        if sym in TOD_CORE_ETF_SYMBOLS:
+            return "Core ETFs"
+        return "Individual Stocks"
     return f"Other ({account_id})"
 
 
@@ -181,7 +181,7 @@ def collapse_buckets(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         return df
     is_tlh = df["asset_class"] == "tax_loss_harvesting"
-    is_tlad = df["bucket"] == "JPM Treasury Ladder"
+    is_tlad = df["bucket"] == "Treasury Ladder"
     keep = df[~is_tlh & ~is_tlad].copy()
 
     extras: list[dict] = []
@@ -191,10 +191,10 @@ def collapse_buckets(df: pd.DataFrame) -> pd.DataFrame:
             "display_symbol":     "Tax Loss Harvesting (TLH)",
             "description_clean":  f"{len(sub)} positions aggregated",
             "symbol":             "",
-            "bucket":             "JPM Tax Loss Harvesting",
+            "bucket":             "Tax Loss Harvesting",
             "asset_class":        "tax_loss_harvesting",
             "asset_class_label":  CLASS_LABELS["tax_loss_harvesting"],
-            "broker":             "jpm",
+            "broker":             "harbor",
             "account_id":         cfg.TLH_ACCOUNT_ID,
             "quantity":           np.nan,
             "price":              np.nan,
@@ -208,10 +208,10 @@ def collapse_buckets(df: pd.DataFrame) -> pd.DataFrame:
             "display_symbol":     "Treasury Ladder",
             "description_clean":  f"{len(sub)} treasuries aggregated",
             "symbol":             "",
-            "bucket":             "JPM Treasury Ladder",
+            "bucket":             "Treasury Ladder",
             "asset_class":        "fixed_income",
             "asset_class_label":  CLASS_LABELS["fixed_income"],
-            "broker":             "jpm",
+            "broker":             "harbor",
             "account_id":         cfg.TREASURY_LADDER_ACCOUNT_ID,
             "quantity":           np.nan,
             "price":              np.nan,
@@ -928,11 +928,11 @@ BENCH_SHORT = {"spy": "SPY", "60_40": "60/40"}
 
 def resolve_benchmark(requested: str, broker_scope: tuple[str, ...] | None) -> str:
     """Map the request sentinel 'auto' to a concrete benchmark id from the
-    broker scope: a JPM-only book resembles a 60/40 mix, so it defaults to the
+    broker scope: a Harbor-only book resembles a 60/40 mix, so it defaults to the
     blend; every other scope defaults to SPY. Explicit ids pass through."""
     if requested in BENCHMARKS:
         return requested
-    return "60_40" if broker_scope == ("JPM",) else "spy"
+    return "60_40" if broker_scope == ("Harbor",) else "spy"
 
 
 def _bench_tr_series(frames: Frames, benchmark: str = "spy") -> pd.Series:
@@ -1187,8 +1187,8 @@ def _broker_options(snap_all: pd.DataFrame) -> tuple[list[dict], dict]:
 def _broker_display_label(raw: str) -> str:
     """Prose casing for a raw broker id, derived by rule so no broker name is
     ever hardcoded: a short all-lower id (<= 3 chars) reads as an initialism
-    (``"jpm"`` -> ``"JPM"``); anything else gets its first letter upper-cased
-    (``"fidelity"`` -> ``"Fidelity"``), a no-op when already cased."""
+    (``"harbor"`` -> ``"Harbor"``); anything else gets its first letter upper-cased
+    (``"alpine"`` -> ``"Alpine"``), a no-op when already cased."""
     if not raw:
         return raw
     if raw.isascii() and raw.isalpha() and raw.islower() and len(raw) <= 3:
@@ -1207,7 +1207,7 @@ def data_brokers(frames: "Frames") -> list[str]:
 
 def canonical_broker_label(frames: "Frames") -> str:
     """Prose label for the unfiltered book, derived from the data — a
-    ``{fidelity, jpm}`` book renders ``"Fidelity + JPM"``. Every caption or
+    ``{alpine, harbor}`` book renders ``"Alpine + Harbor"``. Every caption or
     facts block naming the canonical scope MUST use this rather than a
     literal, so the label follows whatever brokers the data actually holds.
     ``"Portfolio"`` when no broker column is loaded."""

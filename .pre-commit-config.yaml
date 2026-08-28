@@ -5,3 +5,13 @@ repos:
     rev: b813e6fe08b87541cb77296359ba1b7a50a00c98  # v8.18.0
     hooks:
       - id: gitleaks
+  - repo: local
+    hooks:
+      # Tripwire: this repository ships no real broker or bank identity.
+      # gitleaks detects secrets, not names — this closes that gap.
+      - id: no-real-institution-names
+        name: block real institution names
+        entry: '(?i)fidelity|jpmorgan|\bjpm\b|\bchase\b|\bschwab\b|vanguard'
+        language: pygrep
+        types: [text]
+        exclude: ^\.pre-commit-config\.yaml$

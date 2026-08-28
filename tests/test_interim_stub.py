@@ -189,7 +189,7 @@ def stub_fixture(tmpdir: Path, *, bump_days: int = 20, interim: bool = True) -> 
         ]
         pd.DataFrame([{
             "settlement_date": d.strftime("%Y-%m-%d"), "trade_date": d.strftime("%Y-%m-%d"),
-            "broker": "fidelity", "account_id": acct, "transaction_type": t,
+            "broker": "alpine", "account_id": acct, "transaction_type": t,
             "symbol": "", "cusip": "", "description": f"synthetic {t}",
             "quantity": 0.0, "price": 0.0, "amount": amt,
             "source_file": "test", "flow_scope": (scope or ""),

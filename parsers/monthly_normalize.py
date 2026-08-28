@@ -14,7 +14,7 @@ def monthly_normalize(positions: pd.DataFrame) -> pd.DataFrame:
     """
     Normalize positions to one snapshot per (account, calendar month).
 
-    JPM reports on the last business day, Fidelity on the last calendar day,
+    Harbor reports on the last business day, Alpine on the last calendar day,
     so the same month can have two statement_dates. For each (account, month)
     keep the position-set whose statement_date is latest in that month.
 
@@ -22,9 +22,9 @@ def monthly_normalize(positions: pd.DataFrame) -> pd.DataFrame:
     global latest month:
 
       - INTERNAL gap — a month between an account's first and last real
-        statement (e.g. a Fidelity TOD account skips a calendar month).
+        statement (e.g. a Alpine TOD account skips a calendar month).
       - TRAILING gap — a month AFTER an account's last real statement, when
-        that account lags the newest broker statement (e.g. Fidelity issued
+        that account lags the newest broker statement (e.g. Alpine issued
         May statements for most accounts but not for a lagging one). Without
         this the lagging account silently drops out of the latest snapshot
         (~$89K vanishing from Holdings/NAV), instead of showing last-known.
@@ -111,7 +111,7 @@ def month_canonical_dates(positions: pd.DataFrame) -> list[pd.Timestamp]:
     accounts — the same date `monthly_normalize` stamps on filled rows
     (``groupby('month')['statement_date'].max()``) and the date
     mark-to-market marks. Feeds the Holdings "as of" picker so a dual-date
-    month (JPM last-biz-day vs Fidelity month-end) offers ONE entry whose
+    month (Harbor last-biz-day vs Alpine month-end) offers ONE entry whose
     month-slice is the full portfolio, not one broker's partial slice (WSF-2).
 
     Empty / column-less frame -> empty list.

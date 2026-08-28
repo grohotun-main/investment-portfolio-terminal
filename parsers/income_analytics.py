@@ -33,7 +33,7 @@ _NOT_YIELD_RE = re.compile(r"CASH IN LIEU|IN LIEU OF|\bCIL\b", re.I)
 
 # Structurally income-free classes. Everything ELSE with a non-blank
 # symbol is a dividend-channel candidate: broker/display classes are
-# unreliable (JPM files SGOV under fixed income; the app reclasses
+# unreliable (Harbor files SGOV under fixed income; the app reclasses
 # TLH-account rows to tax_loss_harvesting and commodity ETFs to gold),
 # so candidacy is symbol-driven. Options are excluded by class because a
 # leg carries its underlying's symbol (a SPY put says "SPY"); cash rows
@@ -49,7 +49,7 @@ _FWD_COLS = ["symbol", "quantity", "market_value", "cost_basis", "covered",
 # "4.12500%" in a bond description -> the coupon; first match wins.
 _COUPON_RE = re.compile(r"(\d+(?:\.\d+)?)\s*%")
 # MM/DD/YYYY tokens; the LATEST one in a Treasury description is the
-# maturity (the dated date precedes it in JPM's format).
+# maturity (the dated date precedes it in Harbor's format).
 _MDY_RE = re.compile(r"\b\d{1,2}/\d{1,2}/\d{4}\b")
 
 
@@ -89,7 +89,7 @@ def _income_rows(tx: pd.DataFrame) -> pd.DataFrame:
     """Income-type rows with a coalesced `when` date and numeric `amount`.
 
     `when` is the settlement_date, falling back to trade_date when
-    settlement is missing/unparseable — interim-CSV and some JPM income
+    settlement is missing/unparseable — interim-CSV and some Harbor income
     rows file a NaT settlement but carry a valid trade date, and dropping
     them silently understated the actuals (WSD-1). Rows with neither
     parseable date are still dropped (genuinely undateable). The single
@@ -352,7 +352,7 @@ def forward_income(positions: pd.DataFrame,
         pos[col] = pd.to_numeric(pos[col], errors="coerce").fillna(0.0)
     nav = float(pos["market_value"].sum())
     # Quantity held in lots whose cost is known. A symbol can mix costed
-    # and cost-less lots (JPM statements omit cost); YoC must price only
+    # and cost-less lots (Harbor statements omit cost); YoC must price only
     # the costed lots' share of income, not all income over partial cost.
     pos["_qty_costed"] = pos["quantity"].where(pos["cost_basis"] > 0, 0.0)
 

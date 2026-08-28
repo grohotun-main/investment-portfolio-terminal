@@ -10,12 +10,12 @@ DESIGN: idempotent and transient (mirrors parsers/ingest_csv_activity.py).
     is NaN). New (account, key) combinations get fresh rows. Basing each
     account on its own latest statement — not the broker's global latest — is
     load-bearing: an account lagging the newest broker statement (e.g. a
-    Fidelity sleeve with no May statement while the others have one) must
+    Alpine sleeve with no May statement while the others have one) must
     still roll forward, or its interim trades attach to nothing and the whole
     account collapses to the net of those trades.
   - Option legs arrive as contract symbols that never match the statement's
-    bare-underlying option rows by key — Fidelity OCC ("-SPY261218P575") or
-    JPM display format ("SPY DEC 26 PUT 650.00"). They're mapped onto the
+    bare-underlying option rows by key — Alpine OCC ("-SPY261218P575") or
+    Harbor display format ("SPY DEC 26 PUT 650.00"). They're mapped onto the
     statement row for the SAME CONTRACT (underlying + put/call + expiry +
     strike, read from whichever side spells it out; a close with no exact
     match falls back to the first free same-underlying row): a close (net
@@ -23,8 +23,8 @@ DESIGN: idempotent and transient (mirrors parsers/ingest_csv_activity.py).
     into it, and an open with no base row books a fresh option_put/option_call
     row at premium. Quantity is authoritative for option legs whatever the
     ingest type — the `other`-typed expirations / journals through which
-    contracts leave an account with no cash (Fidelity "EXPIRED ...", JPM
-    "Journal") close them too. (Aug 2026: JPM legs used to fall into the
+    contracts leave an account with no cash (Alpine "EXPIRED ...", Harbor
+    "Journal") close them too. (Aug 2026: Harbor legs used to fall into the
     equity path as "brand-new symbols", booking negative phantom rows while
     the statement puts were carried forward; expired calls lingered at cost.)
   - Cash positions (asset_class == "cash") absorb the net per-account cash
@@ -61,7 +61,7 @@ Per-transaction rules (applied to position quantity and account cash):
                                             journal — no cash)
   dividend / interest / other / etc.:       no quantity change
   exchange:                                 skipped entirely (no qty, no cash)
-  other (security exchange leg): a Fidelity fund-exchange leg mis-typed `other`
+  other (security exchange leg): a Alpine fund-exchange leg mis-typed `other`
     but carrying a real quantity + non-zero amount + security key (not an option)
     is applied as a buy/sell — quantity participates and cash is taken from the
     trade DIRECTION (buy=cash out), since the broker's `amount` sign on these
@@ -71,7 +71,7 @@ Per-transaction rules (applied to position quantity and account cash):
     (securities-lending in/out legs) DO match but net to 0 shares / 0 cash.
   Every type EXCEPT `exchange` contributes its `amount` to the per-account
   cash delta — including `other`, which carries internal-pair cash transfers
-  (JPM Journal / Fidelity transfer pairs) that net to zero portfolio-wide.
+  (Harbor Journal / Alpine transfer pairs) that net to zero portfolio-wide.
 
 Run modes:
   python parsers/synthesize_interim_positions.py             # dry-run + samples
@@ -102,7 +102,7 @@ QTY_TYPES = {"buy", "sell", "reinvestment", "stock_split"}
 # `exchange` is a corp-action share-for-share swap where the "FROM" leg may not
 # be held under a matching identifier at Apr 30, and we have no live price for
 # the new symbol — better to omit than to fabricate. `other` is NOT skipped:
-# it covers internal-pair cash transfers (JPM Journal, Fidelity transfer pairs)
+# it covers internal-pair cash transfers (Harbor Journal, Alpine transfer pairs)
 # where we want the cash side, but its few corp-action members (Carnival paired
 # stock) have amount=NaN so they no-op naturally on the cash side and we leave
 # their quantity alone (Carnival share-class rename has no economic effect).
@@ -134,20 +134,20 @@ def _key_for(symbol: object, cusip: object) -> str | None:
 
 
 # OCC-style option symbol, e.g. "-SPY261218P575" => underlying SPY, put.
-# The leading "-" and short (non-zero-padded) strike are Fidelity activity-CSV
+# The leading "-" and short (non-zero-padded) strike are Alpine activity-CSV
 # quirks; the date is always 6 digits and the type is the C/P before the strike.
 _OCC_RE = re.compile(r"^-?([A-Za-z.]+)(\d{6})([CP])(\d+(?:\.\d+)?)$")
-# JPM display-format option symbol (the interim CSV's Ticker column), e.g.
+# Harbor display-format option symbol (the interim CSV's Ticker column), e.g.
 # "SPY DEC 26 PUT 650.00" — expiry MONTH only; the day rides in the description.
 _MONTHS = {"JAN": 1, "FEB": 2, "MAR": 3, "APR": 4, "MAY": 5, "JUN": 6,
            "JUL": 7, "AUG": 8, "SEP": 9, "OCT": 10, "NOV": 11, "DEC": 12}
 _DISPLAY_LEG_RE = re.compile(
     r"^([A-Z][A-Z0-9.]*)\s+(JAN|FEB|MAR|APR|MAY|JUN|JUL|AUG|SEP|OCT|NOV|DEC)\s+"
     r"(\d{2})\s+(CALL|PUT)\s+([\d.,]+)$")
-# The full contract as brokers spell it in a description — JPM position and
+# The full contract as brokers spell it in a description — Harbor position and
 # activity rows ("PUT SPY 12/18/26 650 STATE STREET ...") and the OCC symbol
-# Fidelity appends to its statement rows ("... (100 SHS) (NVDA261218P115)").
-_JPM_DESC_RE = re.compile(
+# Alpine appends to its statement rows ("... (100 SHS) (NVDA261218P115)").
+_Harbor_DESC_RE = re.compile(
     r"^\s*(PUT|CALL)\s+([A-Z][A-Z0-9.]*)\s+(\d{2})/(\d{2})/(\d{2})\s+"
     r"(\d+(?:\.\d+)?)\b", re.I)
 _FID_DESC_OCC_RE = re.compile(r"\(([A-Z][A-Z.]*)(\d{6})([CP])(\d+(?:\.\d+)?)\)")
@@ -201,7 +201,7 @@ def _parse_option_leg(symbol: object) -> tuple[str, str] | None:
 
     Statement option rows carry the bare underlying as `symbol` (e.g. "SPY")
     with asset_class option_put/option_call, but interim activity rows carry
-    a CONTRACT symbol — Fidelity OCC ("-SPY261218P575") or JPM display format
+    a CONTRACT symbol — Alpine OCC ("-SPY261218P575") or Harbor display format
     ("SPY DEC 26 PUT 650.00") — so they never match by `_key_for`. Returns
     None for anything that isn't an option contract symbol (plain tickers,
     bonds)."""
@@ -220,12 +220,12 @@ def _parse_option_leg(symbol: object) -> tuple[str, str] | None:
 def _contract_key(symbol: object, description: object) -> tuple | None:
     """(underlying, type, year, month, day|None, strike) identifying ONE
     contract, read from whichever of symbol / description spells it out:
-    a JPM description ("PUT SPY 12/18/26 650 ..."), the OCC symbol Fidelity
+    a Harbor description ("PUT SPY 12/18/26 650 ..."), the OCC symbol Alpine
     appends to statement descriptions ("(NVDA261218P115)") or carries as the
-    activity symbol ("-NVDA261218P115"), else the JPM display symbol — whose
+    activity symbol ("-NVDA261218P115"), else the Harbor display symbol — whose
     expiry is month-only, so ``day`` is None there."""
     desc = description if isinstance(description, str) else ""
-    m = _JPM_DESC_RE.match(desc)
+    m = _Harbor_DESC_RE.match(desc)
     if m:
         return (m.group(2).upper(),
                 "put" if m.group(1).upper() == "PUT" else "call",
@@ -259,7 +259,7 @@ def _same_contract(a: tuple | None, b: tuple | None) -> bool:
 
 def _is_security_exchange_leg(r: dict) -> bool:
     """True for an `other`-typed row that is really a security buy/sell leg
-    mis-typed at ingest (e.g. a Fidelity fund exchange): qty-bearing, a real
+    mis-typed at ingest (e.g. a Alpine fund exchange): qty-bearing, a real
     NON-ZERO cash amount, a security key, not an option, not an internal
     transfer. The action that would name it ("EXCHANGE"/"TRANSFERRED"/...) is
     lost at ingest, so this is a structural heuristic, not an exact classifier:
@@ -317,7 +317,7 @@ def _rescue_by_name(records: list[dict], account: str, description: object,
 
     Brokers print a cash-merger / redemption out-leg under the identifier
     the action left behind — a cusip the statement never printed for the
-    equity (JPM equities are symbol-keyed on statements) — so the exact
+    equity (Harbor equities are symbol-keyed on statements) — so the exact
     key misses. Both sides print the security NAME: match on the run of
     leading tokens (row side: the text before the first cusip-shaped
     token; statement side: the whole description), strict unique maximum
@@ -419,7 +419,7 @@ def synthesize_interim_positions(
     for broker, bro_pos_all in positions.groupby("broker"):
         # Base each account on ITS OWN latest statement, not the broker's
         # global latest. An account lagging the newest broker statement (e.g.
-        # Fidelity issued May statements for most accounts but never one for
+        # Alpine issued May statements for most accounts but never one for
         # an individual-stocks sleeve) must still roll its last-known
         # holdings forward. Filtering to the broker-global max date instead
         # drops the lagging account's base, so its interim trades attach to
@@ -513,7 +513,7 @@ def synthesize_interim_positions(
             # reinvestment on a since-sold position); re-applying those rows
             # resurrects phantom holdings and double-counts cash. settlement_date
             # is authoritative; fall back to trade_date when the broker leaves it
-            # blank (Fidelity DRIP rows). Unknown date, or an account with no
+            # blank (Alpine DRIP rows). Unknown date, or an account with no
             # base statement -> keep (don't drop genuinely new activity).
             base_d = acct_base_date.get(account)
             eff_d = r.get("settlement_date")
@@ -544,14 +544,14 @@ def synthesize_interim_positions(
             # Option leg: route to the contract-aware apply step (below)
             # rather than the bare-symbol equity path, so it maps onto the
             # right statement row instead of fabricating a phantom row keyed
-            # on the contract symbol (the Aug 2026 negative JPM puts).
+            # on the contract symbol (the Aug 2026 negative Harbor puts).
             leg = _parse_option_leg(r["symbol"])
             if leg is not None:
                 qd = r.get("quantity")
                 # Quantity is authoritative for option legs whatever the
                 # ingest type: buys/sells, AND the `other`-typed expirations /
                 # journals through which contracts leave an account with no
-                # cash (Fidelity "EXPIRED ..." qty<0 amount 0, JPM "Journal"
+                # cash (Alpine "EXPIRED ..." qty<0 amount 0, Harbor "Journal"
                 # qty<0 amount NaN). Ignoring those left expired calls on the
                 # book at cost.
                 if ((ttype in QTY_TYPES or ttype == "other")

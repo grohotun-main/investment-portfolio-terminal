@@ -12,12 +12,12 @@ The broker statement's section header is not a reliable source of truth for a
 security's asset class:
 
   * Commodity tickers (GLD, IAU, ...) are tagged inconsistently across sources
-    (JPM "other", Fidelity "fixed_income", test brokers "gold"). Without an
+    (Harbor "other", Alpine "fixed_income", test brokers "gold"). Without an
     override the Risk-tab Class filter misclassifies them and HHI / sector
     weights are wrong.
-  * Fidelity's May-2026 statement format dropped its "Exchange Traded Products"
-    section and listed ETFs (SPY, SGOV, GLD) under "Stocks / Common Stock", so
-    the holdings parser tagged them ``equity_stock``. The caller-supplied
+  * Some statement formats have no dedicated "Exchange Traded Products"
+    section and list ETFs (SPY, SGOV, GLD) under "Stocks / Common Stock", so
+    the holdings pipeline tags them ``equity_stock``. The caller-supplied
     ``etf_class`` map (ticker -> canonical class) restores the right class
     regardless of which section a given month's statement filed the security
     under.
@@ -27,7 +27,7 @@ from __future__ import annotations
 import re
 
 # Broker DISPLAY-format option symbol, e.g. "SPY DEC 26 PUT 650.00" — the form
-# interim JPM option activity uses (OCC is "-SPY261218P575"). Captures the
+# interim Harbor option activity uses (OCC is "-SPY261218P575"). Captures the
 # CALL/PUT side; the underlying / strike are not needed for classification.
 _DISPLAY_OPT_RE = re.compile(
     r"^[A-Z][A-Z.]*\s+"
@@ -39,7 +39,7 @@ def _display_option_class(sym: str) -> str | None:
     """``option_call`` / ``option_put`` for a broker DISPLAY-format option
     symbol, else None.
 
-    Interim JPM option legs arrive in this display format rather than OCC, so
+    Interim Harbor option legs arrive in this display format rather than OCC, so
     the synthesizer's OCC regex misses them and books the leg
     ``asset_class='other'`` — which would let it slip into the income
     dividend-channel universe (audit WSD-3). ``sym`` is expected upper-cased."""
@@ -70,7 +70,7 @@ def reclass_asset(account_id: str, symbol: str | float, asset_class: str, *,
     Rules, first match wins:
       1. Everything in the Tax Loss Harvesting account is ``tax_loss_harvesting``.
       2. A broker DISPLAY-format option leg currently booked ``other`` (interim
-         JPM activity, e.g. "SPY DEC 26 PUT 650.00") -> ``option_put`` /
+         Harbor activity, e.g. "SPY DEC 26 PUT 650.00") -> ``option_put`` /
          ``option_call`` so the income engine's class exclusion catches it.
       3. Commodity tickers (GLD, IAU, ...) -> their canonical class regardless
          of the broker tag.

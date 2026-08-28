@@ -28,7 +28,7 @@ from parsers.tax_scanner import (  # noqa: E402
 
 def _tx(rows):
     """Minimal canonical transactions frame for the scanner."""
-    base = {"settlement_date": None, "trade_date": None, "broker": "jpm",
+    base = {"settlement_date": None, "trade_date": None, "broker": "harbor",
             "account_id": "TAX-1", "transaction_type": "buy", "symbol": "AAA",
             "cusip": None, "description": "ALPHA TRUST", "quantity": 1.0,
             "price": 10.0, "amount": -10.0, "source_file": "t.pdf",
@@ -694,25 +694,25 @@ class TestWashCheck(unittest.TestCase):
         self.assertEqual(len(chk), 1)
         self.assertEqual(chk.iloc[0]["realized_gl"], -140.0)
 
-    def test_fidelity_loss_sells_are_outside_the_denominator(self):
+    def test_alpine_loss_sells_are_outside_the_denominator(self):
         tx = self._tx_with_sell("W")
-        tx.loc[5, "broker"] = "fidelity"
+        tx.loc[5, "broker"] = "alpine"
         chk = wash_check(_realizations([{}]), tx)
         self.assertTrue(chk.empty)
         # the falsifier's twin: nothing counted the excluded row before --
         # the report read "638 judged" as if that were the whole loss-sell
-        # population, silently dropping every Fidelity row off the books
+        # population, silently dropping every Alpine row off the books
         self.assertEqual(chk.attrs.get("excluded_other_broker"), 1)
 
-    def test_mixed_broker_loss_sells_excludes_only_non_jpm(self):
-        # a JPM sell alongside a Fidelity one must still be judged; only
-        # the Fidelity row leaves the judged universe
+    def test_mixed_broker_loss_sells_excludes_only_non_harbor(self):
+        # a Harbor sell alongside a Alpine one must still be judged; only
+        # the Alpine row leaves the judged universe
         rows = [{"trade_date": f"2026-0{i+1}-01"} for i in range(5)]
         rows.append({"trade_date": "2026-07-01", "transaction_type": "sell",
                      "quantity": -10.0, "amount": 400.0,
-                     "broker": "fidelity"})
+                     "broker": "alpine"})
         rows.append({"trade_date": "2026-07-01", "transaction_type": "sell",
-                     "quantity": -10.0, "amount": 400.0, "broker": "jpm"})
+                     "quantity": -10.0, "amount": 400.0, "broker": "harbor"})
         tx = _tx(rows)
         chk = wash_check(
             _realizations([{"source_row": 5}, {"source_row": 6}]), tx)
@@ -758,22 +758,22 @@ class TestWashCheck(unittest.TestCase):
         self.assertEqual(chk.attrs.get("forward_unobserved"), 0)
 
     def test_broker_frontiers_are_recorded_per_broker(self):
-        # fidelity's own latest observed row lags jpm's by two weeks --
+        # alpine's own latest observed row lags harbor's by two weeks --
         # the per-broker breakdown the report needs to show that the
         # max-over-frame frontier is not every broker's own frontier
         tx = self._tx_with_sell(None)
         extra = tx.iloc[[0]].copy()
         extra["trade_date"] = "2026-06-15"
-        extra["broker"] = "fidelity"
+        extra["broker"] = "alpine"
         tx = pd.concat([tx, extra], ignore_index=True)
         chk = wash_check(_realizations([{}]), tx)
         self.assertEqual(chk.attrs.get("broker_frontiers"),
-                         {"jpm": "2026-07-01", "fidelity": "2026-06-15"})
+                         {"harbor": "2026-07-01", "alpine": "2026-06-15"})
 
     def test_broker_frontiers_single_broker_book(self):
         chk = wash_check(_realizations([{}]), self._tx_with_sell(None))
         self.assertEqual(chk.attrs.get("broker_frontiers"),
-                         {"jpm": "2026-07-01"})
+                         {"harbor": "2026-07-01"})
 
 
 class TestScannerCli(unittest.TestCase):

@@ -3014,17 +3014,17 @@ class TestConditionalCorrelationMatrix(unittest.TestCase):
 
 class TestWeightsPerSnapMonthly(unittest.TestCase):
     """WSF-1: the historical daily synthesis must use ONE weight snapshot per
-    calendar month. A dual-date month (JPM stamps the last business day,
-    Fidelity stamps month-end) must NOT split into two one-broker snapshots
+    calendar month. A dual-date month (Harbor stamps the last business day,
+    Alpine stamps month-end) must NOT split into two one-broker snapshots
     that each own a sub-segment of the synthesis with half the portfolio."""
 
     def test_coalesces_dual_date_month_into_one_snapshot(self) -> None:
-        # JPM May 29 + Fidelity May 31 are one month-end snapshot split across
+        # Harbor May 29 + Alpine May 31 are one month-end snapshot split across
         # two filing dates -> ONE snapshot, keyed by the month's latest date,
         # built from BOTH brokers' rows.
         pos = pd.DataFrame([
-            {"statement_date": pd.Timestamp("2026-05-29"), "broker": "jpm"},
-            {"statement_date": pd.Timestamp("2026-05-31"), "broker": "fidelity"},
+            {"statement_date": pd.Timestamp("2026-05-29"), "broker": "harbor"},
+            {"statement_date": pd.Timestamp("2026-05-31"), "broker": "alpine"},
         ])
         seen_brokers = []
 
@@ -3034,12 +3034,12 @@ class TestWeightsPerSnapMonthly(unittest.TestCase):
 
         out = rm.weights_per_snap_monthly(pos, build)
         self.assertEqual(list(out.keys()), [pd.Timestamp("2026-05-31")])
-        self.assertEqual(seen_brokers, [["fidelity", "jpm"]])
+        self.assertEqual(seen_brokers, [["alpine", "harbor"]])
 
     def test_separate_months_stay_separate(self) -> None:
         pos = pd.DataFrame([
-            {"statement_date": pd.Timestamp("2026-04-30"), "broker": "jpm"},
-            {"statement_date": pd.Timestamp("2026-05-31"), "broker": "jpm"},
+            {"statement_date": pd.Timestamp("2026-04-30"), "broker": "harbor"},
+            {"statement_date": pd.Timestamp("2026-05-31"), "broker": "harbor"},
         ])
         out = rm.weights_per_snap_monthly(
             pos, lambda s: pd.Series({"AGG": 1.0}))
@@ -3049,7 +3049,7 @@ class TestWeightsPerSnapMonthly(unittest.TestCase):
 
     def test_skips_months_with_empty_weights(self) -> None:
         pos = pd.DataFrame([
-            {"statement_date": pd.Timestamp("2026-05-31"), "broker": "jpm"},
+            {"statement_date": pd.Timestamp("2026-05-31"), "broker": "harbor"},
         ])
         out = rm.weights_per_snap_monthly(
             pos, lambda s: pd.Series(dtype=float))

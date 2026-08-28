@@ -1,7 +1,7 @@
 {
   "section": "benchmark",
   "scope": {
-    "broker": "Fidelity + JPM",
+    "broker": "Alpine + Harbor",
     "history_start": "all"
   },
   "benchmark": {

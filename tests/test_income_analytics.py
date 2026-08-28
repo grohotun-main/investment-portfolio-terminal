@@ -168,7 +168,7 @@ class TestIncomeTimeseries(unittest.TestCase):
 
     def test_nat_settlement_falls_back_to_trade_date(self) -> None:
         # WSD-1: a real dividend whose settlement_date is blank/unparseable
-        # (interim CSV / some JPM income rows) must still be counted via its
+        # (interim CSV / some Harbor income rows) must still be counted via its
         # trade_date instead of being silently dropped.
         ts = income_timeseries(_tx_st([
             (None, "2026-01-15", "dividend", 250.00),
@@ -449,7 +449,7 @@ class TestForwardIncomeSpecials(unittest.TestCase):
 
 class TestForwardIncomeEligibility(unittest.TestCase):
     """Dividend-channel candidacy is symbol-driven: broker/display classes
-    are unreliable (JPM files SGOV under fixed income; the app reclasses
+    are unreliable (Harbor files SGOV under fixed income; the app reclasses
     TLH-account rows and gold ETFs). Only options and cash are structural
     non-candidates."""
     ASOF = date(2026, 6, 10)
@@ -508,7 +508,7 @@ class TestForwardIncomeEligibility(unittest.TestCase):
         self.assertAlmostEqual(roll["covered_mv"], 60000.0, places=6)
 
     def test_partial_cost_symbol_yoc_prorated_to_known_lots(self) -> None:
-        # SGOV-style: one lot with cost, one without (JPM statements omit
+        # SGOV-style: one lot with cost, one without (Harbor statements omit
         # it). YoC must price only the cost-known lot's income — not the
         # whole symbol's income over the known lot's cost (19% mirage).
         pos = _positions([("SGOV", "equity_stock", 100, 10000.0, 10000.0),
@@ -587,7 +587,7 @@ class TestForwardIncomeCouponChannel(unittest.TestCase):
         self.assertAlmostEqual(roll["projected_12m"], 600.0, places=6)
 
     def test_covered_symbol_takes_dividend_channel_not_coupon(self) -> None:
-        # SGOV-at-JPM: fixed_income class but the symbol has a history
+        # SGOV-at-Harbor: fixed_income class but the symbol has a history
         # file -> dividend channel only, no duplicate coupon row.
         pos = pd.DataFrame([_prow(
             symbol="SGOV", asset_class="fixed_income", quantity=3980.0,

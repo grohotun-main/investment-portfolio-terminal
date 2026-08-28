@@ -402,12 +402,10 @@ function renderChrome(meta) {
   buildMultiSelect('ms-broker', 'broker', _brokerAllLabel(bopts), bopts);
 }
 
-/* Display-layer capitalization (fidelity -> Fidelity, jpm -> JPM); ids stay
-   lowercase for the API. Unknown brokers keep their server label (the demo
-   brokers already arrive nicely labeled). */
+/* Display-layer capitalization derived by rule (prettyBroker); ids stay
+   lowercase for the API. Already-cased server labels pass through unchanged. */
 function _brokerOpts(meta) {
-  const nice = { fidelity: 'Fidelity', jpm: 'JPM' };
-  return (meta.brokers || []).map((b) => (nice[b.id] ? { ...b, label: nice[b.id] } : b));
+  return (meta.brokers || []).map((b) => ({ ...b, label: prettyBroker(b.label || b.id) }));
 }
 
 /* The broker pill's nothing-checked state is the server's REAL-broker default
@@ -710,9 +708,12 @@ function renderAllocAccount(a) {
   card.appendChild(foot);
 }
 function prettyBroker(b) {
-  if (b === 'fidelity') return 'Fidelity';
-  if (b === 'jpm') return 'JPM';
-  return b ? b.charAt(0).toUpperCase() + b.slice(1) : '';
+  /* Rule-based (mirrors the service's _broker_display_label): a short
+     all-lower id (<= 3 chars) reads as an initialism; anything else gets
+     its first letter upper-cased. No broker name is ever hardcoded. */
+  if (!b) return '';
+  if (/^[a-z]{1,3}$/.test(b)) return b.toUpperCase();
+  return b.charAt(0).toUpperCase() + b.slice(1);
 }
 
 /* ============ TOP HOLDINGS ============ */
@@ -1159,7 +1160,7 @@ function renderAiAnalysis(data) {
   const bcap = $('ai-benchmark-cap');
   if (bcap) {
     if (_benchState.bench === 'auto' && bm.id === '60_40') {
-      bcap.textContent = 'Auto → 60/40 · the JPM book resembles a 60/40 mix';
+      bcap.textContent = 'Auto → 60/40 · the Harbor book resembles a 60/40 mix';
     } else if (bm.unavailable_fallback) {
       bcap.textContent = '60/40 unavailable (AGG data not loaded) — showing SPY';
     } else {
@@ -1609,10 +1610,10 @@ async function fetchTab(id, params) {
     if (!res.ok) {
       let detail = '';
       try { detail = String((await res.json()).detail || ''); } catch (_) { /* non-JSON body */ }
-      // A filter id the server no longer knows — e.g. a Fidelity account still
-      // selected after the broker pill narrowed to JPM — 422s by contract.
+      // A filter id the server no longer knows — e.g. a Alpine account still
+      // selected after the broker pill narrowed to Harbor — 422s by contract.
       // Swallowing that into console.error left the PREVIOUS render on screen
-      // (whole-book value under a "JPM" pill) and, with the signature nulled,
+      // (whole-book value under a "Harbor" pill) and, with the signature nulled,
       // re-failed on every re-entry (TK 2026-08-22). Reset that filter to
       // "all", say so, and refetch once; anything else surfaces in the tab.
       const reset = (res.status === 422) ? _resetUnknownFilter(detail) : null;
@@ -2868,7 +2869,7 @@ function renderBenchmark(data) {
   const cap = $('bench-benchmark-cap');
   if (cap) {
     if (_benchState.bench === 'auto' && bm.id === '60_40') {
-      cap.textContent = 'Auto → 60/40 · the JPM book resembles a 60/40 mix';
+      cap.textContent = 'Auto → 60/40 · the Harbor book resembles a 60/40 mix';
     } else if (bm.unavailable_fallback) {
       cap.textContent = '60/40 unavailable (AGG data not loaded) — showing SPY';
     } else {
@@ -4062,7 +4063,7 @@ function renderTax(data) {
   const h = taxHarvest(), hs = h.summary || {}, hsem = h.semantics || {};
   const hv = hs.total_unrealized_loss;
   const hOk = typeof hv === 'number' && hv !== 0;
-  // Realized YTD is build-time materialized (ledger closes + JPM option
+  // Realized YTD is build-time materialized (ledger closes + Harbor option
   // confirms); an older lots_meta.json without the block is the documented
   // degrade path — em-dash tiles with the reason, never zeros
   const r = s.realized_ytd || { unavailable: 'no data' };
@@ -4120,7 +4121,7 @@ function renderTax(data) {
   // realized figures are made of and what they exclude (the S4b bound)
   $('tax-silent-note').textContent = (s.silent_share_note || '')
     + (ru ? '' : ' Realized YTD ' + r.year + ' at build: ledger closes'
-       + ' + JPM option confirms; excludes Fidelity options'
+       + ' + Harbor option confirms; excludes Alpine options'
        + (r.options_uncovered ? '; ' + r.options_uncovered
           + ' option close(s) unpriced by confirms' : '')
        + (r.broker_unresolved ? '; ' + r.broker_unresolved

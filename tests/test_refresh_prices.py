@@ -147,7 +147,7 @@ class TestPipelineMembership(unittest.TestCase):
     def test_agg_leg_is_orchestrated(self) -> None:
         # DA-B-2: the 60/40 blend's AGG leg was orchestration-orphaned —
         # nothing refreshed it, so it went stale and silently truncated
-        # every JPM-scoped daily benchmark join. All three AGG artifacts
+        # every Harbor-scoped daily benchmark join. All three AGG artifacts
         # must ride the same pipeline as their SPY twins, with the
         # explicit ticker in the entry's extra argv.
         def entry(group, csv_name):

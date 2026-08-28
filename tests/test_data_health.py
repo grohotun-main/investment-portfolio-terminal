@@ -38,7 +38,7 @@ def _by_id(report):
 class TestBuildHealthReport(unittest.TestCase):
     def test_empty_summaries_is_grey_and_unavailable(self):
         rep = build_health_report(
-            _positions([("2026-04-30", "fidelity", "A", 100.0)]),
+            _positions([("2026-04-30", "alpine", "A", 100.0)]),
             _summaries([]),
             today=TODAY,
         )
@@ -48,8 +48,8 @@ class TestBuildHealthReport(unittest.TestCase):
 
     def test_verified_ok_when_extracted_equals_reported(self):
         rep = build_health_report(
-            _positions([("2026-04-30", "fidelity", "A", 100_000.0)]),
-            _summaries([("2026-04-30", "fidelity", "A", 100_000.0, "s")]),
+            _positions([("2026-04-30", "alpine", "A", 100_000.0)]),
+            _summaries([("2026-04-30", "alpine", "A", 100_000.0, "s")]),
             today=TODAY,
         )
         self.assertTrue(rep.recon_available)
@@ -64,8 +64,8 @@ class TestBuildHealthReport(unittest.TestCase):
     def test_verified_watch_band(self):
         # +0.5% drift -> watch (>0.30%, not the >2% AND >$10k error band)
         rep = build_health_report(
-            _positions([("2026-04-30", "fidelity", "A", 100_500.0)]),
-            _summaries([("2026-04-30", "fidelity", "A", 100_000.0, "s")]),
+            _positions([("2026-04-30", "alpine", "A", 100_500.0)]),
+            _summaries([("2026-04-30", "alpine", "A", 100_000.0, "s")]),
             today=TODAY,
         )
         a = _by_id(rep)["A"]
@@ -76,8 +76,8 @@ class TestBuildHealthReport(unittest.TestCase):
     def test_verified_error_band(self):
         # +15% and +$15k -> error
         rep = build_health_report(
-            _positions([("2026-04-30", "fidelity", "A", 115_000.0)]),
-            _summaries([("2026-04-30", "fidelity", "A", 100_000.0, "s")]),
+            _positions([("2026-04-30", "alpine", "A", 115_000.0)]),
+            _summaries([("2026-04-30", "alpine", "A", 100_000.0, "s")]),
             today=TODAY,
         )
         a = _by_id(rep)["A"]
@@ -88,8 +88,8 @@ class TestBuildHealthReport(unittest.TestCase):
     def test_known_band_within_allowlist_tolerance(self):
         # +0.4% drift, allowlisted tol 0.5% -> known (info, not watch)
         rep = build_health_report(
-            _positions([("2026-04-30", "jpm", "P", 100_400.0)]),
-            _summaries([("2026-04-30", "jpm", "P", 100_000.0, "s")]),
+            _positions([("2026-04-30", "harbor", "P", 100_400.0)]),
+            _summaries([("2026-04-30", "harbor", "P", 100_000.0, "s")]),
             today=TODAY,
             allowlist={"P": {"max_pct": 0.5}},
         )
@@ -101,10 +101,10 @@ class TestBuildHealthReport(unittest.TestCase):
     def test_missing_account_reported_but_not_extracted(self):
         # Reported at M, zero extracted -> state "missing", counts as error.
         rep = build_health_report(
-            _positions([("2026-04-30", "fidelity", "A", 100_000.0)]),
+            _positions([("2026-04-30", "alpine", "A", 100_000.0)]),
             _summaries([
-                ("2026-04-30", "fidelity", "A", 100_000.0, "s"),
-                ("2026-04-30", "fidelity", "B", 50_000.0, "s"),
+                ("2026-04-30", "alpine", "A", 100_000.0, "s"),
+                ("2026-04-30", "alpine", "B", 50_000.0, "s"),
             ]),
             today=TODAY,
         )
@@ -118,12 +118,12 @@ class TestBuildHealthReport(unittest.TestCase):
         # advanced to April without it).
         rep = build_health_report(
             _positions([
-                ("2026-04-30", "fidelity", "F1", 10_000.0),
-                ("2026-03-31", "fidelity", "F2", 5_000.0),
+                ("2026-04-30", "alpine", "F1", 10_000.0),
+                ("2026-03-31", "alpine", "F2", 5_000.0),
             ]),
             _summaries([
-                ("2026-04-30", "fidelity", "F1", 10_000.0, "s"),
-                ("2026-03-31", "fidelity", "F2", 5_000.0, "s"),
+                ("2026-04-30", "alpine", "F1", 10_000.0, "s"),
+                ("2026-03-31", "alpine", "F2", 5_000.0, "s"),
             ]),
             today=TODAY,
         )
@@ -137,16 +137,16 @@ class TestBuildHealthReport(unittest.TestCase):
         self.assertEqual(rep.worst_level, "amber")
 
     def test_carried_but_not_lagging_when_whole_broker_behind(self):
-        # fidelity reached April (sets M); jpm's only account is at March, but
-        # jpm's own frontier is March -> J1 carried (behind M) yet not lagging.
+        # alpine reached April (sets M); harbor's only account is at March, but
+        # harbor's own frontier is March -> J1 carried (behind M) yet not lagging.
         rep = build_health_report(
             _positions([
-                ("2026-04-30", "fidelity", "F1", 10_000.0),
-                ("2026-03-31", "jpm", "J1", 7_000.0),
+                ("2026-04-30", "alpine", "F1", 10_000.0),
+                ("2026-03-31", "harbor", "J1", 7_000.0),
             ]),
             _summaries([
-                ("2026-04-30", "fidelity", "F1", 10_000.0, "s"),
-                ("2026-03-31", "jpm", "J1", 7_000.0, "s"),
+                ("2026-04-30", "alpine", "F1", 10_000.0, "s"),
+                ("2026-03-31", "harbor", "J1", 7_000.0, "s"),
             ]),
             today=TODAY,
         )
@@ -157,14 +157,14 @@ class TestBuildHealthReport(unittest.TestCase):
     def test_worst_level_error_beats_watch_beats_carried(self):
         rep = build_health_report(
             _positions([
-                ("2026-04-30", "fidelity", "ERR", 115_000.0),
-                ("2026-04-30", "fidelity", "WAT", 100_500.0),
-                ("2026-03-31", "fidelity", "CAR", 5_000.0),
+                ("2026-04-30", "alpine", "ERR", 115_000.0),
+                ("2026-04-30", "alpine", "WAT", 100_500.0),
+                ("2026-03-31", "alpine", "CAR", 5_000.0),
             ]),
             _summaries([
-                ("2026-04-30", "fidelity", "ERR", 100_000.0, "s"),
-                ("2026-04-30", "fidelity", "WAT", 100_000.0, "s"),
-                ("2026-03-31", "fidelity", "CAR", 5_000.0, "s"),
+                ("2026-04-30", "alpine", "ERR", 100_000.0, "s"),
+                ("2026-04-30", "alpine", "WAT", 100_000.0, "s"),
+                ("2026-03-31", "alpine", "CAR", 5_000.0, "s"),
             ]),
             today=TODAY,
         )
@@ -177,10 +177,10 @@ class TestBuildHealthReport(unittest.TestCase):
         # with no May reported total -> May is unreconciled, verdict amber.
         rep = build_health_report(
             _positions([
-                ("2026-04-30", "fidelity", "A", 100_000.0),
-                ("2026-05-31", "fidelity", "A", 101_000.0),
+                ("2026-04-30", "alpine", "A", 100_000.0),
+                ("2026-05-31", "alpine", "A", 101_000.0),
             ]),
-            _summaries([("2026-04-30", "fidelity", "A", 100_000.0, "s")]),
+            _summaries([("2026-04-30", "alpine", "A", 100_000.0, "s")]),
             today=TODAY,
         )
         self.assertEqual(rep.as_of_month, "2026-04")
@@ -196,10 +196,10 @@ class TestBuildHealthReport(unittest.TestCase):
         # roster AND from unreconciled_months.
         rep = build_health_report(
             _positions([
-                ("2026-04-30", "fidelity", "A", 100_000.0),
-                ("2026-05-31", "fidelity", "DEMO", 5_000.0),
+                ("2026-04-30", "alpine", "A", 100_000.0),
+                ("2026-05-31", "alpine", "DEMO", 5_000.0),
             ]),
-            _summaries([("2026-04-30", "fidelity", "A", 100_000.0, "s")]),
+            _summaries([("2026-04-30", "alpine", "A", 100_000.0, "s")]),
             today=TODAY,
         )
         self.assertEqual(rep.unreconciled_months, [])
@@ -220,11 +220,11 @@ class TestStatementBasisExtraction(unittest.TestCase):
 
     def test_extracted_prefers_statement_basis_stash(self):
         # Marked value alone would be a -22% ERROR; the stash reconciles.
-        pos = _positions([("2026-04-30", "fidelity", "A", 78_000.0)])
+        pos = _positions([("2026-04-30", "alpine", "A", 78_000.0)])
         pos["market_value_stmt"] = [100_000.0]
         rep = build_health_report(
             pos,
-            _summaries([("2026-04-30", "fidelity", "A", 100_000.0, "s")]),
+            _summaries([("2026-04-30", "alpine", "A", 100_000.0, "s")]),
             today=TODAY,
         )
         a = _by_id(rep)["A"]
@@ -236,13 +236,13 @@ class TestStatementBasisExtraction(unittest.TestCase):
         # A row missing the stash (e.g. concatenated after marking) must still
         # contribute its market_value instead of dropping out of the sum.
         pos = _positions([
-            ("2026-04-30", "fidelity", "A", 60_000.0),
-            ("2026-04-30", "fidelity", "A", 40_000.0),
+            ("2026-04-30", "alpine", "A", 60_000.0),
+            ("2026-04-30", "alpine", "A", 40_000.0),
         ])
         pos["market_value_stmt"] = [59_000.0, float("nan")]
         rep = build_health_report(
             pos,
-            _summaries([("2026-04-30", "fidelity", "A", 99_000.0, "s")]),
+            _summaries([("2026-04-30", "alpine", "A", 99_000.0, "s")]),
             today=TODAY,
         )
         a = _by_id(rep)["A"]
@@ -254,7 +254,7 @@ class TestStatementBasisExtraction(unittest.TestCase):
         # dashboard loaded. mark_to_market rewrites market_value on the latest
         # snapshot; the health report must still reconcile to the statement.
         pos = pd.DataFrame([{
-            "statement_date": "2026-06-30", "broker": "fidelity",
+            "statement_date": "2026-06-30", "broker": "alpine",
             "account_id": "A", "symbol": "MEM", "quantity": 1000.0,
             "price": 100.0, "market_value": 100_000.0,
             "cost_basis": 90_000.0, "unrealized_gl": 10_000.0,
@@ -267,7 +267,7 @@ class TestStatementBasisExtraction(unittest.TestCase):
         self.assertAlmostEqual(float(marked["market_value"].sum()), 75_000.0)
         rep = build_health_report(
             marked,
-            _summaries([("2026-06-30", "fidelity", "A", 100_000.0, "s")]),
+            _summaries([("2026-06-30", "alpine", "A", 100_000.0, "s")]),
             today=TODAY,
         )
         a = _by_id(rep)["A"]
@@ -291,7 +291,7 @@ class TestFormatHealthHeadline(unittest.TestCase):
         self.assertIn("unavailable", text.lower())
 
     def test_green_all_reconcile(self):
-        acc = [AccountHealth("A", "A", "fidelity", "verified", False, "ok",
+        acc = [AccountHealth("A", "A", "alpine", "verified", False, "ok",
                              100.0, 100.0, 0.0, 0.0, "2026-04", 5)]
         level, text = format_health_headline(self._rep(accounts=acc, n_ok=1))
         self.assertEqual(level, "green")
@@ -307,7 +307,7 @@ class TestFormatHealthHeadline(unittest.TestCase):
         self.assertIn("watch", text.lower())
 
     def test_amber_names_carried_account(self):
-        acc = [AccountHealth("Z", "Roth IRA", "fidelity", "carried", True, None,
+        acc = [AccountHealth("Z", "Roth IRA", "alpine", "carried", True, None,
                              None, None, None, None, "2026-03", 40)]
         level, text = format_health_headline(
             self._rep(accounts=acc, n_carried=1, worst_level="amber"))
@@ -328,9 +328,9 @@ class TestHealthRowsToTable(unittest.TestCase):
         rep = HealthReport(
             as_of_month="2026-04", recon_available=True,
             accounts=[
-                AccountHealth("A", "A", "fidelity", "verified", False, "ok",
+                AccountHealth("A", "A", "alpine", "verified", False, "ok",
                               100_000.0, 100_000.0, 0.0, 0.0, "2026-04", 5),
-                AccountHealth("C", "C", "fidelity", "carried", True, None,
+                AccountHealth("C", "C", "alpine", "carried", True, None,
                               None, None, None, None, "2026-03", 40),
             ],
             n_ok=1, n_known=0, n_watch=0, n_error=0, n_carried=1,

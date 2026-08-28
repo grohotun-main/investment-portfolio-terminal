@@ -6,7 +6,7 @@ Tests for parsers/pair_internal_transfers.py.
   - `_find_counterparty` / `_looks_like_sweep` / `_make_pair_id` (helpers)
   - `pair_transfers` — counterparty-named pairing, sweep detection,
     leftover→external default, non-flow rows untouched
-  - `_pair_within_broker_same_day` — JPM Cash Flow Summary pairing
+  - `_pair_within_broker_same_day` — Harbor Cash Flow Summary pairing
     (exact match, partial split with residual, same-account skip)
   - `synthesize_in_kind_flows` — NAV-delta inference, min(recv,sent) safety,
     day-1 settle date, idempotent re-run, pre-tracking-debut skip
@@ -33,7 +33,7 @@ def _txn(rows: list[dict]) -> pd.DataFrame:
     defaults = {
         "settlement_date": pd.Timestamp("2026-01-15"),
         "trade_date": pd.Timestamp("2026-01-15"),
-        "broker": "fidelity",
+        "broker": "alpine",
         "account_id": "X10-000007",
         "transaction_type": "transfer_in",
         "symbol": pd.NA,
@@ -91,7 +91,7 @@ class TestFindCounterparty(unittest.TestCase):
         self.assertEqual(pit._find_counterparty(desc, "X10-000007"), "Z10-000008")
 
     def test_returns_none_when_no_match(self) -> None:
-        self.assertIsNone(pit._find_counterparty("EFT FROM CHASE BANK", "X10-000007"))
+        self.assertIsNone(pit._find_counterparty("EFT FROM MAPLE BANK", "X10-000007"))
 
     def test_non_string_returns_none(self) -> None:
         self.assertIsNone(pit._find_counterparty(None, "X10-000007"))
@@ -102,7 +102,7 @@ class TestLooksLikeSweep(unittest.TestCase):
     def test_matches_known_patterns(self) -> None:
         self.assertTrue(pit._looks_like_sweep("CASH Transferred to FCASH"))
         self.assertTrue(pit._looks_like_sweep("FCASH IS LIQUIDATED"))
-        self.assertTrue(pit._looks_like_sweep("FIDELITY GOVERNMENT MONEY MARKET"))
+        self.assertTrue(pit._looks_like_sweep("ALPINE GOVERNMENT MONEY MARKET"))
 
     def test_matches_margin_to_cash_journal(self) -> None:
         # WSF-8: same-account margin<->cash journal must read as a sweep
@@ -111,7 +111,7 @@ class TestLooksLikeSweep(unittest.TestCase):
         self.assertTrue(pit._looks_like_sweep("MARGIN TO CASH A/C Journaled"))
 
     def test_rejects_non_sweep_descriptions(self) -> None:
-        self.assertFalse(pit._looks_like_sweep("EFT FROM CHASE BANK"))
+        self.assertFalse(pit._looks_like_sweep("EFT FROM MAPLE BANK"))
         self.assertFalse(pit._looks_like_sweep(None))
 
 
@@ -162,7 +162,7 @@ class TestPairTransfers(unittest.TestCase):
         # A real bank wire with no counterparty hint must remain external.
         df = _txn([
             {"account_id": "X10-000007", "transaction_type": "transfer_in",
-             "amount": 10000.0, "description": "EFT FROM CHASE BANK"},
+             "amount": 10000.0, "description": "EFT FROM MAPLE BANK"},
         ])
         out = pit.pair_transfers(df)
         self.assertEqual(out["flow_scope"].iloc[0], "external")
@@ -181,17 +181,17 @@ class TestPairTransfers(unittest.TestCase):
 
 
 # ---------------------------------------------------------------------------
-# _pair_within_broker_same_day — JPM CFS pairing
+# _pair_within_broker_same_day — Harbor CFS pairing
 # ---------------------------------------------------------------------------
 class TestPairWithinBrokerSameDay(unittest.TestCase):
     def test_exact_match_same_day_marked_internal(self) -> None:
-        # Two JPM accounts on the same day with equal-and-opposite amounts,
+        # Two Harbor accounts on the same day with equal-and-opposite amounts,
         # no counterparty in description — must still pair.
         df = _txn([
-            {"broker": "jpm", "account_id": "100-00001",
+            {"broker": "harbor", "account_id": "100-00001",
              "transaction_type": "transfer_out", "amount": -816800.0,
              "description": "CASH WITHDRAWAL"},
-            {"broker": "jpm", "account_id": "100-00003",
+            {"broker": "harbor", "account_id": "100-00003",
              "transaction_type": "transfer_in", "amount": 816800.0,
              "description": "CASH DEPOSIT"},
         ])
@@ -206,10 +206,10 @@ class TestPairWithinBrokerSameDay(unittest.TestCase):
         # same day, distinct accounts). $700 of the deposit becomes internal;
         # the $300 residual must remain external (a real bank wire).
         df = _txn([
-            {"broker": "jpm", "account_id": "AAA-11111",
+            {"broker": "harbor", "account_id": "AAA-11111",
              "transaction_type": "transfer_in", "amount": 1000.0,
              "description": "DEPOSIT"},
-            {"broker": "jpm", "account_id": "BBB-22222",
+            {"broker": "harbor", "account_id": "BBB-22222",
              "transaction_type": "transfer_out", "amount": -700.0,
              "description": "WITHDRAWAL"},
         ])
@@ -231,10 +231,10 @@ class TestPairWithinBrokerSameDay(unittest.TestCase):
         # Two flows on the same day in the SAME account must not pair against
         # each other (that would zero out a real round-trip).
         df = _txn([
-            {"broker": "jpm", "account_id": "AAA-11111",
+            {"broker": "harbor", "account_id": "AAA-11111",
              "transaction_type": "transfer_in", "amount": 500.0,
              "description": "DEPOSIT"},
-            {"broker": "jpm", "account_id": "AAA-11111",
+            {"broker": "harbor", "account_id": "AAA-11111",
              "transaction_type": "transfer_out", "amount": -500.0,
              "description": "WITHDRAWAL"},
         ])
@@ -259,11 +259,11 @@ class TestSynthesizeInKindFlows(unittest.TestCase):
         """
         positions = _positions([
             {"statement_date": "2025-12-31", "account_id": "100-00001",
-             "broker": "jpm", "market_value": donor_dec_nav},
+             "broker": "harbor", "market_value": donor_dec_nav},
             {"statement_date": "2026-01-31", "account_id": "100-00001",
-             "broker": "jpm", "market_value": donor_dec_nav - send_amt},
+             "broker": "harbor", "market_value": donor_dec_nav - send_amt},
             {"statement_date": "2026-01-31", "account_id": "100-00002",
-             "broker": "jpm", "market_value": recv_amt},
+             "broker": "harbor", "market_value": recv_amt},
         ])
         # No flows in transactions at all — pure in-kind shift.
         txn = _empty_txn()
@@ -310,9 +310,9 @@ class TestSynthesizeInKindFlows(unittest.TestCase):
         # NAV moves but every move is below the absolute threshold → no synth.
         positions = _positions([
             {"statement_date": "2025-12-31", "account_id": "100-00001",
-             "broker": "jpm", "market_value": 1_000_000.0},
+             "broker": "harbor", "market_value": 1_000_000.0},
             {"statement_date": "2026-01-31", "account_id": "100-00001",
-             "broker": "jpm", "market_value": 1_010_000.0},  # +$10K, < $50K
+             "broker": "harbor", "market_value": 1_010_000.0},  # +$10K, < $50K
         ])
         txn = _empty_txn()
         out, count = pit.synthesize_in_kind_flows(txn, positions)

@@ -1,18 +1,18 @@
 """Extract strike / expiry / opt_type from option position rows.
 
 Positions CSV stores option holdings with a free-text `description` field
-whose format depends on the broker. Strike + expiry data live there for JPM
-but not Fidelity — Fidelity positions only carry the option_type + name,
+whose format depends on the broker. Strike + expiry data live there for Harbor
+but not Alpine — Alpine positions only carry the option_type + name,
 which means the (strike, expiry) has to come from the most recent matching
 BUY transaction. Two broker formats handled:
 
-* **JPM position description** —  ``PUT NVDA 12/18/26 135 NVIDIA CORPORATION ...``
+* **Harbor position description** —  ``PUT NVDA 12/18/26 135 NVIDIA CORPORATION ...``
   Order is fixed: type, ticker, MM/DD/YY expiry, strike. Parsed directly.
 
-* **Fidelity position description** —  ``PUT NVIDIA CORPORATION`` (just
+* **Alpine position description** —  ``PUT NVIDIA CORPORATION`` (just
   type + issuer name; no strike/expiry).  Strike + expiry are recovered
   from the most recent matching BUY transaction whose description carries
-  the canonical Fidelity option format:
+  the canonical Alpine option format:
   ``PUT (NVDA) NVIDIA CORPORATION ... You Bought DEC 18 26 $135 (100 SHS) ...``
 
 Cost-basis per share is computed from the most recent matching BUY
@@ -44,26 +44,26 @@ _MONTHS = {
     "JUL": 7, "AUG": 8, "SEP": 9, "OCT": 10, "NOV": 11, "DEC": 12,
 }
 
-# JPM position description: "PUT NVDA 12/18/26 135 NVIDIA CORPORATION ..."
+# Harbor position description: "PUT NVDA 12/18/26 135 NVIDIA CORPORATION ..."
 # Strike is the FIRST bare number after the date. Allow integer or decimal,
 # but not embedded in another token (so "10:1 STOCK SPLIT" doesn't trip).
-_JPM_RE = re.compile(
+_Harbor_RE = re.compile(
     r"^\s*(PUT|CALL)\s+([A-Z][A-Z0-9.]*)\s+"
     r"(\d{2}/\d{2}/\d{2})\s+"
     r"(\d+(?:\.\d+)?)\b",
     re.IGNORECASE,
 )
 
-# JPM BUY transaction: "PUT SPY 12/18/26 ETF UNSOLICITED OPEN CONTRACT..."
-# Same prefix as the position description but no strike (JPM omits it on the
+# Harbor BUY transaction: "PUT SPY 12/18/26 ETF UNSOLICITED OPEN CONTRACT..."
+# Same prefix as the position description but no strike (Harbor omits it on the
 # trade row). Used only by the cost-basis lookup, which matches on
 # (type, underlying, expiry) and pulls strike from the position side.
-_JPM_BUY_RE = re.compile(
+_Harbor_BUY_RE = re.compile(
     r"^\s*(PUT|CALL)\s+([A-Z][A-Z0-9.]*)\s+(\d{2}/\d{2}/\d{2})\b",
     re.IGNORECASE,
 )
 
-# Fidelity BUY transaction: "PUT (NVDA) NVIDIA CORPORATION ... You Bought
+# Alpine BUY transaction: "PUT (NVDA) NVIDIA CORPORATION ... You Bought
 #   DEC 18 26 $135 (100 SHS) OPENING ..."
 _FID_TYPE_RE = re.compile(
     r"^\s*(PUT|CALL)\s+\(([A-Z][A-Z0-9.]*)\)",
@@ -85,8 +85,8 @@ class ParsedOption:
     strike: float
 
 
-def parse_jpm_option_desc(desc: str | None) -> ParsedOption | None:
-    """Parse a JPM-style option position description.
+def parse_harbor_option_desc(desc: str | None) -> ParsedOption | None:
+    """Parse a Harbor-style option position description.
 
     Returns ParsedOption on success, None if the description doesn't match
     the expected shape (caller's choice whether that's a soft skip or a
@@ -94,7 +94,7 @@ def parse_jpm_option_desc(desc: str | None) -> ParsedOption | None:
     """
     if not isinstance(desc, str):
         return None
-    m = _JPM_RE.match(desc)
+    m = _Harbor_RE.match(desc)
     if not m:
         return None
     opt_type = m.group(1).lower()
@@ -109,10 +109,10 @@ def parse_jpm_option_desc(desc: str | None) -> ParsedOption | None:
                         expiry=expiry, strike=strike)
 
 
-def parse_fidelity_buy_desc(desc: str | None) -> ParsedOption | None:
-    """Parse a Fidelity BUY transaction description.
+def parse_alpine_buy_desc(desc: str | None) -> ParsedOption | None:
+    """Parse a Alpine BUY transaction description.
 
-    Note: this parses BUY *transactions*, not position rows — Fidelity
+    Note: this parses BUY *transactions*, not position rows — Alpine
     position descriptions don't carry strike/expiry at all. The caller is
     expected to walk back from a position row to a matching BUY txn.
     """
@@ -176,23 +176,23 @@ def _is_option_sell(row: pd.Series) -> bool:
 def _parse_full_option_txn(row: pd.Series) -> ParsedOption | None:
     """Parse a BUY/SELL transaction desc into a full ParsedOption (strike included).
 
-    Tries the JPM position-style parser first (which interim CSV BUYs honor:
-    ``PUT SPY 11/20/26 640 ...``) then the Fidelity BUY parser. Returns None
-    when strike is missing from the description (legacy PDF-parsed JPM rows
+    Tries the Harbor position-style parser first (which interim CSV BUYs honor:
+    ``PUT SPY 11/20/26 640 ...``) then the Alpine BUY parser. Returns None
+    when strike is missing from the description (legacy PDF-parsed Harbor rows
     of the form ``PUT SPY 12/18/26 ETF OPEN CONTRACT``) — those are unusable
     for post-statement synthesis because we can't group without a strike.
     """
     desc = row.get("description")
-    p = parse_jpm_option_desc(desc)
+    p = parse_harbor_option_desc(desc)
     if p is not None:
         return p
-    return parse_fidelity_buy_desc(desc)
+    return parse_alpine_buy_desc(desc)
 
 
-def parse_jpm_buy_desc(desc: str | None) -> ParsedOption | None:
-    """Parse a JPM BUY transaction description.
+def parse_harbor_buy_desc(desc: str | None) -> ParsedOption | None:
+    """Parse a Harbor BUY transaction description.
 
-    JPM BUY rows carry type + underlying + expiry but no strike (the
+    Harbor BUY rows carry type + underlying + expiry but no strike (the
     statement omits it on the trade row). Returned ParsedOption has
     ``strike=NaN`` so callers know it must be paired with a position
     row to recover the full quintuple. Cost-basis matching folds these
@@ -200,7 +200,7 @@ def parse_jpm_buy_desc(desc: str | None) -> ParsedOption | None:
     """
     if not isinstance(desc, str):
         return None
-    m = _JPM_BUY_RE.match(desc)
+    m = _Harbor_BUY_RE.match(desc)
     if not m:
         return None
     try:
@@ -215,11 +215,11 @@ def parse_jpm_buy_desc(desc: str | None) -> ParsedOption | None:
 
 def _parse_buy(row: pd.Series) -> ParsedOption | None:
     desc = row.get("description")
-    # Try Fidelity first (it carries strike); fall back to JPM (no strike).
-    fid = parse_fidelity_buy_desc(desc)
+    # Try Alpine first (it carries strike); fall back to Harbor (no strike).
+    fid = parse_alpine_buy_desc(desc)
     if fid is not None:
         return fid
-    return parse_jpm_buy_desc(desc)
+    return parse_harbor_buy_desc(desc)
 
 
 def build_option_position_table(
@@ -234,14 +234,14 @@ def build_option_position_table(
       account_id, statement_date, asset_class, symbol, description,
       opt_type, underlying, expiry, strike, quantity,
       market_value, premium_per_share_mv, cost_basis_per_share,
-      cost_basis_total, source ("jpm" | "fidelity" | "post_statement"
+      cost_basis_total, source ("harbor" | "alpine" | "post_statement"
       | "unparsed")
 
     `premium_per_share_mv` is back-derived from market_value:
     ``market_value / (quantity * 100)``. Useful for sanity-checking
     against Polygon mid.
 
-    Positions that can't be parsed (e.g. Fidelity rows with no matching
+    Positions that can't be parsed (e.g. Alpine rows with no matching
     BUY transaction) come back with source="unparsed" and NaN for
     opt_type/underlying/expiry/strike so callers can decide whether to
     drop or surface them.
@@ -262,7 +262,7 @@ def build_option_position_table(
     ``as_of_ts`` for the snap and SKIPS post-statement synthesis (re-adding
     the in-window BUYs on top of the rolled rows double-counted them).
     Detection: ``as_of_ts == max(txn.settlement_date)`` (see
-    ``_detect_real_statement_cutoff``). The Fidelity cost-basis walk-back
+    ``_detect_real_statement_cutoff``). The Alpine cost-basis walk-back
     still sees every BUY on or before ``as_of_ts``.
     """
     opt_pos = positions[positions.apply(_is_option_row, axis=1)].copy()
@@ -284,7 +284,7 @@ def build_option_position_table(
             if not opt_pos.empty else opt_pos)
 
     # Pre-parse all option BUY transactions on or before as_of_ts so we can
-    # match Fidelity positions back to the trade that opened them.
+    # match Alpine positions back to the trade that opened them.
     txn_buys = transactions[transactions.apply(_is_option_buy, axis=1)].copy()
     if not txn_buys.empty:
         txn_buys["settlement_date"] = pd.to_datetime(txn_buys["settlement_date"])
@@ -297,18 +297,18 @@ def build_option_position_table(
 
     rows: list[dict] = []
     for _, pos in snap.iterrows():
-        parsed = parse_jpm_option_desc(pos.get("description"))
-        source = "jpm" if parsed else None
+        parsed = parse_harbor_option_desc(pos.get("description"))
+        source = "harbor" if parsed else None
 
         if parsed is None:
-            # Fidelity-style: walk back to the most recent matching BUY.
-            parsed, source = _find_fidelity_match(pos, txn_buys)
+            # Alpine-style: walk back to the most recent matching BUY.
+            parsed, source = _find_alpine_match(pos, txn_buys)
 
         mv = float(pos.get("market_value") or 0.0)
         qty = float(pos.get("quantity") or 0.0)
         # Broker-stated statement cost basis is authoritative when present.
         # The txn-pool fallback has two blind spots a roll exposes: sells are
-        # never netted, and JPM strike-less buys pool across every strike
+        # never netted, and Harbor strike-less buys pool across every strike
         # sharing (acct, type, underlying, expiry) — see RollCostBasisTests.
         try:
             stmt_cb = float(pos.get("cost_basis"))
@@ -519,7 +519,7 @@ def _synthesize_post_statement_opens(
     place (pooled qty + pooled cost basis) instead of duplicating.
 
     Limitations:
-      * Skips JPM rows whose broker desc omits the strike — those
+      * Skips Harbor rows whose broker desc omits the strike — those
         legacy-PDF BUY lines (``PUT SPY 12/18/26 ETF OPEN CONTRACT``)
         carry no key we can group on. In practice interim CSV BUYs
         carry the strike, so the gap only affects historical recovery.
@@ -658,14 +658,14 @@ def _empty_position_table() -> pd.DataFrame:
     ])
 
 
-def _find_fidelity_match(
+def _find_alpine_match(
     pos: pd.Series, txn_buys: pd.DataFrame,
 ) -> tuple[ParsedOption | None, str | None]:
-    """Find the BUY transaction that opened a Fidelity position.
+    """Find the BUY transaction that opened a Alpine position.
 
     Matches on (account_id, opt_type, underlying). When multiple buys
     match (e.g. partial closes followed by re-opens), prefers the most
-    recent. Returns (parsed, "fidelity") on success, (None, None) when
+    recent. Returns (parsed, "alpine") on success, (None, None) when
     no match found.
     """
     if txn_buys is None or txn_buys.empty:
@@ -685,7 +685,7 @@ def _find_fidelity_match(
     cands = txn_buys[txn_buys["account_id"] == pos_acct]
     if cands.empty:
         return None, None
-    # Some Fidelity buy rows have NaN symbol — match on parsed underlying.
+    # Some Alpine buy rows have NaN symbol — match on parsed underlying.
     cands = cands[cands["_parsed"].apply(
         lambda p: p is not None and p.underlying == pos_symbol
                   and p.opt_type == pos_opt_type
@@ -693,7 +693,7 @@ def _find_fidelity_match(
     if cands.empty:
         return None, None
     pick = cands.sort_values("settlement_date").iloc[-1]
-    return pick["_parsed"], "fidelity"
+    return pick["_parsed"], "alpine"
 
 
 def _cost_basis(
@@ -703,13 +703,13 @@ def _cost_basis(
 
     Returns (per_share, total). NaN/NaN when no matching buy is found.
     The match is on (account_id, opt_type, underlying, expiry); strike is
-    additionally required when the buy-side parse carries one (Fidelity).
-    JPM buys omit strike from their description so strike is unmatched on
+    additionally required when the buy-side parse carries one (Alpine).
+    Harbor buys omit strike from their description so strike is unmatched on
     that side.
 
     FALLBACK ONLY — the statement-stated ``cost_basis`` on the position row
     takes precedence in build_option_position_table. This pool cannot net
-    sells (rolled-away lots keep counting) and, for strike-less JPM buys,
+    sells (rolled-away lots keep counting) and, for strike-less Harbor buys,
     charges the FULL pool to every row sharing the (acct, type, underlying,
     expiry) key — a roll into two strikes double-counts. Both limitations
     are pinned by RollCostBasisTests.
@@ -725,8 +725,8 @@ def _cost_basis(
                 or p.underlying != parsed.underlying
                 or p.expiry != parsed.expiry):
             return False
-        # Strike must match when the buy side parsed one (Fidelity).
-        # JPM buys parse to NaN strike; accept any.
+        # Strike must match when the buy side parsed one (Alpine).
+        # Harbor buys parse to NaN strike; accept any.
         import math as _m
         if not _m.isnan(p.strike) and p.strike != parsed.strike:
             return False

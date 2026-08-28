@@ -8,8 +8,8 @@
       "requested": "auto",
       "unavailable_fallback": false
     },
-    "subset_label": "Combined portfolio (Fidelity + JPM)",
-    "filter_caption": "Full combined portfolio (Fidelity + JPM) vs SPY total return — use the Account / Asset-class filters to compare a subset.",
+    "subset_label": "Combined portfolio (Alpine + Harbor)",
+    "filter_caption": "Full combined portfolio (Alpine + Harbor) vs SPY total return — use the Account / Asset-class filters to compare a subset.",
     "accounts": [
       {
         "id": "other_test_a",
@@ -48,12 +48,12 @@
     ],
     "brokers": [
       {
-        "id": "fidelity",
-        "label": "fidelity"
+        "id": "alpine",
+        "label": "alpine"
       },
       {
-        "id": "jpm",
-        "label": "jpm"
+        "id": "harbor",
+        "label": "harbor"
       }
     ],
     "filter": {

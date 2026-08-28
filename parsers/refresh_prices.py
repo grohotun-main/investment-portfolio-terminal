@@ -84,7 +84,7 @@ FETCHERS = [
     ("parsers/fetch_benchmark.py",      DATA / "benchmark_spy.csv",        "date",       set(), []),
     # The 60/40 blend's AGG leg. It was orchestration-orphaned (nothing
     # refreshed it, no guard watched it), so it went stale and the blend's
-    # inner-join silently truncated every JPM-scoped daily benchmark series
+    # inner-join silently truncated every Harbor-scoped daily benchmark series
     # while risk_bundle ffilled 0% benchmark days into β/α (DA-B-2).
     ("parsers/fetch_benchmark.py",      DATA / "benchmark_agg.csv",        "date",       set(), ["AGG"]),
 ]

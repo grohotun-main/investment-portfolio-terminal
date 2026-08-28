@@ -11,7 +11,7 @@
     }
   ],
   "data_sources": {
-    "caption": "Positions: 12 rows over 3 statement-dates, 2 normalized months. Transactions: 11 rows (Fidelity + JPM). Accounts: 3 sub-accounts. Latest data: positions through Apr 30, 2026, transactions through Apr 15, 2026 Prices: 3/4 symbols marked from Massive as of Apr 30, 2026.",
+    "caption": "Positions: 12 rows over 3 statement-dates, 2 normalized months. Transactions: 11 rows (Alpine + Harbor). Accounts: 3 sub-accounts. Latest data: positions through Apr 30, 2026, transactions through Apr 15, 2026 Prices: 3/4 symbols marked from Massive as of Apr 30, 2026.",
     "stale_rows": []
   },
   "regime": {
@@ -21,7 +21,7 @@
     "line": "DR 21d / 252d = 1.52× / 1.04× (ratio 1.45)",
     "help": "Ratio = short-window DR ÷ long-window DR (both ≥ 1 long-only, rolling sample std). Below 1 means diversification has compressed recently vs the long baseline; above 1 means it's loosening. 🔴 Stress = correlations clustering · ⚪ Normal · 🟢 Calm = decorrelating. Bands at 0.90 / 1.10."
   },
-  "footer": "Phase 0 reconciliation: 97% across 167 account-statements. Phase 1 transactions: Fidelity + JPM merged, 11 rows (Jan 2024 - Apr 2026). SPY and 60/40 SPY/TLT benchmarks integrated (Massive/Polygon). Next up: AGG blend for fixed-income context.",
+  "footer": "Phase 0 reconciliation complete across the statement archive. Phase 1 transactions: Alpine + Harbor merged, 11 rows (Jan 2024 - Apr 2026). SPY and 60/40 benchmark series integrated (Polygon).",
   "tape": [
     {
       "key": "portfolio_value",

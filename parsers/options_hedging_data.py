@@ -79,7 +79,7 @@ def classify_holding(row: pd.Series) -> str:
 def aggregate_by_ticker(holdings: pd.DataFrame) -> pd.DataFrame:
     """Sum market_value across brokers for same ticker. Prior wrapper
     used dict(zip(...)) which silently kept only the last row when a
-    ticker appeared in multiple brokers (e.g., SPY in JPM + Fidelity)."""
+    ticker appeared in multiple brokers (e.g., SPY in Harbor + Alpine)."""
     if holdings.empty:
         return holdings[["ticker", "market_value"]].copy()
     out = (holdings.groupby("ticker", as_index=False)["market_value"]

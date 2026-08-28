@@ -45,7 +45,7 @@ def build_snapshot_weights(snap: pd.DataFrame,
       * TLH sleeve → SPY (Parametric direct-indexing is one SPY-like
         decision; without the fold the 300+ component names would
         dominate concentration / contribution math).
-      * JPM Treasury Ladder rungs → per-rung duration bucket via
+      * Treasury Ladder rungs → per-rung duration bucket via
         _treasury_proxy: SGOV (<1y), SCHO (1-3y), IEI (3-7y), IEF
         (7-12y), TLT (12y+). (Pre-fold, every rung went to SGOV,
         understating rate exposure ~20x for rungs > 1y.)
@@ -71,7 +71,7 @@ def build_snapshot_weights(snap: pd.DataFrame,
         return pd.Series(dtype=float), pd.Series(dtype=float)
     tlh_mask = snap_for_synth["account_id"] == cfg.TLH_ACCOUNT_ID
     snap_for_synth.loc[tlh_mask, "symbol"] = "SPY"
-    tlad_mask = snap_for_synth["bucket"] == "JPM Treasury Ladder"
+    tlad_mask = snap_for_synth["bucket"] == "Treasury Ladder"
     if tlad_mask.any():
         as_of = pd.Timestamp(
             snap_for_synth.loc[tlad_mask, "statement_date"].max())

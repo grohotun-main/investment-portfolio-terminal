@@ -127,7 +127,7 @@ class CashClassTests(unittest.TestCase):
     def test_depositary_receipts_are_not_cash_like(self):
         self.assertFalse(is_cash_like("AMERICAN DEPOSITARY SHARES", "XX", set(), "desc"))
         self.assertFalse(is_cash_like("SPONSORED ADR AMERICAN DEPOSITARY RECEIPT", "XX", set(), "desc"))
-        self.assertTrue(is_cash_like("CHASE DEPOSIT SWEEP", "XX", set(), "desc"))
+        self.assertTrue(is_cash_like("MAPLE DEPOSIT SWEEP", "XX", set(), "desc"))
 
     def test_literal_cash_symbol_is_cash_like(self):
         self.assertTrue(is_cash_like("YOU SOLD CASH", "CASH", set(), "symbol"))
@@ -898,7 +898,7 @@ class OptionExclusionTests(unittest.TestCase):
 
     def test_predicates_match_option_shapes_only(self):
         from parsers.lot_engine import is_option_position, is_option_row
-        # JPM confirm + positions shapes, Fidelity confirm/positions shape
+        # Harbor confirm + positions shapes, Alpine confirm/positions shape
         self.assertTrue(is_option_row("CALL ZZZ 01/17/25 OPEN CONTRACT"))
         self.assertTrue(is_option_row("PUT ZZZ 12/18/26 115 ZEBRA CORP ADJ 10:1"))
         self.assertTrue(is_option_row("PUT (ZZZ) ZEBRA CORP DEC 18 26 $115 (100 SHS)"))
@@ -1007,7 +1007,7 @@ class OptionExclusionTests(unittest.TestCase):
 
 
 class KeyResolutionTests(unittest.TestCase):
-    """Fidelity prints a security's NAME + cusip on confirms but its NAME +
+    """Alpine prints a security's NAME + cusip on confirms but its NAME +
     ticker in holdings, so transactions and positions land in disjoint key
     spaces and nothing joins (slice-3 spec §3). The resolver learns
     name->symbol from positions and canonicalizes transaction keys onto it.
@@ -1922,7 +1922,7 @@ class PrintedPoolReliefTests(unittest.TestCase):
 
 
 class UnknowableLotReliefTests(unittest.TestCase):
-    """Fidelity's specific-share flag means the broker relieved a lot it does
+    """Alpine's specific-share flag means the broker relieved a lot it does
     not name ("refer to confirm for Lot detail"). The ledger cannot execute
     that, so where the broker printed what it relieved, that figure is the
     only non-guessing basis to draw. The lot stays unknown either way."""

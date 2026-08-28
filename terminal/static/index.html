@@ -713,8 +713,8 @@
           </div>
           <details class="exp"><summary><span class="chev">&rsaquo;</span> How this tab works</summary>
             <div class="eb">
-              <p><strong>Position parsing.</strong> Strike + expiry come from the position description (JPM) or the most
-                recent matching BUY transaction (Fidelity). Cost basis is recovered from BUY txns in the same account,
+              <p><strong>Position parsing.</strong> Strike + expiry come from the position description (Harbor) or the most
+                recent matching BUY transaction (Alpine). Cost basis is recovered from BUY txns in the same account,
                 aggregated across tranches. Code at <code>parsers/option_positions.py</code>.</p>
               <p><strong>IV + spot snapshot.</strong> <code>Refresh option IV</code> calls
                 <code>parsers/fetch_option_position_iv.py</code>, which pulls one Polygon chain snapshot per unique

@@ -3,7 +3,7 @@ reconciliation guard.
 
 The guard compares each account's EXTRACTED position value (summed
 market_value) against the statement's REPORTED account total, in two bands,
-so a silently-wrong extraction (the JPM May +$234K phantom) is caught at
+so a silently-wrong extraction (the Harbor May +$234K phantom) is caught at
 ingest while legitimate residuals stay quiet.
 
 The residuals that shape the bands:
@@ -37,7 +37,7 @@ from reconcile_holdings import (  # noqa: E402
 
 class TestClassify(unittest.TestCase):
     def test_large_drift_in_both_pct_and_dollars_is_error(self) -> None:
-        # The JPM May 100-00001 phantom shape: extracted $1,150,000 vs reported
+        # The Harbor May 100-00001 phantom shape: extracted $1,150,000 vs reported
         # $1,000,000 = +$150,000 / +15%. Trips both ERROR clauses.
         self.assertEqual(classify(1_150_000.00, 1_000_000.00), "error")
 
@@ -87,14 +87,14 @@ class TestClassify(unittest.TestCase):
 class TestReconcile(unittest.TestCase):
     def _fixture(self):
         extracted = {
-            ("jpm", "100-00001", "2026-05"): 1_780_953.92,   # phantom -> error
-            ("jpm", "100-00004", "2026-05"): 100_480.0,       # +0.48% parametric
-            ("fidelity", "X10-000007", "2026-05"): 99_910.0,  # -0.09% accrued
+            ("harbor", "100-00001", "2026-05"): 1_780_953.92,   # phantom -> error
+            ("harbor", "100-00004", "2026-05"): 100_480.0,       # +0.48% parametric
+            ("alpine", "X10-000007", "2026-05"): 99_910.0,  # -0.09% accrued
         }
         reported = {
-            ("jpm", "100-00001", "2026-05"): 1_546_937.88,
-            ("jpm", "100-00004", "2026-05"): 100_000.0,
-            ("fidelity", "X10-000007", "2026-05"): 100_000.0,
+            ("harbor", "100-00001", "2026-05"): 1_546_937.88,
+            ("harbor", "100-00004", "2026-05"): 100_000.0,
+            ("alpine", "X10-000007", "2026-05"): 100_000.0,
         }
         allowlist = {"100-00004": {"max_pct": 0.6,
                                    "reason": "Parametric TLH lot-rounding"}}
@@ -113,14 +113,14 @@ class TestReconcile(unittest.TestCase):
         by_acct = {r.account_id: r for r in reconcile(extracted, reported, allowlist)}
         self.assertAlmostEqual(by_acct["100-00001"].diff_usd, 234_016.04, places=2)
         self.assertAlmostEqual(by_acct["100-00001"].diff_pct, 15.1277, places=3)
-        self.assertEqual(by_acct["100-00001"].broker, "jpm")
+        self.assertEqual(by_acct["100-00001"].broker, "harbor")
         self.assertEqual(by_acct["100-00001"].month, "2026-05")
 
     def test_account_reported_but_not_extracted_is_error(self) -> None:
         # Reported has the account; extraction produced nothing for it. A
         # silently-dropped account must surface as ERROR, not be omitted.
         extracted = {}
-        reported = {("jpm", "100-00003", "2026-05"): 400_000.0}
+        reported = {("harbor", "100-00003", "2026-05"): 400_000.0}
         rows = reconcile(extracted, reported, {})
         self.assertEqual(len(rows), 1)
         self.assertEqual(rows[0].band, "error")
@@ -128,8 +128,8 @@ class TestReconcile(unittest.TestCase):
 
 class TestFormatTable(unittest.TestCase):
     def test_includes_account_ids_and_band_labels(self) -> None:
-        extracted = {("jpm", "100-00001", "2026-05"): 1_780_953.92}
-        reported = {("jpm", "100-00001", "2026-05"): 1_546_937.88}
+        extracted = {("harbor", "100-00001", "2026-05"): 1_780_953.92}
+        reported = {("harbor", "100-00001", "2026-05"): 1_546_937.88}
         out = format_table(reconcile(extracted, reported, {}))
         self.assertIn("100-00001", out)
         self.assertIn("error", out.lower())
@@ -167,9 +167,9 @@ class TestUpsertSummaries(unittest.TestCase):
     def test_adds_new_month_preserving_history(self) -> None:
         with TemporaryDirectory() as td:
             p = Path(td) / "summaries.csv"
-            self._seed(p, [self._rec("2026-04-30", "jpm", "AAA-11111",
+            self._seed(p, [self._rec("2026-04-30", "harbor", "AAA-11111",
                                      400000.0, "apr.pdf")])
-            upsert_summaries([self._rec("2026-05-31", "jpm", "AAA-11111",
+            upsert_summaries([self._rec("2026-05-31", "harbor", "AAA-11111",
                                         410000.0, "may.pdf")], p)
             df = pd.read_csv(p, dtype=str)
             months = set(df["statement_date"].str.slice(0, 7))
@@ -179,9 +179,9 @@ class TestUpsertSummaries(unittest.TestCase):
         # A corrected re-ingest of the same key must overwrite, not duplicate.
         with TemporaryDirectory() as td:
             p = Path(td) / "summaries.csv"
-            self._seed(p, [self._rec("2026-05-31", "jpm", "AAA-11111",
+            self._seed(p, [self._rec("2026-05-31", "harbor", "AAA-11111",
                                      100.0, "bad.pdf")])
-            upsert_summaries([self._rec("2026-05-31", "jpm", "AAA-11111",
+            upsert_summaries([self._rec("2026-05-31", "harbor", "AAA-11111",
                                         110.0, "fixed.pdf")], p)
             df = pd.read_csv(p, dtype=str)
             self.assertEqual(len(df), 1)
@@ -210,33 +210,33 @@ class TestLaggingAccounts(unittest.TestCase):
     along). Brokers are scored independently; a suppress set silences closed ones."""
 
     def test_account_behind_broker_frontier_is_flagged(self) -> None:
-        latest = {("fidelity", "Z10-000008"): "2026-04",
-                  ("fidelity", "Z10-000009"): "2026-04",
-                  ("fidelity", "X10-000007"): "2026-05",
-                  ("fidelity", "100-000006"): "2026-05"}
+        latest = {("alpine", "Z10-000008"): "2026-04",
+                  ("alpine", "Z10-000009"): "2026-04",
+                  ("alpine", "X10-000007"): "2026-05",
+                  ("alpine", "100-000006"): "2026-05"}
         rows = lagging_accounts(latest)
         self.assertEqual({r.account_id for r in rows}, {"Z10-000008", "Z10-000009"})
         for r in rows:
-            self.assertEqual(r.broker, "fidelity")
+            self.assertEqual(r.broker, "alpine")
             self.assertEqual((r.last_month, r.broker_latest), ("2026-04", "2026-05"))
 
     def test_brokers_are_independent(self) -> None:
-        # jpm sits entirely at April; fidelity at May. jpm accounts must NOT be
-        # flagged just because fidelity is ahead — each broker has its own frontier.
-        latest = {("jpm", "100-00003"): "2026-04", ("jpm", "100-00004"): "2026-04",
-                  ("fidelity", "X10-000007"): "2026-05", ("fidelity", "Z10-000008"): "2026-04"}
+        # harbor sits entirely at April; alpine at May. harbor accounts must NOT be
+        # flagged just because alpine is ahead — each broker has its own frontier.
+        latest = {("harbor", "100-00003"): "2026-04", ("harbor", "100-00004"): "2026-04",
+                  ("alpine", "X10-000007"): "2026-05", ("alpine", "Z10-000008"): "2026-04"}
         flagged = {(r.broker, r.account_id) for r in lagging_accounts(latest)}
-        self.assertEqual(flagged, {("fidelity", "Z10-000008")})
+        self.assertEqual(flagged, {("alpine", "Z10-000008")})
 
     def test_all_current_is_empty(self) -> None:
-        latest = {("fidelity", "X10-000007"): "2026-05", ("fidelity", "100-000006"): "2026-05"}
+        latest = {("alpine", "X10-000007"): "2026-05", ("alpine", "100-000006"): "2026-05"}
         self.assertEqual(lagging_accounts(latest), [])
 
     def test_single_account_broker_never_lags(self) -> None:
-        self.assertEqual(lagging_accounts({("jpm", "100-00001"): "2026-05"}), [])
+        self.assertEqual(lagging_accounts({("harbor", "100-00001"): "2026-05"}), [])
 
     def test_suppress_silences_named_account(self) -> None:
-        latest = {("fidelity", "X10-000007"): "2026-05", ("fidelity", "OLD-99999"): "2026-01"}
+        latest = {("alpine", "X10-000007"): "2026-05", ("alpine", "OLD-99999"): "2026-01"}
         self.assertEqual(lagging_accounts(latest, suppress={"OLD-99999"}), [])
 
     def test_empty_input_is_empty(self) -> None:
@@ -245,19 +245,19 @@ class TestLaggingAccounts(unittest.TestCase):
     def test_two_brokers_each_with_a_laggard(self) -> None:
         # Each broker is scored against its OWN frontier, so a laggard in each
         # broker is flagged independently in the same call.
-        latest = {("fidelity", "X10-000007"): "2026-05",
-                  ("fidelity", "Z10-000008"): "2026-04",
-                  ("jpm", "100-00001"): "2026-05",
-                  ("jpm", "100-00002"): "2026-03"}
+        latest = {("alpine", "X10-000007"): "2026-05",
+                  ("alpine", "Z10-000008"): "2026-04",
+                  ("harbor", "100-00001"): "2026-05",
+                  ("harbor", "100-00002"): "2026-03"}
         flagged = {(r.broker, r.account_id) for r in lagging_accounts(latest)}
-        self.assertEqual(flagged, {("fidelity", "Z10-000008"),
-                                   ("jpm", "100-00002")})
+        self.assertEqual(flagged, {("alpine", "Z10-000008"),
+                                   ("harbor", "100-00002")})
 
 
 class TestFormatLagging(unittest.TestCase):
     def test_lists_accounts_and_count_when_lagging(self) -> None:
-        rows = [LaggingRow("fidelity", "Z10-000008", "2026-04", "2026-05"),
-                LaggingRow("fidelity", "Z10-000009", "2026-04", "2026-05")]
+        rows = [LaggingRow("alpine", "Z10-000008", "2026-04", "2026-05"),
+                LaggingRow("alpine", "Z10-000009", "2026-04", "2026-05")]
         out = format_lagging(rows)
         self.assertIn("Z10-000008", out)
         self.assertIn("Z10-000009", out)
@@ -268,7 +268,7 @@ class TestFormatLagging(unittest.TestCase):
         self.assertIn("all accounts current", format_lagging([]).lower())
 
     def test_single_account_message(self) -> None:
-        out = format_lagging([LaggingRow("jpm", "100-00004", "2026-04", "2026-05")])
+        out = format_lagging([LaggingRow("harbor", "100-00004", "2026-04", "2026-05")])
         self.assertIn("100-00004", out)
         self.assertIn("1 carried forward", out)
         self.assertIn("missing statement and", out)   # singular, no "(s)"

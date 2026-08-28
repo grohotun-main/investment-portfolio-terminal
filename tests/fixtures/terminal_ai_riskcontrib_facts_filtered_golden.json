@@ -1,7 +1,7 @@
 {
   "section": "riskcontrib",
   "scope": {
-    "broker": "Fidelity + JPM",
+    "broker": "Alpine + Harbor",
     "history_start": "all",
     "asset_class": "Individual Stocks"
   },

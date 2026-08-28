@@ -1,9 +1,9 @@
 """Tests for parsers/option_positions.py.
 
 The parser walks two broker formats:
-  - JPM: position description carries (type, ticker, MM/DD/YY, strike).
+  - Harbor: position description carries (type, ticker, MM/DD/YY, strike).
     BUY rows carry (type, ticker, MM/DD/YY) — strike absent.
-  - Fidelity: position description carries (type, name) only.
+  - Alpine: position description carries (type, name) only.
     BUY rows carry (type, (TICKER), name, expiry like "DEC 18 26", "$strike").
 
 Tests lock down regex fragility, cost-basis recovery across multiple buys,
@@ -25,17 +25,17 @@ from option_positions import (  # noqa: E402
     ParsedOption,
     build_option_position_table,
     option_book_aggregates,
-    parse_fidelity_buy_desc,
-    parse_jpm_buy_desc,
-    parse_jpm_option_desc,
+    parse_alpine_buy_desc,
+    parse_harbor_buy_desc,
+    parse_harbor_option_desc,
 )
 
 
-class JPMPositionDescTests(unittest.TestCase):
-    """Canonical JPM position description shapes."""
+class HarborPositionDescTests(unittest.TestCase):
+    """Canonical Harbor position description shapes."""
 
     def test_basic_put(self):
-        got = parse_jpm_option_desc(
+        got = parse_harbor_option_desc(
             "PUT SPY 12/18/26 560 STATE STREET SPDR S&P 500 -- ETF"
         )
         self.assertEqual(
@@ -43,7 +43,7 @@ class JPMPositionDescTests(unittest.TestCase):
         )
 
     def test_call(self):
-        got = parse_jpm_option_desc(
+        got = parse_harbor_option_desc(
             "CALL TSLA 06/19/26 250 TESLA INC COM"
         )
         self.assertEqual(
@@ -53,7 +53,7 @@ class JPMPositionDescTests(unittest.TestCase):
     def test_stock_split_continuation_does_not_swallow_strike(self):
         # "ADJ 10:1 STOCK SPLIT" tail must not consume strike; the regex
         # is anchored on the FIRST bare number after the date.
-        got = parse_jpm_option_desc(
+        got = parse_harbor_option_desc(
             "PUT NVDA 12/18/26 135 NVIDIA CORPORATION ADJ 10:1 STOCK SPLIT * tax lots"
         )
         self.assertEqual(
@@ -61,7 +61,7 @@ class JPMPositionDescTests(unittest.TestCase):
         )
 
     def test_decimal_strike(self):
-        got = parse_jpm_option_desc("PUT LDI 12/19/25 2.50 LOANDEPOT INC")
+        got = parse_harbor_option_desc("PUT LDI 12/19/25 2.50 LOANDEPOT INC")
         self.assertEqual(
             got, ParsedOption("put", "LDI", date(2025, 12, 19), 2.50)
         )
@@ -69,34 +69,34 @@ class JPMPositionDescTests(unittest.TestCase):
     def test_lowercase_input_accepted(self):
         # Case-insensitive — defensively, even though the parser ships
         # are all upper from PDF parsers.
-        got = parse_jpm_option_desc("put spy 12/18/26 560 etf")
+        got = parse_harbor_option_desc("put spy 12/18/26 560 etf")
         self.assertEqual(got and got.opt_type, "put")
         self.assertEqual(got and got.underlying, "SPY")
 
     def test_returns_none_for_unrelated_row(self):
-        self.assertIsNone(parse_jpm_option_desc("SPDR S&P 500 ETF"))
+        self.assertIsNone(parse_harbor_option_desc("SPDR S&P 500 ETF"))
 
     def test_returns_none_for_non_string(self):
-        self.assertIsNone(parse_jpm_option_desc(None))
-        self.assertIsNone(parse_jpm_option_desc(float("nan")))
+        self.assertIsNone(parse_harbor_option_desc(None))
+        self.assertIsNone(parse_harbor_option_desc(float("nan")))
 
     def test_returns_none_for_invalid_date(self):
         # 13th month — datetime.strptime raises
-        self.assertIsNone(parse_jpm_option_desc(
+        self.assertIsNone(parse_harbor_option_desc(
             "PUT SPY 13/18/26 575 something"
         ))
 
     def test_returns_none_for_zero_strike(self):
-        self.assertIsNone(parse_jpm_option_desc(
+        self.assertIsNone(parse_harbor_option_desc(
             "PUT SPY 12/18/26 0 something"
         ))
 
 
-class JPMBuyDescTests(unittest.TestCase):
-    """JPM BUY-transaction descriptions: type + ticker + expiry, no strike."""
+class HarborBuyDescTests(unittest.TestCase):
+    """Harbor BUY-transaction descriptions: type + ticker + expiry, no strike."""
 
     def test_strike_is_nan(self):
-        got = parse_jpm_buy_desc(
+        got = parse_harbor_buy_desc(
             "PUT SPY 12/18/26 ETF UNSOLICITED OPEN CONTRACT Exchange Listed Option"
         )
         self.assertIsNotNone(got)
@@ -107,7 +107,7 @@ class JPMBuyDescTests(unittest.TestCase):
         self.assertTrue(math.isnan(got.strike))
 
     def test_stock_split_tag_after_expiry(self):
-        got = parse_jpm_buy_desc(
+        got = parse_harbor_buy_desc(
             "PUT NVDA 12/18/26 STOCK SPLIT UNSOLICITED OPEN CONTRACT"
         )
         self.assertEqual(got and got.opt_type, "put")
@@ -115,16 +115,16 @@ class JPMBuyDescTests(unittest.TestCase):
         self.assertEqual(got and got.expiry, date(2026, 12, 18))
 
     def test_returns_none_when_no_match(self):
-        self.assertIsNone(parse_jpm_buy_desc("BUY SPY 100 shares"))
-        self.assertIsNone(parse_jpm_buy_desc(None))
+        self.assertIsNone(parse_harbor_buy_desc("BUY SPY 100 shares"))
+        self.assertIsNone(parse_harbor_buy_desc(None))
 
 
-class FidelityBuyDescTests(unittest.TestCase):
-    """Fidelity BUY descriptions carry parens-wrapped ticker, written-out
+class AlpineBuyDescTests(unittest.TestCase):
+    """Alpine BUY descriptions carry parens-wrapped ticker, written-out
     date, dollar-sign strike."""
 
     def test_basic_put(self):
-        got = parse_fidelity_buy_desc(
+        got = parse_alpine_buy_desc(
             "PUT (SPY) SPDR S&P500 ETF 1234567AB You Bought DEC 18 26 $560 "
             "(100 SHS) OPENING refer to confirm for Lot detail TRANSACTION"
         )
@@ -133,7 +133,7 @@ class FidelityBuyDescTests(unittest.TestCase):
         )
 
     def test_call(self):
-        got = parse_fidelity_buy_desc(
+        got = parse_alpine_buy_desc(
             "CALL (AAPL) APPLE INC ABC123 You Bought JAN 16 26 $200 (100 SHS) OPENING"
         )
         self.assertEqual(
@@ -141,19 +141,19 @@ class FidelityBuyDescTests(unittest.TestCase):
         )
 
     def test_strike_with_comma(self):
-        got = parse_fidelity_buy_desc(
+        got = parse_alpine_buy_desc(
             "PUT (NVDA) NVIDIA CORPORATION X You Bought DEC 18 26 $1,200 (100 SHS) OPENING"
         )
         self.assertEqual(got and got.strike, 1200.0)
 
     def test_strike_with_decimal(self):
-        got = parse_fidelity_buy_desc(
+        got = parse_alpine_buy_desc(
             "PUT (GME) GAMESTOP X You Bought DEC 18 26 $22.50 (100 SHS) OPENING"
         )
         self.assertEqual(got and got.strike, 22.50)
 
     def test_four_digit_year(self):
-        got = parse_fidelity_buy_desc(
+        got = parse_alpine_buy_desc(
             "PUT (SPY) SPDR X You Bought DEC 18 2026 $560 (100 SHS) OPENING"
         )
         self.assertEqual(got and got.expiry, date(2026, 12, 18))
@@ -161,10 +161,10 @@ class FidelityBuyDescTests(unittest.TestCase):
     def test_returns_none_for_position_only(self):
         # Position-style description (no expiry, no strike) — must return
         # None so callers walk back to the BUY txn instead.
-        self.assertIsNone(parse_fidelity_buy_desc("PUT NVIDIA CORPORATION"))
+        self.assertIsNone(parse_alpine_buy_desc("PUT NVIDIA CORPORATION"))
 
     def test_returns_none_for_unrelated(self):
-        self.assertIsNone(parse_fidelity_buy_desc(
+        self.assertIsNone(parse_alpine_buy_desc(
             "DIVIDEND RECEIVED ON SPY"
         ))
 
@@ -172,13 +172,13 @@ class FidelityBuyDescTests(unittest.TestCase):
 class BuildTableTests(unittest.TestCase):
     """End-to-end: positions + transactions → parsed table.
 
-    Synthetic micro-fixtures cover JPM-only, Fidelity-only, both brokers
+    Synthetic micro-fixtures cover Harbor-only, Alpine-only, both brokers
     holding the same contract, and an unparsed orphan.
     """
 
     def _make_data(self) -> tuple[pd.DataFrame, pd.DataFrame]:
         positions = pd.DataFrame([
-            {"account_id": "JPM-A", "statement_date": "2026-04-30",
+            {"account_id": "Harbor-A", "statement_date": "2026-04-30",
              "asset_class": "option_put", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 560 STATE STREET SPDR S&P 500 -- ETF",
              "quantity": 9, "market_value": 7335.0},
@@ -191,30 +191,30 @@ class BuildTableTests(unittest.TestCase):
              "description": "PUT something unknown",
              "quantity": 1, "market_value": 100.0},
             # An equity row — must be excluded.
-            {"account_id": "JPM-A", "statement_date": "2026-04-30",
+            {"account_id": "Harbor-A", "statement_date": "2026-04-30",
              "asset_class": "equity_etf", "symbol": "SPY",
              "description": "SPY ETF", "quantity": 100,
              "market_value": 74564.0},
             # Stale statement date — must be excluded when as_of=latest.
-            {"account_id": "JPM-A", "statement_date": "2026-03-31",
+            {"account_id": "Harbor-A", "statement_date": "2026-03-31",
              "asset_class": "option_put", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 560 OLD",
              "quantity": 9, "market_value": 9000.0},
         ])
         transactions = pd.DataFrame([
-            # JPM buy — strike absent in description (matched on expiry).
-            {"account_id": "JPM-A", "settlement_date": "2026-04-10",
+            # Harbor buy — strike absent in description (matched on expiry).
+            {"account_id": "Harbor-A", "settlement_date": "2026-04-10",
              "transaction_type": "buy", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 ETF UNSOLICITED OPEN CONTRACT",
              "quantity": 9, "amount": -13143.60},
-            # Fidelity buy — full data in description.
+            # Alpine buy — full data in description.
             {"account_id": "FID-A", "settlement_date": "2026-04-14",
              "transaction_type": "buy", "symbol": None,
              "description": "PUT (NVDA) NVIDIA CORPORATION 7654321CD "
                             "You Bought DEC 18 26 $135 (100 SHS) OPENING",
              "quantity": 11, "amount": -3286.80},
             # Unrelated dividend — must be ignored by _is_option_buy.
-            {"account_id": "JPM-A", "settlement_date": "2026-04-15",
+            {"account_id": "Harbor-A", "settlement_date": "2026-04-15",
              "transaction_type": "dividend", "symbol": "SPY",
              "description": "DIVIDEND",
              "quantity": float("nan"), "amount": 12.50},
@@ -229,18 +229,18 @@ class BuildTableTests(unittest.TestCase):
         # the stale 2026-03-31 row are excluded).
         self.assertEqual(len(tbl), 3)
 
-        jpm = tbl[tbl["account_id"] == "JPM-A"].iloc[0]
-        self.assertEqual(jpm["source"], "jpm")
-        self.assertEqual(jpm["opt_type"], "put")
-        self.assertEqual(jpm["underlying"], "SPY")
-        self.assertEqual(jpm["strike"], 560.0)
-        self.assertEqual(jpm["expiry"], date(2026, 12, 18))
+        harbor = tbl[tbl["account_id"] == "Harbor-A"].iloc[0]
+        self.assertEqual(harbor["source"], "harbor")
+        self.assertEqual(harbor["opt_type"], "put")
+        self.assertEqual(harbor["underlying"], "SPY")
+        self.assertEqual(harbor["strike"], 560.0)
+        self.assertEqual(harbor["expiry"], date(2026, 12, 18))
         # Cost basis = 13143.60 / (9 * 100) = 14.604
-        self.assertAlmostEqual(jpm["cost_basis_per_share"], 14.604, places=3)
-        self.assertAlmostEqual(jpm["cost_basis_total"], 13143.60, places=2)
+        self.assertAlmostEqual(harbor["cost_basis_per_share"], 14.604, places=3)
+        self.assertAlmostEqual(harbor["cost_basis_total"], 13143.60, places=2)
 
         fid = tbl[tbl["account_id"] == "FID-A"].iloc[0]
-        self.assertEqual(fid["source"], "fidelity")
+        self.assertEqual(fid["source"], "alpine")
         self.assertEqual(fid["strike"], 135.0)
         # Cost basis = 3286.80 / (11 * 100) = 2.988
         self.assertAlmostEqual(fid["cost_basis_per_share"], 2.988, places=3)
@@ -254,9 +254,9 @@ class BuildTableTests(unittest.TestCase):
     def test_premium_per_share_mv_back_derives_correctly(self):
         positions, transactions = self._make_data()
         tbl = build_option_position_table(positions, transactions)
-        jpm = tbl[tbl["account_id"] == "JPM-A"].iloc[0]
+        harbor = tbl[tbl["account_id"] == "Harbor-A"].iloc[0]
         # 7335.0 / (9 * 100) = 8.15
-        self.assertAlmostEqual(jpm["premium_per_share_mv"], 8.15, places=4)
+        self.assertAlmostEqual(harbor["premium_per_share_mv"], 8.15, places=4)
 
     def test_empty_positions(self):
         tbl = build_option_position_table(pd.DataFrame(columns=[
@@ -276,14 +276,14 @@ class BuildTableTests(unittest.TestCase):
         tbl = build_option_position_table(
             positions, transactions, as_of="2026-03-31"
         )
-        # One statement row (the stale JPM SPY 560) and one synthesized
-        # post-statement row (the Fidelity NVDA buy on 2026-04-14 carries
-        # full strike/expiry). The JPM buy on 2026-04-10 has no strike
+        # One statement row (the stale Harbor SPY 560) and one synthesized
+        # post-statement row (the Alpine NVDA buy on 2026-04-14 carries
+        # full strike/expiry). The Harbor buy on 2026-04-10 has no strike
         # in its desc so it's skipped, not synthesized.
         stmt_rows = tbl[tbl["source"] != "post_statement"]
         post_rows = tbl[tbl["source"] == "post_statement"]
         self.assertEqual(len(stmt_rows), 1)
-        self.assertEqual(stmt_rows.iloc[0]["account_id"], "JPM-A")
+        self.assertEqual(stmt_rows.iloc[0]["account_id"], "Harbor-A")
         import math
         self.assertTrue(math.isnan(stmt_rows.iloc[0]["cost_basis_per_share"]))
         self.assertEqual(len(post_rows), 1)
@@ -319,17 +319,17 @@ class BuildTableTests(unittest.TestCase):
 class RollCostBasisTests(unittest.TestCase):
     """A roll (sell one strike, open others under the same
     (account, type, underlying, expiry) key) poisons the txn-pool fallback
-    two ways: sells are never netted, and JPM strike-less buys match EVERY
+    two ways: sells are never netted, and Harbor strike-less buys match EVERY
     strike's row, double-counting the pool across rows. The broker-stated
     statement ``cost_basis`` is authoritative when present."""
 
     def _roll_data(self, with_statement_basis: bool):
         pos_rows = [
-            {"account_id": "JPM-A", "statement_date": "2026-06-30",
+            {"account_id": "Harbor-A", "statement_date": "2026-06-30",
              "asset_class": "option_put", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 500 STATE STREET SPDR S&P 500 -- ETF",
              "quantity": 6, "market_value": 5000.0},
-            {"account_id": "JPM-A", "statement_date": "2026-06-30",
+            {"account_id": "Harbor-A", "statement_date": "2026-06-30",
              "asset_class": "option_put", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 520 STATE STREET SPDR S&P 500 -- ETF",
              "quantity": 4, "market_value": 4500.0},
@@ -338,22 +338,22 @@ class RollCostBasisTests(unittest.TestCase):
             pos_rows[0]["cost_basis"] = 6000.0
             pos_rows[1]["cost_basis"] = 5000.0
         transactions = pd.DataFrame([
-            # The original lot, later rolled away — strike-less JPM buy desc.
-            {"account_id": "JPM-A", "settlement_date": "2026-04-10",
+            # The original lot, later rolled away — strike-less Harbor buy desc.
+            {"account_id": "Harbor-A", "settlement_date": "2026-04-10",
              "transaction_type": "buy", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 ETF UNSOLICITED OPEN CONTRACT",
              "quantity": 12, "amount": -15000.0},
             # The roll's sell — must never feed cost basis.
-            {"account_id": "JPM-A", "settlement_date": "2026-06-03",
+            {"account_id": "Harbor-A", "settlement_date": "2026-06-03",
              "transaction_type": "sell", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 ETF UNSOLICITED CLOSE CONTRACT",
              "quantity": -12, "amount": 14000.0},
             # Replacement lots (strike-less descs — each matches BOTH rows).
-            {"account_id": "JPM-A", "settlement_date": "2026-06-03",
+            {"account_id": "Harbor-A", "settlement_date": "2026-06-03",
              "transaction_type": "buy", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 ETF UNSOLICITED OPEN CONTRACT",
              "quantity": 6, "amount": -6000.0},
-            {"account_id": "JPM-A", "settlement_date": "2026-06-03",
+            {"account_id": "Harbor-A", "settlement_date": "2026-06-03",
              "transaction_type": "buy", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 ETF UNSOLICITED OPEN CONTRACT",
              "quantity": 4, "amount": -5000.0},
@@ -399,14 +399,14 @@ class PostStatementOpenTests(unittest.TestCase):
 
     def _stmt_positions(self) -> pd.DataFrame:
         return pd.DataFrame([
-            {"account_id": "JPM-A", "statement_date": "2026-04-30",
+            {"account_id": "Harbor-A", "statement_date": "2026-04-30",
              "asset_class": "option_put", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 560 STATE STREET SPDR S&P 500 -- ETF",
              "quantity": 9, "market_value": 7335.0},
         ])
 
     def _stmt_buy(self) -> dict:
-        return {"account_id": "JPM-A", "settlement_date": "2026-04-10",
+        return {"account_id": "Harbor-A", "settlement_date": "2026-04-10",
                 "transaction_type": "buy", "symbol": "SPY",
                 "description": "PUT SPY 12/18/26 ETF UNSOLICITED OPEN CONTRACT",
                 "quantity": 9, "amount": -13143.60, "price": 14.60}
@@ -416,7 +416,7 @@ class PostStatementOpenTests(unittest.TestCase):
         txns = pd.DataFrame([
             self._stmt_buy(),
             # NEW: post-statement open — strike present (interim CSV format).
-            {"account_id": "JPM-A", "settlement_date": "2026-05-15",
+            {"account_id": "Harbor-A", "settlement_date": "2026-05-15",
              "transaction_type": "buy", "symbol": "SPY NOV 26 PUT 640.00",
              "description": "PUT SPY 11/20/26 640 STATE STREET SPDR S&P 500 ETF "
                             "UNSOLICITED OPEN CONTRACT",
@@ -444,12 +444,12 @@ class PostStatementOpenTests(unittest.TestCase):
         positions = self._stmt_positions()
         txns = pd.DataFrame([
             self._stmt_buy(),
-            {"account_id": "JPM-A", "settlement_date": "2026-05-07",
+            {"account_id": "Harbor-A", "settlement_date": "2026-05-07",
              "transaction_type": "buy", "symbol": "USO MAY 26 PUT 95.00",
              "description": "PUT USO 05/15/26 95 UNITED STATES OIL FUND LP "
                             "UNSOLICITED OPEN CONTRACT",
              "quantity": 300, "amount": -3297.00, "price": 0.11},
-            {"account_id": "JPM-A", "settlement_date": "2026-05-12",
+            {"account_id": "Harbor-A", "settlement_date": "2026-05-12",
              "transaction_type": "sell", "symbol": "USO MAY 26 PUT 95.00",
              "description": "PUT USO 05/15/26 95 UNITED STATES OIL FUND LP "
                             "UNSOLICITED CLOSING CONTRACT",
@@ -465,7 +465,7 @@ class PostStatementOpenTests(unittest.TestCase):
         positions = self._stmt_positions()
         txns = pd.DataFrame([
             self._stmt_buy(),
-            {"account_id": "JPM-A", "settlement_date": "2026-05-10",
+            {"account_id": "Harbor-A", "settlement_date": "2026-05-10",
              "transaction_type": "buy", "symbol": "SPY DEC 26 PUT 560.00",
              "description": "PUT SPY 12/18/26 560 STATE STREET SPDR S&P 500 ETF "
                             "UNSOLICITED OPEN CONTRACT",
@@ -482,17 +482,17 @@ class PostStatementOpenTests(unittest.TestCase):
         # Pooled cost basis: (13143.60 + 5200.0) / (13 * 100) ≈ 14.1105
         self.assertAlmostEqual(row["cost_basis_per_share"], 14.1105, places=3)
         self.assertAlmostEqual(row["cost_basis_total"], 18343.60, places=2)
-        # Source stays "jpm" (the existing-row mutation path doesn't relabel).
-        self.assertEqual(row["source"], "jpm")
+        # Source stays "harbor" (the existing-row mutation path doesn't relabel).
+        self.assertEqual(row["source"], "harbor")
 
-    def test_jpm_buy_without_strike_is_skipped_gracefully(self):
-        # Legacy PDF-parsed JPM BUY without strike (e.g. "PUT SPY 12/18/26
+    def test_harbor_buy_without_strike_is_skipped_gracefully(self):
+        # Legacy PDF-parsed Harbor BUY without strike (e.g. "PUT SPY 12/18/26
         # ETF OPEN CONTRACT") can't be grouped, so it should be skipped —
         # the existing statement row still renders, no crash.
         positions = self._stmt_positions()
         txns = pd.DataFrame([
             self._stmt_buy(),
-            {"account_id": "JPM-A", "settlement_date": "2026-05-10",
+            {"account_id": "Harbor-A", "settlement_date": "2026-05-10",
              "transaction_type": "buy", "symbol": "AMZN",
              "description": "PUT AMZN 06/19/26 OPEN CONTRACT Exchange Listed",
              "quantity": 5, "amount": -2500.0, "price": 5.0},
@@ -512,18 +512,18 @@ class PostStatementOpenTests(unittest.TestCase):
         # BUYs on top doubled them (Aug 2026: 2 SNDK calls became 4).
         positions = pd.DataFrame([
             # Statement row.
-            {"account_id": "JPM-A", "statement_date": "2026-04-30",
+            {"account_id": "Harbor-A", "statement_date": "2026-04-30",
              "asset_class": "option_put", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 560 STATE STREET SPDR S&P 500 -- ETF",
              "quantity": 9, "market_value": 7335.0},
             # synthesize_interim_positions carry-forward to the synth date.
             # Same description, quantity, MV — only statement_date changes.
-            {"account_id": "JPM-A", "statement_date": "2026-05-22",
+            {"account_id": "Harbor-A", "statement_date": "2026-05-22",
              "asset_class": "option_put", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 560 STATE STREET SPDR S&P 500 -- ETF",
              "quantity": 9, "market_value": 7335.0},
             # The in-window SPY 640 open, booked by the roll at its premium.
-            {"account_id": "JPM-A", "statement_date": "2026-05-22",
+            {"account_id": "Harbor-A", "statement_date": "2026-05-22",
              "asset_class": "option_put", "symbol": "SPY",
              "description": "PUT SPY 11/20/26 640 STATE STREET SPDR S&P 500 ETF "
                             "UNSOLICITED OPEN CONTRACT",
@@ -531,18 +531,18 @@ class PostStatementOpenTests(unittest.TestCase):
         ])
         txns = pd.DataFrame([
             # Original opening BUY for SPY 575.
-            {"account_id": "JPM-A", "settlement_date": "2026-04-10",
+            {"account_id": "Harbor-A", "settlement_date": "2026-04-10",
              "transaction_type": "buy", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 ETF UNSOLICITED OPEN CONTRACT",
              "quantity": 9, "amount": -13143.60, "price": 14.60},
             # NEW post-statement open, dated BEFORE the synth roll date.
-            {"account_id": "JPM-A", "settlement_date": "2026-05-15",
+            {"account_id": "Harbor-A", "settlement_date": "2026-05-15",
              "transaction_type": "buy", "symbol": "SPY NOV 26 PUT 640.00",
              "description": "PUT SPY 11/20/26 640 STATE STREET SPDR S&P 500 ETF "
                             "UNSOLICITED OPEN CONTRACT",
              "quantity": 4, "amount": -6610.80, "price": 16.53},
             # An unrelated late-settled txn that defines the synth-roll date.
-            {"account_id": "JPM-A", "settlement_date": "2026-05-22",
+            {"account_id": "Harbor-A", "settlement_date": "2026-05-22",
              "transaction_type": "dividend", "symbol": "SPY",
              "description": "DIVIDEND",
              "quantity": float("nan"), "amount": 25.0},
@@ -556,7 +556,7 @@ class PostStatementOpenTests(unittest.TestCase):
         # the rolled quantity, and never as a post_statement duplicate.
         spy_640 = tbl[tbl["strike"] == 640.0]
         self.assertEqual(len(spy_640), 1)
-        self.assertEqual(spy_640.iloc[0]["source"], "jpm")
+        self.assertEqual(spy_640.iloc[0]["source"], "harbor")
         self.assertEqual(spy_640.iloc[0]["quantity"], 4.0)
         self.assertEqual(len(tbl[tbl["source"] == "post_statement"]), 0)
         self.assertEqual(len(tbl), 2)
@@ -567,12 +567,12 @@ class DualDateMonthTests(unittest.TestCase):
 
     def test_dual_date_latest_month_keeps_both_brokers(self) -> None:
         positions = pd.DataFrame([
-            # JPM leg on the last business day.
-            {"account_id": "JPM-A", "statement_date": "2026-04-29",
+            # Harbor leg on the last business day.
+            {"account_id": "Harbor-A", "statement_date": "2026-04-29",
              "asset_class": "option_put", "symbol": "SPY",
              "description": "PUT SPY 12/18/26 560 STATE STREET SPDR S&P 500 -- ETF",
              "quantity": 10, "market_value": 9000.0},
-            # Fidelity leg on the calendar month-end.
+            # Alpine leg on the calendar month-end.
             {"account_id": "FID-A", "statement_date": "2026-04-30",
              "asset_class": "option_put", "symbol": "TSLA",
              "description": "PUT TESLA INC",
@@ -583,10 +583,10 @@ class DualDateMonthTests(unittest.TestCase):
             "symbol", "description", "quantity", "amount",
         ])
         # as_of=None -> max option date = 2026-04-30. Month-resolution must
-        # still include the 2026-04-29 JPM leg (exact-match dropped it).
+        # still include the 2026-04-29 Harbor leg (exact-match dropped it).
         tbl = build_option_position_table(positions, txns)
-        self.assertEqual(set(tbl["account_id"]), {"JPM-A", "FID-A"},
-                         "month-resolution must keep the 04-29 JPM leg")
+        self.assertEqual(set(tbl["account_id"]), {"Harbor-A", "FID-A"},
+                         "month-resolution must keep the 04-29 Harbor leg")
         self.assertIn("SPY", set(tbl["underlying"]))
 
 

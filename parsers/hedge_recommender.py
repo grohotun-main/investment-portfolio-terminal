@@ -490,7 +490,7 @@ def existing_puts_to_table(positions: list[dict],
     same order. We use a parallel list instead of a dict keyed on
     (underlying, strike, expiry) because two positions in different
     brokers can share that key (e.g. user holds NVDA $115 puts in both
-    JPM and Fidelity) — a dict would silently collide and both rows
+    Harbor and Alpine) — a dict would silently collide and both rows
     would display the same number.
     """
     if len(worst_payoffs) != len(positions):
@@ -620,7 +620,7 @@ def build_hedge_basket(*,
     )
 
     # --- 1. Classify holdings, compute portfolio splits ---
-    # Collapse multi-row tickers (e.g. SPY held in both JPM and Fidelity,
+    # Collapse multi-row tickers (e.g. SPY held in both Harbor and Alpine,
     # or a snapshot frame that wasn't yet filtered to one statement_date)
     # by summing market_value. Without this, set_index("ticker") produces
     # a duplicate index that inflates weighted_beta inside

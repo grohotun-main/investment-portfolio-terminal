@@ -122,7 +122,7 @@
     "federal tables: 2026 (Rev. Proc. 2025-32); CA tables: 2025 schedule (2026 indexation pending)",
     "AMT and quarterly payment timing are out of scope",
     "whole taxable book (broker filter not applied)",
-    "realized YTD excludes Fidelity option confirms",
+    "realized YTD excludes Alpine option confirms",
     "wash flags cover only the observable window \u2014 zero flags is not safety",
     "wash flags cover replacement purchases OTHER than the lot's own opening buy \u2014 a partial sale can still wash against the shares you keep from that same purchase",
     "income actuals through 2026-04-15"

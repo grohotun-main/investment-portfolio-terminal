@@ -83,7 +83,7 @@ def _treasury_ladder(latest_snap: pd.DataFrame) -> dict:
     """app.py 5667-5685."""
     if latest_snap is None or latest_snap.empty:
         return {"present": False, "caption": None}
-    lad = latest_snap[latest_snap["bucket"] == "JPM Treasury Ladder"]
+    lad = latest_snap[latest_snap["bucket"] == "Treasury Ladder"]
     if lad.empty:
         return {"present": False, "caption": None}
     as_of = pd.Timestamp(lad["statement_date"].max())

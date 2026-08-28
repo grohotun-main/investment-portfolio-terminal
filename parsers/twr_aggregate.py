@@ -65,7 +65,7 @@ def recompute_portfolio_twr(twr_account_subset: pd.DataFrame) -> pd.DataFrame:
     account's monthly TWR by its prior-month NAV and chain.
 
     Approximate: inter-broker transfers within the filtered set still get
-    treated as external at the account level. For Fidelity-only or JPM-only
+    treated as external at the account level. For Alpine-only or Harbor-only
     views this is fine — those legs are external from the subset's POV anyway.
     """
     sub = twr_account_subset.dropna(subset=["return_pct"]).copy()

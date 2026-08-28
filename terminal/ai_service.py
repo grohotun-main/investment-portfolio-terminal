@@ -29,7 +29,7 @@ import pandas as pd
 import _config
 from attribution import position_return_contribution
 from interim_stub import bench_stub_return, chain, ytd_to_date
-# OCC / JPM display leg -> (underlying, put|call)
+# OCC / Harbor display leg -> (underlying, put|call)
 from synthesize_interim_positions import _parse_option_leg
 from crash_betas import portfolio_crash_scenarios
 from hedge_recommender import CRASH_WINDOWS
@@ -685,7 +685,7 @@ def _concentration_facts(b: dict, frames: hs.Frames) -> tuple[dict, float | None
     is_option = s["asset_class"].astype(str).str.startswith("option")
     s = s[(s["asset_class"] != "cash") & (~is_option)].copy()
     s.loc[s["asset_class"] == "tax_loss_harvesting", "symbol"] = "SPY"
-    s.loc[s["bucket"] == "JPM Treasury Ladder", "symbol"] = "SGOV"
+    s.loc[s["bucket"] == "Treasury Ladder", "symbol"] = "SGOV"
     s = s.dropna(subset=["symbol"])
     by_ticker = s.groupby("symbol")["market_value"].sum()
     if not len(by_ticker):
@@ -1436,7 +1436,7 @@ def _facts_holdings_detail(frames: hs.Frames, history_start: str,
         ticker = str(r.get("symbol") or "")
         klass = str(r.get("class_label") or "")
         if klass.lower().startswith("option"):
-            leg = _parse_option_leg(ticker)    # OCC or JPM display symbol
+            leg = _parse_option_leg(ticker)    # OCC or Harbor display symbol
             if leg is not None:
                 ticker = leg[0]                # the contract -> its underlying
         if txs._TICKER_DIGIT_RUN_RE.search(ticker):

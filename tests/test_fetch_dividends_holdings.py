@@ -38,7 +38,7 @@ def _hist(pairs):
 
 class TestCollectDividendUniverse(unittest.TestCase):
     def test_latest_month_symbols_except_options_cash(self) -> None:
-        # Symbol-driven: fixed_income ETFs (SGOV at JPM) belong in the
+        # Symbol-driven: fixed_income ETFs (SGOV at Harbor) belong in the
         # universe; options and cash sweeps never do.
         with TemporaryDirectory() as td:
             csv = _write_positions(Path(td), [
@@ -46,8 +46,8 @@ class TestCollectDividendUniverse(unittest.TestCase):
                 ("2026-05-31", "SPY", "equity_etf"),
                 ("2026-05-31", "spy", "equity_etf"),      # dupe, case
                 ("2026-05-31", "AAA", "equity_stock"),
-                ("2026-05-31", "SGOV", "fixed_income"),   # JPM-classed ETF
-                ("2026-05-31", "GLD", "other"),           # JPM-classed gold
+                ("2026-05-31", "SGOV", "fixed_income"),   # Harbor-classed ETF
+                ("2026-05-31", "GLD", "other"),           # Harbor-classed gold
                 ("2026-05-31", "SPY", "option_put"),      # leg: excluded
                 ("2026-05-31", "QJERQ", "cash"),          # sweep: excluded
                 ("2026-05-31", "", "equity_stock"),       # blank symbol

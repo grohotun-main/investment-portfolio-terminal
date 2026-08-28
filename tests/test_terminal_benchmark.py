@@ -385,8 +385,8 @@ class TestServer(unittest.TestCase):
         r = self.client.get("/api/benchmark", params={"benchmark": "all"})
         self.assertEqual(r.status_code, 422)
 
-    def test_jpm_broker_auto_6040(self):
-        r = self.client.get("/api/benchmark", params={"broker": "jpm"})
+    def test_harbor_broker_auto_6040(self):
+        r = self.client.get("/api/benchmark", params={"broker": "harbor"})
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.json()["meta"]["benchmark"]["id"], "60_40")
 
@@ -423,7 +423,7 @@ class TestBenchMultiLabel(unittest.TestCase):
 
 class TestBrokerScopedCaptions(unittest.TestCase):
     """DA-D-3: under a broker scope the tab used to caption itself "Full
-    combined portfolio (Fidelity + JPM)" and claim the canonical
+    combined portfolio (Alpine + Harbor)" and claim the canonical
     compute_twr series while actually rendering the NAV-weighted
     recompute (the docstring premise "no broker selector in the terminal"
     went stale at #323). Scope labels and the methodology's series
@@ -445,9 +445,9 @@ class TestBrokerScopedCaptions(unittest.TestCase):
         scope_lbl = " + ".join(self.scoped.broker_scope)
         meta = self.view["meta"]
         self.assertIn(scope_lbl, meta["subset_label"])
-        self.assertNotIn("Fidelity + JPM", meta["subset_label"])
+        self.assertNotIn("Alpine + Harbor", meta["subset_label"])
         self.assertIn(scope_lbl, meta["filter_caption"])
-        self.assertNotIn("Fidelity + JPM", meta["filter_caption"])
+        self.assertNotIn("Alpine + Harbor", meta["filter_caption"])
 
     def test_scoped_methodology_discloses_the_recompute(self):
         if len(self.ids) < 2:
@@ -482,17 +482,17 @@ class TestBenchmarkResolve(unittest.TestCase):
     def test_registry_ids(self):
         self.assertEqual(set(hs.BENCHMARKS), {"spy", "60_40"})
 
-    def test_auto_jpm_only_picks_6040(self):
-        self.assertEqual(hs.resolve_benchmark("auto", ("JPM",)), "60_40")
+    def test_auto_harbor_only_picks_6040(self):
+        self.assertEqual(hs.resolve_benchmark("auto", ("Harbor",)), "60_40")
 
     def test_auto_whole_book_picks_spy(self):
         self.assertEqual(hs.resolve_benchmark("auto", None), "spy")
 
-    def test_auto_fidelity_only_picks_spy(self):
-        self.assertEqual(hs.resolve_benchmark("auto", ("Fidelity",)), "spy")
+    def test_auto_alpine_only_picks_spy(self):
+        self.assertEqual(hs.resolve_benchmark("auto", ("Alpine",)), "spy")
 
     def test_explicit_ids_pass_through(self):
-        self.assertEqual(hs.resolve_benchmark("spy", ("JPM",)), "spy")
+        self.assertEqual(hs.resolve_benchmark("spy", ("Harbor",)), "spy")
         self.assertEqual(hs.resolve_benchmark("60_40", None), "60_40")
 
     def test_agg_tr_loaded_on_fixture(self):
@@ -551,9 +551,9 @@ class TestBenchmarkSwitch(unittest.TestCase):
         self.assertNotAlmostEqual(spy_rows["itd"]["bench"],
                                   blend_rows["itd"]["bench"])
 
-    def test_auto_resolves_6040_under_jpm_scope(self):
-        jpm = dataclasses.replace(self.frames, broker_scope=("JPM",))
-        v = bs.build_benchmark_view(jpm, benchmark="auto")
+    def test_auto_resolves_6040_under_harbor_scope(self):
+        harbor = dataclasses.replace(self.frames, broker_scope=("Harbor",))
+        v = bs.build_benchmark_view(harbor, benchmark="auto")
         self.assertEqual(v["meta"]["benchmark"]["id"], "60_40")
 
     def test_6040_unavailable_falls_back_to_spy(self):

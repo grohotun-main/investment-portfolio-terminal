@@ -55,8 +55,8 @@ def _estimate_view():
         "by_account": {"TEST-A": {"short": {
             "gains": 1_000.0, "losses": -400.0, "net": 600.0,
             "closes": 2}}},
-        "notes": {"excludes_fidelity_options": True,
-                  "options_source": "jpm_printed_confirms",
+        "notes": {"excludes_alpine_options": True,
+                  "options_source": "harbor_printed_confirms",
                   "broker_unresolved": 0}}
     (d / "lots_meta.json").write_text(json.dumps(meta), encoding="utf-8")
     frames = hs.load_frames(d)
@@ -284,7 +284,7 @@ class TestTaxCore(unittest.TestCase):
         self.assertIs(txs.taxable_of("roth_ira"), False)
         self.assertIs(txs.taxable_of("traditional_ira"), False)
         self.assertIs(txs.taxable_of("individual_tod"), True)
-        self.assertIs(txs.taxable_of("jpm_brokerage"), True)
+        self.assertIs(txs.taxable_of("harbor_brokerage"), True)
         self.assertIs(txs.taxable_of(""), None)
         self.assertIs(txs.taxable_of(None), None)
 
@@ -383,7 +383,7 @@ class TestTaxEndToEndExclusions(unittest.TestCase):
             lots.to_csv(d / "lots.csv", index=False)
         return d
 
-    _IRA_POS = {"statement_date": "2026-04-30", "broker": "fidelity",
+    _IRA_POS = {"statement_date": "2026-04-30", "broker": "alpine",
                 "account_id": "TEST-D", "account_type": "roth_ira",
                 "symbol": "SPY", "asset_class": "equity_etf",
                 "quantity": 5, "market_value": 2850.0}
@@ -412,8 +412,8 @@ class TestTaxEndToEndExclusions(unittest.TestCase):
                            extra_lots=[self._IRA_LOT])
         frames = hs.load_frames(d)
         opts, _ = hs._broker_options(hs._current_snap(frames))
-        jpm_id = next(o["id"] for o in opts if o["label"] == "jpm")
-        view = txs.build_tax_view(frames, d, asof=ASOF, broker=[jpm_id])
+        harbor_id = next(o["id"] for o in opts if o["label"] == "harbor")
+        view = txs.build_tax_view(frames, d, asof=ASOF, broker=[harbor_id])
         self.assertEqual({r["account_id"] for r in view["lots"]}, {"TEST-B"})
         self.assertEqual(view["summary"]["excluded"]["ira_accounts"], 1)
 
@@ -421,11 +421,11 @@ class TestTaxEndToEndExclusions(unittest.TestCase):
         # the route validates broker OPTION IDS (slugs); positions carries
         # raw labels. With a label that is NOT its own slug the two
         # namespaces diverge — narrowing must still work.
-        d = self._dir_with(relabel_broker={"fidelity": "Fidelity Co."})
+        d = self._dir_with(relabel_broker={"alpine": "Alpine Co."})
         frames = hs.load_frames(d)
         opts, _ = hs._broker_options(hs._current_snap(frames))
-        fid_id = next(o["id"] for o in opts if o["label"] == "Fidelity Co.")
-        self.assertNotEqual(fid_id, "Fidelity Co.")   # namespaces differ
+        fid_id = next(o["id"] for o in opts if o["label"] == "Alpine Co.")
+        self.assertNotEqual(fid_id, "Alpine Co.")   # namespaces differ
         view = txs.build_tax_view(frames, d, asof=ASOF, broker=[fid_id])
         accts = {r["account_id"] for r in view["lots"]}
         self.assertEqual(accts, {"TEST-A", "TEST-C"})   # not silently empty
@@ -488,7 +488,7 @@ class TestTaxHarvest(unittest.TestCase):
         return d
 
     @staticmethod
-    def _buy(account, date_str, *, kind="buy", symbol="BBB", broker="jpm",
+    def _buy(account, date_str, *, kind="buy", symbol="BBB", broker="harbor",
              qty=10):
         return {"settlement_date": date_str, "trade_date": date_str,
                 "broker": broker, "account_id": account,
@@ -499,7 +499,7 @@ class TestTaxHarvest(unittest.TestCase):
 
     @staticmethod
     def _ira_position(account="TEST-IRA"):
-        return {"statement_date": "2026-04-30", "broker": "jpm",
+        return {"statement_date": "2026-04-30", "broker": "harbor",
                 "account_id": account, "account_type": "roth_ira",
                 "symbol": "BBB", "asset_class": "equity",
                 "quantity": 10, "market_value": 505.0}
@@ -560,7 +560,7 @@ class TestTaxHarvest(unittest.TestCase):
         # the campaign's whole premise: no broker sees across institutions,
         # so a replacement bought elsewhere must still block
         c = self._only(self._dir_with(
-            txns=[self._buy("TEST-A", self.IN_WINDOW, broker="fidelity")]))
+            txns=[self._buy("TEST-A", self.IN_WINDOW, broker="alpine")]))
         self.assertEqual(c["wash_status"], "blocked")
         self.assertEqual([b["account_id"] for b in c["blocking_buys"]],
                          ["TEST-A"])
@@ -683,9 +683,9 @@ class TestTaxHarvest(unittest.TestCase):
         d = self._dir_with()
         frames = hs.load_frames(d)
         opts, _ = hs._broker_options(hs._current_snap(frames))
-        fid = next(o["id"] for o in opts if o["label"] == "fidelity")
+        fid = next(o["id"] for o in opts if o["label"] == "alpine")
         view = txs.build_tax_view(frames, d, asof=ASOF, broker=[fid])
-        # BBB lives in the jpm account, so both views must drop it
+        # BBB lives in the harbor account, so both views must drop it
         self.assertNotIn("TEST-B", {r["account_id"] for r in view["lots"]})
         self.assertEqual(view["harvest"]["candidates"], [])
         self.assertEqual(view["harvest"]["summary"]["candidates"], 0)
@@ -724,7 +724,7 @@ class TestTaxPricingFallbacks(unittest.TestCase):
                     "10,10,5000.00,5000.00,90,reconstructed,ok\r\n")
     LOT_CUSIP = ("TEST-C,912TEST111,cusip,,2025-12-01,2025-12-01,buy,"
                  "20000,20000,19900.00,19900.00,91,reconstructed,ok\r\n")
-    POS_BILL = ("2026-04-30,fidelity,TEST-C,individual_tod,,912TEST111,"
+    POS_BILL = ("2026-04-30,alpine,TEST-C,individual_tod,,912TEST111,"
                 "Synthetic Bill,fixed_income,{q},0.99,{mv},9900.00,0.00,"
                 "0.00,USD,synth\r\n")
     PRICE_LIVE = "912TEST111,2026-04-30,1.01,synth,ok\r\n"
@@ -837,7 +837,7 @@ class TestTaxRealizedYtd(unittest.TestCase):
     unknown-type account's realized never lands) AND inside the global
     broker narrowing. All values synthetic (#310)."""
 
-    _IRA_POS = {"statement_date": "2026-04-30", "broker": "fidelity",
+    _IRA_POS = {"statement_date": "2026-04-30", "broker": "alpine",
                 "account_id": "TEST-D", "account_type": "roth_ira",
                 "symbol": "SPY", "asset_class": "equity_etf",
                 "quantity": 5, "market_value": 2850.0}
@@ -865,8 +865,8 @@ class TestTaxRealizedYtd(unittest.TestCase):
         else:
             meta["realized_ytd"] = {
                 "year": year, "by_account": by_account or {},
-                "notes": {"excludes_fidelity_options": True,
-                          "options_source": "jpm_printed_confirms",
+                "notes": {"excludes_alpine_options": True,
+                          "options_source": "harbor_printed_confirms",
                           "broker_unresolved": 0}}
         (d / "lots_meta.json").write_text(json.dumps(meta),
                                           encoding="utf-8")
@@ -904,8 +904,8 @@ class TestTaxRealizedYtd(unittest.TestCase):
                        "TEST-B": {"long": self._slot(500.0, 0.0)}})
         frames = hs.load_frames(d)
         opts, _ = hs._broker_options(hs._current_snap(frames))
-        jpm_id = next(o["id"] for o in opts if o["label"] == "jpm")
-        view = txs.build_tax_view(frames, d, asof=ASOF, broker=[jpm_id])
+        harbor_id = next(o["id"] for o in opts if o["label"] == "harbor")
+        view = txs.build_tax_view(frames, d, asof=ASOF, broker=[harbor_id])
         rz = view["summary"]["realized_ytd"]
         self.assertEqual(rz["gains"], 500.0)
         self.assertEqual(rz["net"], 500.0)
@@ -1121,8 +1121,8 @@ class TestTaxRealizedYtd(unittest.TestCase):
                        "TEST-B": {"long": self._slot(500.0, 0.0)}})
         frames = hs.load_frames(d)
         opts, _ = hs._broker_options(hs._current_snap(frames))
-        jpm_id = next(o["id"] for o in opts if o["label"] == "jpm")
-        view = txs.build_tax_view(frames, d, asof=ASOF, broker=[jpm_id])
+        harbor_id = next(o["id"] for o in opts if o["label"] == "harbor")
+        view = txs.build_tax_view(frames, d, asof=ASOF, broker=[harbor_id])
         rows = view["summary"]["realized_ytd"]["by_account"]
         self.assertEqual([r["account_id"] for r in rows], ["TEST-B"])
 
@@ -1217,7 +1217,7 @@ class TestTaxInstrumentType(unittest.TestCase):
                    "5,5,500.00,500.00,91,reconstructed,ok\r\n")
     LOT_CUSIP = ("TEST-C,912TEST111,cusip,,2025-12-01,2025-12-01,buy,"
                  "100,100,95.00,95.00,92,reconstructed,ok\r\n")
-    POS_CUSIP = ("2026-04-30,fidelity,TEST-C,individual_tod,,912TEST111,"
+    POS_CUSIP = ("2026-04-30,alpine,TEST-C,individual_tod,,912TEST111,"
                  "Synthetic Note,equity_stock,100,1.00,100.00,95.00,5.00,"
                  "0.00,USD,synth\r\n")
 
@@ -1262,7 +1262,7 @@ class TestTaxInstrumentType(unittest.TestCase):
         self.assertEqual(txs._type_map(pos.iloc[::-1])["RRR"], "etf")
 
     # ---- the reclass layer (2026-07-31 live-smoke fix) ----
-    # positions.csv carries the broker's RAW tag; Fidelity files ETFs under
+    # positions.csv carries the broker's RAW tag; Alpine files ETFs under
     # Common Stock (PR #131), so on the real book raw-class typing left the
     # ETFs view EMPTY. Type runs through reclass_asset + the config ETF
     # sets; these pin the true path (raw tag WRONG, correction supplied).
@@ -1515,7 +1515,7 @@ class TestTaxServer(unittest.TestCase):
         self.assertEqual(r.status_code, 422)
 
     def test_broker_filter_narrows_accounts(self):
-        r = self.client.get("/api/tax", params={"broker": "jpm"})
+        r = self.client.get("/api/tax", params={"broker": "harbor"})
         self.assertEqual(r.status_code, 200)
         accts = {row["account_id"] for row in r.json()["lots"]}
         self.assertEqual(accts, {"TEST-B"})
@@ -1602,8 +1602,8 @@ class TestTaxEstimateAssembly(unittest.TestCase):
         else:
             meta["realized_ytd"] = {
                 "year": 2026, "by_account": by_account or {},
-                "notes": {"excludes_fidelity_options": True,
-                          "options_source": "jpm_printed_confirms",
+                "notes": {"excludes_alpine_options": True,
+                          "options_source": "harbor_printed_confirms",
                           "broker_unresolved": 0}}
         (d / "lots_meta.json").write_text(json.dumps(meta),
                                           encoding="utf-8")
@@ -1969,8 +1969,8 @@ class TestTaxEstimateServer(unittest.TestCase):
             "by_account": {"TEST-A": {"short": {
                 "gains": 1_000.0, "losses": -400.0, "net": 600.0,
                 "closes": 2}}},
-            "notes": {"excludes_fidelity_options": True,
-                      "options_source": "jpm_printed_confirms",
+            "notes": {"excludes_alpine_options": True,
+                      "options_source": "harbor_printed_confirms",
                       "broker_unresolved": 0}}
         (self.dir / "lots_meta.json").write_text(json.dumps(meta),
                                                  encoding="utf-8")

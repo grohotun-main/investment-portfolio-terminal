@@ -39,7 +39,7 @@ def _pos(symbol, cusip, asset_class: str, quantity: float,
          date: str = "2026-04-30") -> dict:
     row = {c: None for c in POSITIONS_COLS}
     row.update({
-        "statement_date": pd.Timestamp(date), "broker": "fidelity",
+        "statement_date": pd.Timestamp(date), "broker": "alpine",
         "account_id": account_id, "account_type": "BROKERAGE",
         "symbol": symbol, "cusip": cusip, "description": symbol or "",
         "asset_class": asset_class, "quantity": quantity,
@@ -54,7 +54,7 @@ def _pos(symbol, cusip, asset_class: str, quantity: float,
 def _txn(date: str, ttype: str, symbol, cusip, quantity, amount,
          account_id: str = "TEST-1", price: float = 0.0) -> dict:
     return {
-        "settlement_date": pd.Timestamp(date), "broker": "fidelity",
+        "settlement_date": pd.Timestamp(date), "broker": "alpine",
         "account_id": account_id, "transaction_type": ttype,
         "symbol": symbol, "cusip": cusip, "description": ttype,
         "quantity": quantity, "price": price, "amount": amount,
@@ -150,7 +150,7 @@ class TestSynthesizeInterimPositions(unittest.TestCase):
 class TestLaggingAccountAndHardening(unittest.TestCase):
     """Regression tests for the Z10-000008 disappearance (Jun 2026).
 
-    Fidelity issued May statements for most accounts but not for the
+    Alpine issued May statements for most accounts but not for the
     individual-stocks sleeve (last real statement Apr-30). With interim June
     activity present, the roller dropped that account's entire base and showed
     only the net of June trades. Root cause: the per-broker base was filtered to
@@ -223,8 +223,8 @@ class TestLaggingAccountAndHardening(unittest.TestCase):
         # Closed $4920 base → $0; opened P635 at its $4180.00 premium.
         self.assertAlmostEqual(puts["market_value"].sum(), 4180.00, places=2)
 
-    # ---- JPM display-format legs (Aug 2026 phantom-puts incident) ---------
-    # JPM's interim CSV carries the contract as a DISPLAY symbol ("SPY DEC 26
+    # ---- Harbor display-format legs (the phantom-puts regression) ------------
+    # Harbor's interim CSV carries the contract as a DISPLAY symbol ("SPY DEC 26
     # PUT 650.00") with the full contract in the description ("PUT SPY
     # 12/18/26 650 ..."); the statement row carries the bare underlying with
     # the same description shape. Before the fix these legs fell into the
@@ -232,30 +232,30 @@ class TestLaggingAccountAndHardening(unittest.TestCase):
     # the statement puts were carried forward untouched.
 
     @staticmethod
-    def _jpm_put(strike: int, qty: float, mv: float, cost: float) -> dict:
+    def _harbor_put(strike: int, qty: float, mv: float, cost: float) -> dict:
         row = _pos("SPY", None, "option_put", quantity=qty, market_value=mv)
-        row["broker"] = "jpm"
+        row["broker"] = "harbor"
         row["description"] = (f"PUT SPY 12/18/26 {strike} STATE STREET SPDR "
                               "S&P 500 ETF")
         row["cost_basis"] = cost
         return row
 
     @staticmethod
-    def _jpm_leg(date: str, ttype: str, strike: int, qty: float,
+    def _harbor_leg(date: str, ttype: str, strike: int, qty: float,
                  amount: float, *, month: str = "DEC") -> dict:
         leg = _txn(date, ttype, f"SPY {month} 26 PUT {strike}.00", None,
                    quantity=qty, amount=amount)
-        leg["broker"] = "jpm"
+        leg["broker"] = "harbor"
         verb = "CLOSING" if qty < 0 else "OPEN"
         leg["description"] = (f"PUT SPY 12/18/26 {strike} STATE STREET SPDR "
                               f"S&P 500 ETF UNSOLICITED {verb} CONTRACT")
         return leg
 
-    def test_jpm_display_format_sell_closes_statement_put(self) -> None:
+    def test_harbor_display_format_sell_closes_statement_put(self) -> None:
         cash = _pos("CASH", None, "cash", 2000.0, 2000.0)
-        cash["broker"] = "jpm"
-        positions = pd.DataFrame([self._jpm_put(650, 6, 4572.0, 6688.04), cash])
-        interim = pd.DataFrame([self._jpm_leg("2026-08-12", "sell", 650, -6,
+        cash["broker"] = "harbor"
+        positions = pd.DataFrame([self._harbor_put(650, 6, 4572.0, 6688.04), cash])
+        interim = pd.DataFrame([self._harbor_leg("2026-08-12", "sell", 650, -6,
                                               3235.95)])
         out = synthesize_interim_positions(positions, interim)
         # No display-symbol phantom row, no "other" row.
@@ -272,13 +272,13 @@ class TestLaggingAccountAndHardening(unittest.TestCase):
         cash_mv = float(out[out["asset_class"] == "cash"]["market_value"].sum())
         self.assertAlmostEqual(cash_mv, 2000.0 + 3235.95, places=2)
 
-    def test_jpm_display_format_close_matches_its_own_strike(self) -> None:
+    def test_harbor_display_format_close_matches_its_own_strike(self) -> None:
         # 650 ×6 and 670 ×4 on the statement; the 670s are sold. The
         # description carries expiry + strike, so the close binds to the 670
         # row exactly — never "first free same-underlying row".
-        positions = pd.DataFrame([self._jpm_put(650, 6, 4572.0, 6688.04),
-                                  self._jpm_put(670, 4, 3816.0, 5374.69)])
-        interim = pd.DataFrame([self._jpm_leg("2026-08-12", "sell", 670, -4,
+        positions = pd.DataFrame([self._harbor_put(650, 6, 4572.0, 6688.04),
+                                  self._harbor_put(670, 4, 3816.0, 5374.69)])
+        interim = pd.DataFrame([self._harbor_leg("2026-08-12", "sell", 670, -4,
                                               2689.29)])
         out = synthesize_interim_positions(positions, interim)
         puts = out[out["asset_class"] == "option_put"].set_index("description")
@@ -290,8 +290,8 @@ class TestLaggingAccountAndHardening(unittest.TestCase):
                            "quantity"]), 0.0)
 
     def test_partial_close_scales_statement_cost_basis(self) -> None:
-        positions = pd.DataFrame([self._jpm_put(650, 6, 4572.0, 6688.04)])
-        interim = pd.DataFrame([self._jpm_leg("2026-08-12", "sell", 650, -2,
+        positions = pd.DataFrame([self._harbor_put(650, 6, 4572.0, 6688.04)])
+        interim = pd.DataFrame([self._harbor_leg("2026-08-12", "sell", 650, -2,
                                               1078.65)])
         out = synthesize_interim_positions(positions, interim)
         put = out[out["asset_class"] == "option_put"].iloc[0]
@@ -300,18 +300,18 @@ class TestLaggingAccountAndHardening(unittest.TestCase):
         self.assertAlmostEqual(float(put["cost_basis"]), 6688.04 * 4 / 6, places=2)
 
     def test_option_expiry_other_row_closes_the_contract(self) -> None:
-        # Expirations land as `other` (Fidelity "EXPIRED ..." qty<0 amount 0;
-        # JPM "Journal" qty<0 amount NaN). They carry no cash, but the
+        # Expirations land as `other` (Alpine "EXPIRED ..." qty<0 amount 0;
+        # Harbor "Journal" qty<0 amount NaN). They carry no cash, but the
         # contracts DID leave the account — the quantity applies.
         base = _pos("META", None, "option_call", quantity=5, market_value=0.0)
-        base["broker"] = "jpm"
+        base["broker"] = "harbor"
         base["description"] = "CALL META 07/31/26 650 META PLATFORMS INC CL A"
         base["cost_basis"] = 3153.32
         cash = _pos("CASH", None, "cash", 1000.0, 1000.0)
-        cash["broker"] = "jpm"
+        cash["broker"] = "harbor"
         journal = _txn("2026-08-03", "other", "META JUL 26 CALL 650.00", None,
                        quantity=-5, amount=float("nan"))
-        journal["broker"] = "jpm"
+        journal["broker"] = "harbor"
         journal["description"] = "CALL META 07/31/26 650 META PLATFORMS INC CL A"
         out = synthesize_interim_positions(pd.DataFrame([base, cash]),
                                            pd.DataFrame([journal]))
@@ -324,7 +324,7 @@ class TestLaggingAccountAndHardening(unittest.TestCase):
         self.assertAlmostEqual(cash_mv, 1000.0)
 
     def test_occ_open_then_expiry_nets_to_nothing(self) -> None:
-        # Fidelity: buy 2 SNDK calls in the window, then "EXPIRED" (other,
+        # Alpine: buy 2 SNDK calls in the window, then "EXPIRED" (other,
         # qty -2, amount 0). Net 0 contracts → no live option row; the
         # premium is the only cash impact.
         positions = pd.DataFrame([_pos("CASH", None, "cash", 5000.0, 5000.0)])
@@ -343,8 +343,8 @@ class TestLaggingAccountAndHardening(unittest.TestCase):
     def test_display_format_add_on_buy_pools_into_statement_row(self) -> None:
         # Buying more of a contract already on the statement adds to THAT
         # row (qty + cost basis) instead of booking a duplicate.
-        positions = pd.DataFrame([self._jpm_put(650, 6, 4572.0, 6688.04)])
-        interim = pd.DataFrame([self._jpm_leg("2026-08-12", "buy", 650, 2,
+        positions = pd.DataFrame([self._harbor_put(650, 6, 4572.0, 6688.04)])
+        interim = pd.DataFrame([self._harbor_leg("2026-08-12", "buy", 650, 2,
                                               -1100.00)])
         out = synthesize_interim_positions(positions, interim)
         puts = out[out["asset_class"] == "option_put"]
@@ -452,8 +452,8 @@ class TestWSD4ExchangeLeg(unittest.TestCase):
                     account_id="F1", price=250.40)
         buy = {
             "settlement_date": pd.NaT, "trade_date": pd.Timestamp("2026-06-03"),
-            "broker": "fidelity", "account_id": "F1", "transaction_type": "other",
-            "symbol": "FXAIX", "cusip": None, "description": "FIDELITY 500 INDEX FUND",
+            "broker": "alpine", "account_id": "F1", "transaction_type": "other",
+            "symbol": "FXAIX", "cusip": None, "description": "ALPINE 500 INDEX FUND",
             "quantity": 12.335, "price": float("nan"), "amount": 3074.50,
             "source_file": "interim.csv",
         }
@@ -481,7 +481,7 @@ class TestWSD4Guards(unittest.TestCase):
         ])
         carnival = {
             "settlement_date": pd.Timestamp("2026-06-03"), "trade_date": None,
-            "broker": "fidelity", "account_id": "F1", "transaction_type": "other",
+            "broker": "alpine", "account_id": "F1", "transaction_type": "other",
             "symbol": "CCL", "cusip": None, "description": "CARNIVAL CORP",
             "quantity": 25.0, "price": float("nan"), "amount": float("nan"),
             "source_file": "interim.csv",
@@ -496,7 +496,7 @@ class TestWSD4Guards(unittest.TestCase):
         ])
         journal = {
             "settlement_date": pd.Timestamp("2026-06-03"), "trade_date": None,
-            "broker": "fidelity", "account_id": "F1", "transaction_type": "other",
+            "broker": "alpine", "account_id": "F1", "transaction_type": "other",
             "symbol": None, "cusip": None, "description": "JOURNALED CASH",
             "quantity": float("nan"), "price": float("nan"), "amount": -200.0,
             "source_file": "interim.csv",
@@ -507,7 +507,7 @@ class TestWSD4Guards(unittest.TestCase):
 
 
 class TestSecurityExchangeLegPredicate(unittest.TestCase):
-    """A mis-typed Fidelity fund-exchange leg (`other` + qty + real amount +
+    """A mis-typed Alpine fund-exchange leg (`other` + qty + real amount +
     security key, not an option) must be recognized; cash journals and Carnival
     share-class renames must not be."""
 
@@ -536,7 +536,7 @@ class TestSecurityExchangeLegPredicate(unittest.TestCase):
         self.assertFalse(_is_security_exchange_leg(self._row(symbol="-SPY261218P575")))
 
     def test_display_format_option_leg_is_false(self) -> None:
-        # JPM display-format legs are option legs too — never an equity leg.
+        # Harbor display-format legs are option legs too — never an equity leg.
         self.assertFalse(_is_security_exchange_leg(
             self._row(symbol="SPY DEC 26 PUT 650.00")))
 
@@ -561,7 +561,7 @@ class TestWSD4BalancedRoundTrip(unittest.TestCase):
         ])
         leg_in = {
             "settlement_date": pd.Timestamp("2026-06-03"), "trade_date": None,
-            "broker": "fidelity", "account_id": "F1", "transaction_type": "other",
+            "broker": "alpine", "account_id": "F1", "transaction_type": "other",
             "symbol": "DRAM", "cusip": None, "description": "ROUNDHILL MEMORY ETF",
             "quantity": 216.0, "price": float("nan"), "amount": 14191.20,
             "source_file": "interim.csv",
@@ -620,13 +620,13 @@ class TestSupersededAccounts(unittest.TestCase):
 
     def test_relabel_branch_respects_superseded(self) -> None:
         # A broker with NO interim rows takes the wholesale-relabel path;
-        # it must skip superseded accounts too (JPM June book stays put
+        # it must skip superseded accounts too (Harbor June book stays put
         # once its June statement lands) while still bridging lagging ones.
         positions = pd.DataFrame([
             dict(_pos("VOO", None, "equity_etf", 3, 900.0,
-                      account_id="J-NEW", date="2026-06-30"), broker="jpm"),
+                      account_id="J-NEW", date="2026-06-30"), broker="harbor"),
             dict(_pos("BND", None, "equity_etf", 5, 500.0,
-                      account_id="J-LAG", date="2026-05-31"), broker="jpm"),
+                      account_id="J-LAG", date="2026-05-31"), broker="harbor"),
             _pos("VTI", None, "equity_etf", 4, 1200.0,
                  account_id="F-LAG", date="2026-05-31"),
         ])
@@ -757,7 +757,7 @@ class TestNewRowAssetClassInference(unittest.TestCase):
         self.assertEqual(new_spy.iloc[0]["asset_class"], "equity_stock")
 
     def test_other_history_is_not_inherited(self) -> None:
-        # JPM statements tag commodity tickers "other" — no information to
+        # Harbor statements tag commodity tickers "other" — no information to
         # inherit. The synthesizer defaults to equity_stock and the display
         # layer's commodity map (GLD -> gold) corrects it downstream.
         positions = pd.DataFrame([
@@ -774,7 +774,7 @@ class TestNewRowAssetClassInference(unittest.TestCase):
         self.assertEqual(gld.iloc[0]["asset_class"], "equity_stock")
 
     def test_display_format_option_leg_books_option_row(self) -> None:
-        # Interim JPM option legs arrive in DISPLAY format ("SPY DEC 26 PUT
+        # Interim Harbor option legs arrive in DISPLAY format ("SPY DEC 26 PUT
         # 650.00"). They used to stay an "other" placeholder (rescued into
         # option_put at render time, WSD-3) — which also meant they never
         # netted against the statement's option rows (the Aug 2026 phantom

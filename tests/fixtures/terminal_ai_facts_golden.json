@@ -2,7 +2,7 @@
   "section": "factors",
   "available": true,
   "scope": {
-    "broker": "Fidelity + JPM",
+    "broker": "Alpine + Harbor",
     "history_start": "all"
   },
   "window": "Full history",

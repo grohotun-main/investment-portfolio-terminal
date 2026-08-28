@@ -3,7 +3,7 @@
 Covers:
 * Lot reconstruction: BUY-open + SELL-close, partial closes, cross-account
   pairing, strike resolution via positions, txns with already-negative qty
-  for SELLs, missing-strike legacy JPM BUYs.
+  for SELLs, missing-strike legacy Harbor BUYs.
 * Drawdown episode detection: peak/trough/recover boundaries, threshold,
   end-of-data unrecovered episodes, overlapping nested troughs.
 * Sleeve MV aggregation across multiple open lots.
@@ -42,7 +42,7 @@ def _mk_txn(rows):
         {
             "settlement_date": pd.Timestamp(d),
             "trade_date": pd.Timestamp(d),
-            "broker": "jpm",
+            "broker": "harbor",
             "account_id": acc,
             "transaction_type": tt,
             "symbol": None,
@@ -62,7 +62,7 @@ def _mk_pos(rows):
     return pd.DataFrame([
         {
             "statement_date": pd.Timestamp(d),
-            "broker": "jpm",
+            "broker": "harbor",
             "account_id": acc,
             "asset_class": ac,
             "symbol": "X",
@@ -130,7 +130,7 @@ class LotReconstructionTests(unittest.TestCase):
         self.assertEqual(lots[0].close_date, pd.Timestamp("2025-07-01"))
 
     def test_strike_resolved_from_positions_when_txn_omits_it(self):
-        # JPM PDF descriptions sometimes drop strike from BUY/SELL lines.
+        # Harbor PDF descriptions sometimes drop strike from BUY/SELL lines.
         # Resolver uses positions to recover it.
         txn = _mk_txn([
             ("2025-06-01", "buy", 10, -10000,
@@ -149,7 +149,7 @@ class LotReconstructionTests(unittest.TestCase):
 
     def test_cross_account_buy_sell_pair(self):
         # BUY recorded in account A, SELL recorded in account B —
-        # JPM book-and-allocate quirk. Should still close the lot.
+        # Harbor book-and-allocate quirk. Should still close the lot.
         txn = _mk_txn([
             ("2025-06-01", "buy", 10, -10000,
              "PUT SPY 09/19/25 600 OPEN", "A"),
@@ -186,15 +186,15 @@ class LotReconstructionTests(unittest.TestCase):
         self.assertEqual(lots, [])
 
     def test_test_broker_excluded_from_resolver(self):
-        # TEST-FID / JPM Test rows shouldn't poison the resolver.
+        # TEST-FID / Harbor Test rows shouldn't poison the resolver.
         pos = pd.DataFrame([
             {"statement_date": pd.Timestamp("2025-06-30"),
-             "broker": "JPM Test", "account_id": "TEST-JPM",
+             "broker": "Harbor Test", "account_id": "TEST-Harbor",
              "asset_class": "option_put", "symbol": "SPY",
              "description": "PUT SPY 09/19/25 580 STANDARD POORS",
              "quantity": 1, "market_value": 800},
             {"statement_date": pd.Timestamp("2025-06-30"),
-             "broker": "jpm", "account_id": "A",
+             "broker": "harbor", "account_id": "A",
              "asset_class": "option_put", "symbol": "SPY",
              "description": "PUT SPY 09/19/25 600 STANDARD POORS",
              "quantity": 10, "market_value": 8000},

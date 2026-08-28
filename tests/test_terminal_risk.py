@@ -126,7 +126,7 @@ class TestEngineParity(unittest.TestCase):
         is_opt = snap["asset_class"].astype(str).str.startswith("option")
         snap = snap[(snap["asset_class"] != "cash") & (~is_opt)].copy()
         snap.loc[snap["asset_class"] == "tax_loss_harvesting", "symbol"] = "SPY"
-        snap.loc[snap["bucket"] == "JPM Treasury Ladder", "symbol"] = "SGOV"
+        snap.loc[snap["bucket"] == "Treasury Ladder", "symbol"] = "SGOV"
         snap = snap.dropna(subset=["symbol"])
         conc = compute_concentration(snap.groupby("symbol")["market_value"].sum())
         tiles = self.view["concentration"]["tiles"]

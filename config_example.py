@@ -19,16 +19,16 @@ ACCOUNT_BUCKETS_FIXED = {
 
 # Accounts split by symbol downstream (e.g. transfer-on-death accounts whose
 # holdings span multiple display buckets).
-FIDELITY_TOD_ACCOUNTS = set()                  # e.g. {"X00-000000"}
+TOD_SPLIT_ACCOUNTS = set()                  # e.g. {"X00-000000"}
 
 # Tickers treated as the "core ETF" bucket when a TOD account is split.
-FIDELITY_CORE_ETF_SYMBOLS = {"SPY"}            # public tickers; placeholder
+TOD_CORE_ETF_SYMBOLS = {"SPY"}            # public tickers; placeholder
 
 # Ticker -> asset_class override for funds the broker may file under the wrong
-# statement section. Fidelity's May-2026 statement format dropped its "Exchange
-# Traded Products" section and listed ETFs under "Stocks / Common Stock", so the
-# holdings parser tagged them "equity_stock". This map restores the right class
-# at display time (app._reclass_asset), mirroring the built-in GLD->gold
+# statement section. A statement format with no dedicated "Exchange Traded
+# Products" section lists ETFs under "Stocks / Common Stock", and the holdings
+# pipeline then tags them "equity_stock". This map restores the right class
+# at display time (the shared reclass), mirroring the built-in GLD->gold
 # commodity override. Applied to every broker and idempotent — when a later
 # statement files the security correctly the override returns the same class.
 #
@@ -43,7 +43,7 @@ ETF_TICKER_CLASS = {
 # Per-account display label.
 ACCOUNT_DISPLAY = {}                           # account_id -> display string
 
-# Account-holder surname, used ONLY as a line anchor by the Fidelity holdings
+# Account-holder surname, used ONLY as a line anchor by the Alpine holdings
 # parser to locate the "NAME - ACCOUNT TYPE" statement header and read the
 # account type. It is account-holder PII, so the real value lives in
 # config_local.py; the parser falls back to a placeholder when this is unset.
@@ -122,7 +122,7 @@ TICKER_HISTORY = {
 # the lot ledger at replay time (parsers/lot_engine.py). Today one kind:
 #
 #   "split" — multiply open share counts by `ratio` on `effective_date`
-#   (basis unchanged). Fidelity prints no split activity at all, so without
+#   (basis unchanged). Alpine prints no split activity at all, so without
 #   an entry a split's post-ratio sells underflow and the pre-ratio lot
 #   strands. `ratio` is owner-stated, never inferred from quantity gaps.
 #   Optional "cusips": identifier aliases the action introduced (a

@@ -641,7 +641,7 @@ class BuildHedgeBasketIntegrationTests(unittest.TestCase):
         self.assertIn("DRAM", dict(rec.diagnostics["scenario_excluded_no_history"]))
 
     def test_duplicate_ticker_rows_get_summed(self):
-        # Multi-broker case: SPY held in both JPM and Fidelity surfaces as
+        # Multi-broker case: SPY held in both Harbor and Alpine surfaces as
         # two rows in the same snapshot. The engine must collapse by
         # ticker (sum market_value) before computing weights / per-name
         # position MV — otherwise weights_in_equity gets a duplicate

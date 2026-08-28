@@ -1,7 +1,7 @@
 {
   "section": "brief",
   "scope": {
-    "broker": "Fidelity + JPM",
+    "broker": "Alpine + Harbor",
     "history_start": "all"
   },
   "available": true,

@@ -6,11 +6,11 @@ missing a month does not silently vanish from the NAV / Holdings views.
 
 Two fill kinds:
   - INTERNAL gap   — a month between an account's first and last real
-                     statement (e.g. a skipped Fidelity month). Pre-existing.
+                     statement (e.g. a skipped Alpine month). Pre-existing.
   - TRAILING gap   — a month AFTER an account's last real statement but at or
                      before the portfolio's global latest month, i.e. the
                      account lags the newest broker statement. NEW: without
-                     this a small Fidelity account whose only statements are
+                     this a small Alpine account whose only statements are
                      April, while the rest reached May, drops out of the May
                      snapshot entirely.
 
@@ -46,7 +46,7 @@ def _positions(rows: list[dict]) -> pd.DataFrame:
 
 
 def _row(date: str, acct: str, symbol: str = "AAA",
-         qty: float = 10.0, mv: float = 1000.0, broker: str = "fidelity") -> dict:
+         qty: float = 10.0, mv: float = 1000.0, broker: str = "alpine") -> dict:
     return {"statement_date": date, "account_id": acct, "broker": broker,
             "symbol": symbol, "quantity": qty, "market_value": mv}
 
@@ -181,10 +181,10 @@ class TestMonthCanonicalDates(unittest.TestCase):
 
     def test_dual_date_month_collapses_to_month_max(self) -> None:
         pos = _positions([
-            _row("2026-03-30", "B", broker="jpm"),       # JPM last-biz-day
-            _row("2026-03-31", "A", broker="fidelity"),  # Fidelity month-end
-            _row("2026-04-29", "B", broker="jpm"),
-            _row("2026-04-30", "A", broker="fidelity"),
+            _row("2026-03-30", "B", broker="harbor"),       # Harbor last-biz-day
+            _row("2026-03-31", "A", broker="alpine"),  # Alpine month-end
+            _row("2026-04-29", "B", broker="harbor"),
+            _row("2026-04-30", "A", broker="alpine"),
         ])
         out = month_canonical_dates(pos)
         self.assertEqual(
@@ -213,14 +213,14 @@ class TestSliceAsOfMonth(unittest.TestCase):
 
     def test_dual_date_slice_keeps_both_brokers(self) -> None:
         pos = _positions([
-            _row("2026-03-30", "B", symbol="BBB", mv=2000.0, broker="jpm"),
-            _row("2026-03-31", "A", symbol="AAA", mv=1000.0, broker="fidelity"),
+            _row("2026-03-30", "B", symbol="BBB", mv=2000.0, broker="harbor"),
+            _row("2026-03-31", "A", symbol="AAA", mv=1000.0, broker="alpine"),
         ])
         # Any in-month date (either statement date, or a mid-month date)
         # returns the FULL month.
         for d in ("2026-03-31", "2026-03-30", "2026-03-15"):
             out = slice_as_of_month(pos, pd.Timestamp(d))
-            self.assertEqual(set(out["broker"]), {"jpm", "fidelity"},
+            self.assertEqual(set(out["broker"]), {"harbor", "alpine"},
                              f"slice for {d} dropped a broker")
             self.assertEqual(out["market_value"].sum(), 3000.0)
 
@@ -236,10 +236,10 @@ class TestSliceAsOfMonth(unittest.TestCase):
         # positions_monthly is already one snapshot per (account, month);
         # slicing it by month returns exactly that month's accounts.
         pos = _positions([
-            _row("2026-03-30", "B", mv=2000.0, broker="jpm"),
-            _row("2026-03-31", "A", mv=1000.0, broker="fidelity"),
-            _row("2026-04-30", "A", mv=1100.0, broker="fidelity"),
-            _row("2026-04-29", "B", mv=2100.0, broker="jpm"),
+            _row("2026-03-30", "B", mv=2000.0, broker="harbor"),
+            _row("2026-03-31", "A", mv=1000.0, broker="alpine"),
+            _row("2026-04-30", "A", mv=1100.0, broker="alpine"),
+            _row("2026-04-29", "B", mv=2100.0, broker="harbor"),
         ])
         pm = monthly_normalize(pos)
         out = slice_as_of_month(pm, pd.Timestamp("2026-03-31"))

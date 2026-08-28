@@ -328,8 +328,8 @@ class TestCache(unittest.TestCase):
     def test_scope_key_comma_value_cannot_collide(self):
         # Review-3: a single value containing a comma must not produce the
         # same key as the two-value selection (cache-warmth-dependent 422).
-        self.assertNotEqual(ai.scope_key(["fidelity,jpm"], "all"),
-                            ai.scope_key(["fidelity", "jpm"], "all"))
+        self.assertNotEqual(ai.scope_key(["alpine,harbor"], "all"),
+                            ai.scope_key(["alpine", "harbor"], "all"))
 
     def test_missing_dir_raises_fnf(self):
         with self.assertRaises(FileNotFoundError):
@@ -430,7 +430,7 @@ class TestChatPack(unittest.TestCase):
         self.assertIs(got, built)
         self.assertIsNone(ai.chat_pack_get("dv2", "all", ["all"]))
         self.assertIsNone(ai.chat_pack_get("dv1", "2022", ["all"]))
-        self.assertIsNone(ai.chat_pack_get("dv1", "all", ["fidelity"]))
+        self.assertIsNone(ai.chat_pack_get("dv1", "all", ["alpine"]))
 
     def test_memo_broker_order_canonical(self):
         ai.chat_pack_build(self.frames, "dv1", "all", ["b", "a"])
@@ -671,7 +671,7 @@ class TestHealthFacts(unittest.TestCase):
         from data_health import AccountHealth, HealthReport
         from terminal import health_service as hlth
         bad = AccountHealth(
-            account_id="87654321", label="87654321", broker="fidelity",
+            account_id="87654321", label="87654321", broker="alpine",
             state="verified", lagging=False, band="ok",
             extracted=1000.0, reported=1000.0, diff_usd=0.0, diff_pct=0.0,
             last_verified_month="2026-07", days_since=20)
@@ -870,7 +870,7 @@ class TestDetailTransactions(unittest.TestCase):
             _sh.copytree(FIXTURE, td, dirs_exist_ok=True)
             with open(Path(td) / "transactions.csv", "a",
                       encoding="utf-8", newline="") as f:
-                f.write("2026-06-10,2026-06-10,fidelity,TEST-A,buy,ZZT,,"
+                f.write("2026-06-10,2026-06-10,alpine,TEST-A,buy,ZZT,,"
                         "ZZ TEST CO,5,10.00,-50.00,synth,,\n")
             frames = hs.load_frames(td)
             out = ai.run_detail(frames, "all", ["all"], "transactions",
@@ -3255,9 +3255,9 @@ class TestTaxDetailFacts(unittest.TestCase):
         header = ("settlement_date,trade_date,broker,account_id,transaction_type,"
                   "symbol,cusip,description,quantity,price,amount,source_file,"
                   "flow_scope,pair_id\n")
-        rows = ("2026-06-20,2026-06-20,fidelity,TEST-A,buy,AAA,,Synthetic Equity A,"
+        rows = ("2026-06-20,2026-06-20,alpine,TEST-A,buy,AAA,,Synthetic Equity A,"
                 "5,90.00,-450.00,interim,,\n"
-                "2026-06-25,2026-06-25,fidelity,TEST-A,sell,AAA,,Synthetic Equity A,"
+                "2026-06-25,2026-06-25,alpine,TEST-A,sell,AAA,,Synthetic Equity A,"
                 "-2,95.00,190.00,interim,,\n")
         with tempfile.TemporaryDirectory() as td:
             for name in ("transactions.csv", "positions.csv"):
@@ -3575,14 +3575,14 @@ class TestPortfolioRouteBenchmark(unittest.TestCase):
         self.assertEqual(r.status_code, 200)
         self.assertEqual(r.json()["meta"]["benchmark"]["id"], "60_40")
 
-    def test_auto_resolves_to_60_40_for_jpm_only(self):
-        # discover the raw JPM broker id from meta, then request it alone
+    def test_auto_resolves_to_60_40_for_harbor_only(self):
+        # discover the raw Harbor broker id from meta, then request it alone
         with self._fake():
             j = self.client.get("/api/ai/portfolio").json()
-            jpm = next(o["id"] for o in j["meta"]["brokers"]
-                       if o["id"].lower() == "jpm")
+            harbor = next(o["id"] for o in j["meta"]["brokers"]
+                       if o["id"].lower() == "harbor")
             r = self.client.get(
-                f"/api/ai/portfolio?broker={jpm}&benchmark=auto")
+                f"/api/ai/portfolio?broker={harbor}&benchmark=auto")
         self.assertEqual(r.json()["meta"]["benchmark"]["id"], "60_40")
 
     def test_scope_key_separates_spy_and_60_40(self):

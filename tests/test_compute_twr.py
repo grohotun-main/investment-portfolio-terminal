@@ -422,16 +422,16 @@ class TestPortfolioTwrSyntheticFlowInvariant(unittest.TestCase):
         # total: $1000. Synthetic total: $500. Invariant:
         # sum(net_external_flow) - sum(synthetic_flow) == sum(real flows).
         pos = self._positions([
-            ("REG-1",   "2026-01-31",  1000.0, "fidelity"),
-            ("REG-1",   "2026-02-28",  2050.0, "fidelity"),
-            ("REG-1",   "2026-03-31",  2050.0, "fidelity"),
-            ("SYNTH-1", "2026-01-31",   500.0, "fidelity"),
-            ("SYNTH-1", "2026-02-28",   500.0, "fidelity"),
-            ("SYNTH-1", "2026-03-31",   500.0, "fidelity"),
+            ("REG-1",   "2026-01-31",  1000.0, "alpine"),
+            ("REG-1",   "2026-02-28",  2050.0, "alpine"),
+            ("REG-1",   "2026-03-31",  2050.0, "alpine"),
+            ("SYNTH-1", "2026-01-31",   500.0, "alpine"),
+            ("SYNTH-1", "2026-02-28",   500.0, "alpine"),
+            ("SYNTH-1", "2026-03-31",   500.0, "alpine"),
         ])
         txn = self._transactions([
             {"settlement_date": "2026-02-15", "account_id": "REG-1",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 1000.0, "flow_scope": "external"},
         ])
         out = ct.compute_portfolio_twr(
@@ -481,12 +481,12 @@ class TestIrrSinceCutoff(unittest.TestCase):
     def test_account_irr_default_matches_unbounded(self) -> None:
         # start_date=None must produce byte-identical results to omitting it.
         pos = self._positions([
-            ("AAA-11111", "2024-01-31", 1000.0, "fidelity"),
-            ("AAA-11111", "2025-01-31", 1100.0, "fidelity"),
+            ("AAA-11111", "2024-01-31", 1000.0, "alpine"),
+            ("AAA-11111", "2025-01-31", 1100.0, "alpine"),
         ])
         txn = self._transactions([
             {"settlement_date": "2024-01-31", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 1000.0, "flow_scope": "external"},
         ])
         a = ct.compute_account_irr(pos, txn, synthetic_onboarding={})
@@ -501,13 +501,13 @@ class TestIrrSinceCutoff(unittest.TestCase):
         # Without the NAV-at-cutoff injection, xirr would see only the
         # terminal $165 with no negative cashflow → degenerate.
         pos = self._positions([
-            ("AAA-11111", "2024-01-31",  100.0, "fidelity"),
-            ("AAA-11111", "2024-12-31",  150.0, "fidelity"),
-            ("AAA-11111", "2025-12-31",  165.0, "fidelity"),
+            ("AAA-11111", "2024-01-31",  100.0, "alpine"),
+            ("AAA-11111", "2024-12-31",  150.0, "alpine"),
+            ("AAA-11111", "2025-12-31",  165.0, "alpine"),
         ])
         txn = self._transactions([
             {"settlement_date": "2024-01-31", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 100.0, "flow_scope": "external"},
         ])
         full = ct.compute_account_irr(pos, txn, synthetic_onboarding={})
@@ -523,17 +523,17 @@ class TestIrrSinceCutoff(unittest.TestCase):
         # invisible when cutoff is 2025-01-01. The pre-cutoff NAV (after the
         # withdrawal) is what's injected on the cutoff date.
         pos = self._positions([
-            ("AAA-11111", "2024-01-31",  100.0, "fidelity"),
-            ("AAA-11111", "2024-06-30",   55.0, "fidelity"),  # post-withdrawal
-            ("AAA-11111", "2024-12-31",   60.0, "fidelity"),
-            ("AAA-11111", "2025-12-31",   66.0, "fidelity"),  # +10% in 2025
+            ("AAA-11111", "2024-01-31",  100.0, "alpine"),
+            ("AAA-11111", "2024-06-30",   55.0, "alpine"),  # post-withdrawal
+            ("AAA-11111", "2024-12-31",   60.0, "alpine"),
+            ("AAA-11111", "2025-12-31",   66.0, "alpine"),  # +10% in 2025
         ])
         txn = self._transactions([
             {"settlement_date": "2024-01-31", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 100.0, "flow_scope": "external"},
             {"settlement_date": "2024-06-15", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_out",
+             "broker": "alpine", "transaction_type": "transfer_out",
              "amount": -50.0, "flow_scope": "external"},
         ])
         since = ct.compute_account_irr(
@@ -549,12 +549,12 @@ class TestIrrSinceCutoff(unittest.TestCase):
         # Should fall back to flow-based IRR — no NAV injection (nothing held
         # at cutoff), the real deposit + terminal NAV solve cleanly.
         pos = self._positions([
-            ("BBB-22222", "2025-06-30", 1000.0, "fidelity"),
-            ("BBB-22222", "2026-06-30", 1100.0, "fidelity"),
+            ("BBB-22222", "2025-06-30", 1000.0, "alpine"),
+            ("BBB-22222", "2026-06-30", 1100.0, "alpine"),
         ])
         txn = self._transactions([
             {"settlement_date": "2025-06-15", "account_id": "BBB-22222",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 1000.0, "flow_scope": "external"},
         ])
         since = ct.compute_account_irr(
@@ -567,12 +567,12 @@ class TestIrrSinceCutoff(unittest.TestCase):
     def test_account_irr_cutoff_account_closed_before(self) -> None:
         # Account's last statement is before the cutoff → no row in output.
         pos = self._positions([
-            ("CCC-33333", "2024-01-31", 1000.0, "fidelity"),
-            ("CCC-33333", "2024-06-30", 1050.0, "fidelity"),
+            ("CCC-33333", "2024-01-31", 1000.0, "alpine"),
+            ("CCC-33333", "2024-06-30", 1050.0, "alpine"),
         ])
         txn = self._transactions([
             {"settlement_date": "2024-01-31", "account_id": "CCC-33333",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 1000.0, "flow_scope": "external"},
         ])
         since = ct.compute_account_irr(
@@ -587,8 +587,8 @@ class TestIrrSinceCutoff(unittest.TestCase):
         # that predates the tracked transaction archive). Without this, the
         # account has no negative cashflow at all and xirr is undefined.
         pos = self._positions([
-            ("SYN-1", "2022-10-31", 100.0, "fidelity"),
-            ("SYN-1", "2023-10-31", 110.0, "fidelity"),  # +10% in a year
+            ("SYN-1", "2022-10-31", 100.0, "alpine"),
+            ("SYN-1", "2023-10-31", 110.0, "alpine"),  # +10% in a year
         ])
         txn = self._transactions([])  # no real transactions
         since = ct.compute_account_irr(
@@ -605,9 +605,9 @@ class TestIrrSinceCutoff(unittest.TestCase):
         # pre-cutoff value the synthetic was modeling. Double-counting would
         # halve the IRR.
         pos = self._positions([
-            ("SYN-2", "2020-01-31", 100.0, "fidelity"),
-            ("SYN-2", "2024-12-31", 150.0, "fidelity"),
-            ("SYN-2", "2025-12-31", 165.0, "fidelity"),  # +10% in 2025
+            ("SYN-2", "2020-01-31", 100.0, "alpine"),
+            ("SYN-2", "2024-12-31", 150.0, "alpine"),
+            ("SYN-2", "2025-12-31", 165.0, "alpine"),  # +10% in 2025
         ])
         txn = self._transactions([])
         since = ct.compute_account_irr(
@@ -625,8 +625,8 @@ class TestIrrSinceCutoff(unittest.TestCase):
 # skipped everywhere a flow's dollar amount feeds the math: the IRR cashflow
 # series (poisoned xirr into the -0.9999 floor) AND modified-Dietz TWR (a NaN
 # weighted-flow blanked the month's return, silently dropping it from the
-# linked cumulative). Regression for the 2026-06-07 historical-Fidelity
-# re-parse: 3 unpriced JPM in-kind journals floored the portfolio + two JPM
+# linked cumulative). Regression for the 2026-06-07 historical-Alpine
+# re-parse: 3 unpriced Harbor in-kind journals floored the portfolio + two Harbor
 # accounts' IRR to -99.99% and dropped Dec-2025 from the portfolio TWR.
 # ---------------------------------------------------------------------------
 class TestIrrNanAmountFlows(unittest.TestCase):
@@ -648,15 +648,15 @@ class TestIrrNanAmountFlows(unittest.TestCase):
         # must be skipped: a finite +10% IRR over exactly 2 cashflows, NOT the
         # -0.9999 floor over 3.
         pos = self._positions([
-            ("AAA-11111", "2025-01-31", 1000.0, "fidelity"),
-            ("AAA-11111", "2026-01-31", 1100.0, "fidelity"),
+            ("AAA-11111", "2025-01-31", 1000.0, "alpine"),
+            ("AAA-11111", "2026-01-31", 1100.0, "alpine"),
         ])
         txn = self._transactions([
             {"settlement_date": "2025-01-31", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 1000.0, "flow_scope": "external"},
             {"settlement_date": "2025-06-30", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": float("nan"), "flow_scope": "external"},
         ])
         out = ct.compute_account_irr(pos, txn, synthetic_onboarding={})
@@ -668,15 +668,15 @@ class TestIrrNanAmountFlows(unittest.TestCase):
     def test_portfolio_irr_skips_nan_amount_flow(self) -> None:
         # The same unpriced in-kind journal must not floor the portfolio IRR.
         pos = self._positions([
-            ("AAA-11111", "2025-01-31", 1000.0, "fidelity"),
-            ("AAA-11111", "2026-01-31", 1100.0, "fidelity"),
+            ("AAA-11111", "2025-01-31", 1000.0, "alpine"),
+            ("AAA-11111", "2026-01-31", 1100.0, "alpine"),
         ])
         txn = self._transactions([
             {"settlement_date": "2025-01-31", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 1000.0, "flow_scope": "external"},
             {"settlement_date": "2025-06-30", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_out",
+             "broker": "alpine", "transaction_type": "transfer_out",
              "amount": float("nan"), "flow_scope": "external"},
         ])
         out = ct.compute_portfolio_irr(pos, txn, synthetic_onboarding={})
@@ -691,12 +691,12 @@ class TestIrrNanAmountFlows(unittest.TestCase):
         # weighted loop does not). Dropping the NaN flow keeps the month:
         # $1000 -> $1100 with no usable flow = +10%.
         pos = self._positions([
-            ("AAA-11111", "2025-11-30", 1000.0, "fidelity"),
-            ("AAA-11111", "2025-12-31", 1100.0, "fidelity"),
+            ("AAA-11111", "2025-11-30", 1000.0, "alpine"),
+            ("AAA-11111", "2025-12-31", 1100.0, "alpine"),
         ])
         txn = self._transactions([
             {"settlement_date": "2025-12-15", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": float("nan"), "flow_scope": "external"},
         ])
         twr = ct.compute_monthly_twr(pos, txn)
@@ -710,7 +710,7 @@ class TestIrrNanAmountFlows(unittest.TestCase):
 class TestIrrSanityGate(unittest.TestCase):
     """The ingest-time IRR sanity gate (compute_twr).
 
-    PR #147's NaN-amount in-kind flows floored the portfolio + two JPM accounts'
+    PR #147's NaN-amount in-kind flows floored the portfolio + two Harbor accounts'
     IRR at xirr's -0.9999 bisection bound (shown as -99.99%), and it went
     unnoticed because nothing validated the IRR step the way reconcile_holdings
     (PR #129) validates NAV before writing. This gate is that missing check: a
@@ -804,12 +804,12 @@ class TestIrrSanityGate(unittest.TestCase):
         # shown as "n/a" on the dashboard. The gate surfaces that as "watch" --
         # NOT the blocking "error" floor, and NOT a fake -99.99%.
         pos = self._positions([
-            ("BBB-22222", "2025-01-31", 1000.0, "jpm"),
-            ("BBB-22222", "2026-01-31", 1100.0, "jpm"),
+            ("BBB-22222", "2025-01-31", 1000.0, "harbor"),
+            ("BBB-22222", "2026-01-31", 1100.0, "harbor"),
         ])
         txn = self._transactions([
             {"settlement_date": "2025-06-30", "account_id": "BBB-22222",
-             "broker": "jpm", "transaction_type": "transfer_in",
+             "broker": "harbor", "transaction_type": "transfer_in",
              "amount": float("nan"), "flow_scope": "external"},
         ])
         irr_df = ct.compute_account_irr(pos, txn, synthetic_onboarding={})
@@ -827,18 +827,18 @@ class TestIrrSanityGate(unittest.TestCase):
             pos_csv, txn_csv = td / "positions.csv", td / "transactions.csv"
             irr_csv = td / "irr_per_account.csv"
             self._positions([
-                ("ZZZ-99999", "2025-01-31", 1000.0, "jpm"),
-                ("ZZZ-99999", "2026-01-31", 1100.0, "jpm"),
+                ("ZZZ-99999", "2025-01-31", 1000.0, "harbor"),
+                ("ZZZ-99999", "2026-01-31", 1100.0, "harbor"),
             ]).to_csv(pos_csv, index=False)
             self._transactions([
                 {"settlement_date": "2025-01-31", "account_id": "ZZZ-99999",
-                 "broker": "jpm", "transaction_type": "transfer_in",
+                 "broker": "harbor", "transaction_type": "transfer_in",
                  "amount": 1000.0, "flow_scope": "external"},
             ]).to_csv(txn_csv, index=False)
             with patch.object(ct, "POSITIONS_CSV", pos_csv), \
                     patch.object(ct, "TRANSACTIONS_CSV", txn_csv), \
                     patch.object(ct, "DATA_DIR", td), \
-                    patch.object(ct, "FIDELITY_COVERAGE_CSV", td / "none.csv"), \
+                    patch.object(ct, "ALPINE_COVERAGE_CSV", td / "none.csv"), \
                     contextlib.redirect_stdout(io.StringIO()), \
                     contextlib.redirect_stderr(io.StringIO()):
                 code = ct.main([])
@@ -856,12 +856,12 @@ class TestIrrSanityGate(unittest.TestCase):
             pos_csv, txn_csv = td / "positions.csv", td / "transactions.csv"
             irr_csv = td / "irr_per_account.csv"
             self._positions([
-                ("ZZZ-99999", "2025-01-31", 1000.0, "jpm"),
-                ("ZZZ-99999", "2026-01-31", 1100.0, "jpm"),
+                ("ZZZ-99999", "2025-01-31", 1000.0, "harbor"),
+                ("ZZZ-99999", "2026-01-31", 1100.0, "harbor"),
             ]).to_csv(pos_csv, index=False)
             self._transactions([
                 {"settlement_date": "2025-01-31", "account_id": "ZZZ-99999",
-                 "broker": "jpm", "transaction_type": "transfer_in",
+                 "broker": "harbor", "transaction_type": "transfer_in",
                  "amount": 1000.0, "flow_scope": "external"},
             ]).to_csv(txn_csv, index=False)
             sentinel = "account_id,irr\nPRIOR-GOOD,0.19\n"
@@ -873,7 +873,7 @@ class TestIrrSanityGate(unittest.TestCase):
             with patch.object(ct, "POSITIONS_CSV", pos_csv), \
                     patch.object(ct, "TRANSACTIONS_CSV", txn_csv), \
                     patch.object(ct, "DATA_DIR", td), \
-                    patch.object(ct, "FIDELITY_COVERAGE_CSV", td / "none.csv"), \
+                    patch.object(ct, "ALPINE_COVERAGE_CSV", td / "none.csv"), \
                     patch.object(ct, "compute_portfolio_irr", return_value=floored), \
                     contextlib.redirect_stdout(io.StringIO()), \
                     contextlib.redirect_stderr(io.StringIO()) as err:
@@ -919,15 +919,15 @@ class TestScopedPortfolioIrr(unittest.TestCase):
         # transfer on 2025-06-30 whose partner account is NOT in the frame
         # (broker-narrowed scope), and still ends 2026-01-31 at 1100.
         pos = self._positions([
-            ("AAA-11111", "2025-01-31", 1000.0, "fidelity"),
-            ("AAA-11111", "2026-01-31", 1100.0, "fidelity"),
+            ("AAA-11111", "2025-01-31", 1000.0, "alpine"),
+            ("AAA-11111", "2026-01-31", 1100.0, "alpine"),
         ])
         txn = self._transactions([
             {"settlement_date": "2025-01-31", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 1000.0, "flow_scope": "external", "pair_id": None},
             {"settlement_date": "2025-06-30", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_out",
+             "broker": "alpine", "transaction_type": "transfer_out",
              "amount": -500.0, "flow_scope": "internal",
              "pair_id": internal_pair_id},
         ])
@@ -957,20 +957,20 @@ class TestScopedPortfolioIrr(unittest.TestCase):
         # Both legs of pair p1 are inside the frame (AAA -> BBB, 500 on
         # 2025-06-30): scoped must equal the default external-only result.
         pos = self._positions([
-            ("AAA-11111", "2025-01-31", 1000.0, "fidelity"),
-            ("AAA-11111", "2026-01-31", 600.0, "fidelity"),
-            ("BBB-22222", "2025-06-30", 500.0, "fidelity"),
-            ("BBB-22222", "2026-01-31", 550.0, "fidelity"),
+            ("AAA-11111", "2025-01-31", 1000.0, "alpine"),
+            ("AAA-11111", "2026-01-31", 600.0, "alpine"),
+            ("BBB-22222", "2025-06-30", 500.0, "alpine"),
+            ("BBB-22222", "2026-01-31", 550.0, "alpine"),
         ])
         txn = self._transactions([
             {"settlement_date": "2025-01-31", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 1000.0, "flow_scope": "external", "pair_id": None},
             {"settlement_date": "2025-06-30", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_out",
+             "broker": "alpine", "transaction_type": "transfer_out",
              "amount": -500.0, "flow_scope": "internal", "pair_id": "p1"},
             {"settlement_date": "2025-06-30", "account_id": "BBB-22222",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 500.0, "flow_scope": "internal", "pair_id": "p1"},
         ])
         base = ct.compute_portfolio_irr(pos, txn, synthetic_onboarding={})
@@ -1011,18 +1011,18 @@ class TestScopedPortfolioIrr(unittest.TestCase):
         # read is a GROUP whose in-scope legs net to -1000 (not 0) — pure
         # boundary-crossing money, so BOTH legs must count.
         pos = self._positions([
-            ("AAA-11111", "2025-01-31", 1000.0, "fidelity"),
-            ("AAA-11111", "2026-01-31", 1100.0, "fidelity"),
+            ("AAA-11111", "2025-01-31", 1000.0, "alpine"),
+            ("AAA-11111", "2026-01-31", 1100.0, "alpine"),
         ])
         txn = self._transactions([
             {"settlement_date": "2025-01-31", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 1000.0, "flow_scope": "external", "pair_id": None},
             {"settlement_date": "2025-06-30", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_out",
+             "broker": "alpine", "transaction_type": "transfer_out",
              "amount": -500.0, "flow_scope": "internal", "pair_id": "dup"},
             {"settlement_date": "2025-06-30", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_out",
+             "broker": "alpine", "transaction_type": "transfer_out",
              "amount": -500.0, "flow_scope": "internal", "pair_id": "dup"},
         ])
         base = ct.compute_portfolio_irr(pos, txn, synthetic_onboarding={})
@@ -1042,26 +1042,26 @@ class TestScopedPortfolioIrr(unittest.TestCase):
         # rule too (counts["dup"] == 4, never "lone") — a same-before-and-
         # after case, unlike the boundary-leg test above.
         pos = self._positions([
-            ("AAA-11111", "2025-01-31", 1000.0, "fidelity"),
-            ("AAA-11111", "2026-01-31", 600.0, "fidelity"),
-            ("BBB-22222", "2025-06-30", 1000.0, "fidelity"),
-            ("BBB-22222", "2026-01-31", 1100.0, "fidelity"),
+            ("AAA-11111", "2025-01-31", 1000.0, "alpine"),
+            ("AAA-11111", "2026-01-31", 600.0, "alpine"),
+            ("BBB-22222", "2025-06-30", 1000.0, "alpine"),
+            ("BBB-22222", "2026-01-31", 1100.0, "alpine"),
         ])
         txn = self._transactions([
             {"settlement_date": "2025-01-31", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 1000.0, "flow_scope": "external", "pair_id": None},
             {"settlement_date": "2025-06-30", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_out",
+             "broker": "alpine", "transaction_type": "transfer_out",
              "amount": -500.0, "flow_scope": "internal", "pair_id": "dup"},
             {"settlement_date": "2025-06-30", "account_id": "BBB-22222",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 500.0, "flow_scope": "internal", "pair_id": "dup"},
             {"settlement_date": "2025-06-30", "account_id": "AAA-11111",
-             "broker": "fidelity", "transaction_type": "transfer_out",
+             "broker": "alpine", "transaction_type": "transfer_out",
              "amount": -500.0, "flow_scope": "internal", "pair_id": "dup"},
             {"settlement_date": "2025-06-30", "account_id": "BBB-22222",
-             "broker": "fidelity", "transaction_type": "transfer_in",
+             "broker": "alpine", "transaction_type": "transfer_in",
              "amount": 500.0, "flow_scope": "internal", "pair_id": "dup"},
         ])
         base = ct.compute_portfolio_irr(pos, txn, synthetic_onboarding={})

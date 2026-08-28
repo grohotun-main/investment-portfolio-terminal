@@ -67,8 +67,7 @@ CLASS_COLORS = {
 }
 # Keyed by the broker ids that appear in the data's `broker` column.
 BROKER_COLORS = {
-    "fidelity": "#4DA3F5", "jpm": "#2DD4BF",
-    "Fidelity Test": "#4DA3F5", "JPM Test": "#2DD4BF",
+    "alpine": "#4DA3F5", "harbor": "#2DD4BF",
 }
 
 # --- Typography ------------------------------------------------------------

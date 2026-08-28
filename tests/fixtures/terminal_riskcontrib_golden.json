@@ -38,12 +38,12 @@
     ],
     "brokers": [
       {
-        "id": "fidelity",
-        "label": "fidelity"
+        "id": "alpine",
+        "label": "alpine"
       },
       {
-        "id": "jpm",
-        "label": "jpm"
+        "id": "harbor",
+        "label": "harbor"
       }
     ],
     "filter": {

@@ -49,13 +49,13 @@ class TestAsOfHoldings(unittest.TestCase):
 
 
     def test_dual_date_month_keeps_both_brokers(self) -> None:
-        # WSF-2: JPM (last-biz-day) and Fidelity (month-end) land on different
+        # WSF-2: Harbor (last-biz-day) and Alpine (month-end) land on different
         # dates in the SAME month. Resolving by month must keep both legs.
         positions = pd.DataFrame([
-            {"statement_date": pd.Timestamp("2026-04-29"),  # JPM
+            {"statement_date": pd.Timestamp("2026-04-29"),  # Harbor
              "symbol": "SPY", "market_value": 100_000.0,
              "asset_class": "equity_etf"},
-            {"statement_date": pd.Timestamp("2026-04-30"),  # Fidelity
+            {"statement_date": pd.Timestamp("2026-04-30"),  # Alpine
              "symbol": "GLD", "market_value": 50_000.0,
              "asset_class": "other"},
         ])
@@ -134,9 +134,9 @@ class TestClassifyHolding(unittest.TestCase):
 class TestAggregateByTicker(unittest.TestCase):
     def test_aggregate_by_ticker_collapses_multi_broker(self) -> None:
         holdings = pd.DataFrame([
-            {"ticker": "SPY", "market_value": 60_000.0, "broker": "jpm"},
-            {"ticker": "SPY", "market_value": 40_000.0, "broker": "fidelity"},
-            {"ticker": "AAPL", "market_value": 25_000.0, "broker": "jpm"},
+            {"ticker": "SPY", "market_value": 60_000.0, "broker": "harbor"},
+            {"ticker": "SPY", "market_value": 40_000.0, "broker": "alpine"},
+            {"ticker": "AAPL", "market_value": 25_000.0, "broker": "harbor"},
         ])
         out = ohd.aggregate_by_ticker(holdings)
         spy_mv = float(out.loc[out["ticker"] == "SPY", "market_value"].iloc[0])
@@ -212,16 +212,16 @@ class TestBuildExistingOptionsRows(unittest.TestCase):
             {"underlying": "NVDA", "opt_type": "put",
              "strike": 115.0, "expiry": pd.Timestamp("2026-12-19").date(),
              "quantity": -3, "cost_basis_per_share": 4.50,
-             "market_value": 1200.0, "broker": "jpm"},
+             "market_value": 1200.0, "broker": "harbor"},
             {"underlying": "NVDA", "opt_type": "put",
              "strike": 115.0, "expiry": pd.Timestamp("2026-12-19").date(),
              "quantity": -5, "cost_basis_per_share": 4.20,
-             "market_value": 2050.0, "broker": "fidelity"},
+             "market_value": 2050.0, "broker": "alpine"},
             # A call should be ignored
             {"underlying": "SPY", "opt_type": "call",
              "strike": 600.0, "expiry": pd.Timestamp("2026-12-19").date(),
              "quantity": 1, "cost_basis_per_share": 10.0,
-             "market_value": 1100.0, "broker": "jpm"},
+             "market_value": 1100.0, "broker": "harbor"},
         ])
         out = ohd.build_existing_options_rows(opt_tbl)
         self.assertEqual(len(out), 2)
@@ -257,45 +257,45 @@ class TestOrchestrator(unittest.TestCase):
             # Multi-broker SPY
             {"statement_date": as_of, "symbol": "SPY",
              "market_value": 60_000.0, "asset_class": "equity_etf",
-             "broker": "jpm", "description": "SPDR S&P 500 ETF"},
+             "broker": "harbor", "description": "SPDR S&P 500 ETF"},
             {"statement_date": as_of, "symbol": "SPY",
              "market_value": 40_000.0, "asset_class": "equity_etf",
-             "broker": "fidelity", "description": "SPDR S&P 500 ETF"},
+             "broker": "alpine", "description": "SPDR S&P 500 ETF"},
             # GLD tagged 'other'
             {"statement_date": as_of, "symbol": "GLD",
              "market_value": 30_000.0, "asset_class": "other",
-             "broker": "jpm", "description": "SPDR Gold Shares"},
+             "broker": "harbor", "description": "SPDR Gold Shares"},
             # SGOV tagged fixed_income
             {"statement_date": as_of, "symbol": "SGOV",
              "market_value": 50_000.0, "asset_class": "fixed_income",
-             "broker": "fidelity", "description": "iShares 0-3 Month T-Bill"},
+             "broker": "alpine", "description": "iShares 0-3 Month T-Bill"},
             # Treasury CUSIP, NaN symbol
             {"statement_date": as_of, "symbol": None,
              "market_value": 20_000.0, "asset_class": "fixed_income",
-             "broker": "jpm",
+             "broker": "harbor",
              "description": "UST 4.25% 2027 CUSIP 91282CFB1"},
             # SPY put tagged 'other' via description (bug #5 detection
             # path: classify_holding finds the PUT via description regex
             # even though asset_class is misleading).
             {"statement_date": as_of, "symbol": "SPY 11/26 PUT 640",
              "market_value": 1_500.0, "asset_class": "other",
-             "broker": "fidelity",
+             "broker": "alpine",
              "description": "PUT SPY 11/20/26 640"},
             # Unpriced microcap
             {"statement_date": as_of, "symbol": "XYZQQ",
              "market_value": 5_000.0, "asset_class": "equity_stock",
-             "broker": "jpm", "description": "Tiny Microcap Inc"},
+             "broker": "harbor", "description": "Tiny Microcap Inc"},
             # Earlier snapshot — should be dropped
             {"statement_date": pd.Timestamp("2026-03-31"),
              "symbol": "SPY", "market_value": 999_999.0,
-             "asset_class": "equity_etf", "broker": "jpm",
+             "asset_class": "equity_etf", "broker": "harbor",
              "description": "stale"},
         ])
         opt_tbl = pd.DataFrame([
             {"underlying": "SPY", "opt_type": "put",
              "strike": 640.0, "expiry": pd.Timestamp("2026-11-20").date(),
              "quantity": -1, "cost_basis_per_share": 15.0,
-             "market_value": 1_500.0, "broker": "fidelity"},
+             "market_value": 1_500.0, "broker": "alpine"},
         ])
         return positions, opt_tbl
 
@@ -362,10 +362,10 @@ class TestOrchestrator(unittest.TestCase):
         positions = pd.DataFrame([
             {"statement_date": as_of, "symbol": "SPY",
              "market_value": 100_000.0, "asset_class": "equity_etf",
-             "broker": "jpm", "description": ""},
+             "broker": "harbor", "description": ""},
             {"statement_date": as_of, "symbol": "AAPL",
              "market_value": 25_000.0, "asset_class": "equity_stock",
-             "broker": "jpm", "description": ""},
+             "broker": "harbor", "description": ""},
         ])
         inputs = ohd.build_options_hedging_inputs(
             positions=positions, opt_tbl=pd.DataFrame(),
@@ -379,7 +379,7 @@ class TestOrchestrator(unittest.TestCase):
         positions = pd.DataFrame([
             {"statement_date": as_of, "symbol": "SPY",
              "market_value": 100_000.0, "asset_class": "equity_etf",
-             "broker": "jpm", "description": ""},
+             "broker": "harbor", "description": ""},
         ])
         inputs = ohd.build_options_hedging_inputs(
             positions=positions, opt_tbl=pd.DataFrame(),

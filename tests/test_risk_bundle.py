@@ -98,7 +98,7 @@ class TestBuildSnapshotWeights(unittest.TestCase):
         snap = self.snap.copy()
         desc = "UNITED STATES TREAS NTS 4.25% 05/15/2033"
         mask = snap["symbol"] == "BBB"
-        snap.loc[mask, "bucket"] = "JPM Treasury Ladder"
+        snap.loc[mask, "bucket"] = "Treasury Ladder"
         snap.loc[mask, "symbol"] = "CUSIP123"
         snap.loc[mask, "description"] = desc
         expect = treasury_proxy(desc, pd.Timestamp("2026-05-31"))

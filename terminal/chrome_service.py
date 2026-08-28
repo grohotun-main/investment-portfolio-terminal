@@ -95,7 +95,7 @@ def _warnings_and_sources(frames: Frames, data_dir: Path,
 
     # Both benchmark TR legs: SPY, and the 60/40 blend's AGG leg — the AGG
     # file used to sit outside every guard, so its staleness silently
-    # truncated JPM-scoped benchmark series (DA-B-2). A data dir without
+    # truncated Harbor-scoped benchmark series (DA-B-2). A data dir without
     # the AGG file (fixture) probes None and stays silent.
     for _tick in ("SPY", "AGG"):
         try:
@@ -196,14 +196,13 @@ def _footer(frames: Frames) -> str:
     """app.py:9100-9111 verbatim."""
     t = frames.transactions
     if t.empty:
-        return ("Phase 0 reconciliation: 97% across 167 account-statements. "
+        return ("Phase 0 reconciliation complete across the statement archive. "
                 "Phase 1 transactions: not loaded.")
-    return ("Phase 0 reconciliation: 97% across 167 account-statements. "
+    return ("Phase 0 reconciliation complete across the statement archive. "
             f"Phase 1 transactions: {hs.canonical_broker_label(frames)} merged, {len(t):,} rows "
             f"({t['settlement_date'].min().strftime('%b %Y')} - "
             f"{t['settlement_date'].max().strftime('%b %Y')}). "
-            "SPY and 60/40 SPY/TLT benchmarks integrated (Massive/Polygon). "
-            "Next up: AGG blend for fixed-income context.")
+            "SPY and 60/40 benchmark series integrated (Polygon).")
 
 
 def build_chrome_view(frames: Frames, data_dir, today=None) -> dict:

@@ -77,14 +77,14 @@ _QTY_EPS = 1e-6
 # Relief conventions. FIFO is the ledger default and the fallback; the others
 # are honoured when a broker prints them on the sell row. MLMG (maximum loss,
 # minimum gain) and PRO (pro rata) are recognised but not executable here,
-# and SPEC is Fidelity's specific-share flag with no lot detail printed
+# and SPEC is Alpine's specific-share flag with no lot detail printed
 # ("refer to confirm for Lot detail") — all three relieve FIFO and log why.
 RELIEF_METHODS = {"FIFO", "LIFO", "HC", "LC", "LTHC", "VSP",
                   "MLMG", "PRO", "SPEC"}
 _RELIEF_FALLBACK_REASON = {"MLMG": "relief_unsupported",
                            "PRO": "relief_unsupported",
                            "SPEC": "relief_lot_unspecified"}
-# JPM names the lot(s) a specific-match sell closed, inline in the row text:
+# Harbor names the lot(s) a specific-match sell closed, inline in the row text:
 #   "... MARKET IN THIS SECURITY VS 081925 1 @614.9 ROME: ..."
 # and chains them when one sell matched several lots:
 #   "... VS 021925 1 @591.42 VS 031125 1 @563.17 VS 031925 1 @559.34 ..."
@@ -98,7 +98,7 @@ RE_VSP_HINT = re.compile(
 MM_DESC_PAT = re.compile(
     r"^CASH\b|MONEY MARKET|SWEEP|\bDEPOSIT\b|\bCORE\b|MMF|GOVT MMKT|TREASURY FUND",
     re.I)
-# JPM bond buys print "<MM/DD/YYYY> MATURITY DATE" in the confirm text.
+# Harbor bond buys print "<MM/DD/YYYY> MATURITY DATE" in the confirm text.
 RE_MATURITY = re.compile(r"\b(\d{2}/\d{2}/\d{4})\s+MATURITY\b")
 # Interest rows print the maturity as "DUE MM/DD/YYYY" even when the buy
 # confirm's truncated text never says MATURITY (treasury notes).
@@ -222,7 +222,7 @@ def corporate_split_events(corporate_actions: Optional[dict],
     return events
 
 
-# Fidelity prints a security's NAME + cusip on confirms but its NAME + ticker
+# Alpine prints a security's NAME + cusip on confirms but its NAME + ticker
 # in holdings (its holdings parser writes cusip="" literally), so transactions
 # key by cusip while positions key by symbol and NOTHING joins. Both facts are
 # printed by the same broker in the same statement, so the crosswalk is
@@ -244,7 +244,7 @@ def normalize_security_name(text) -> str:
 def security_name_from_description(description) -> str:
     """The security name a description leads with, normalized.
 
-    Fidelity confirms read "<NAME> <CUSIP> You Bought ...", so the name is
+    Alpine confirms read "<NAME> <CUSIP> You Bought ...", so the name is
     whatever precedes the first cusip-shaped token; without one, the whole
     description is the name.
     """
@@ -283,7 +283,7 @@ def build_cusip_resolver(transactions: Optional[pd.DataFrame],
                          ) -> dict[str, str]:
     """{cusip: symbol} for cusips a NAME match has already proved.
 
-    Fidelity prints the cusip inside the description only on trade confirms.
+    Alpine prints the cusip inside the description only on trade confirms.
     Its dividend-reinvestment and account-transfer rows carry the cusip in the
     column but not in the description, so the name rule cannot speak for them
     and they would strand under the raw cusip while the same instrument's buys
@@ -428,8 +428,8 @@ def is_cash_like(description, key: str, cash_keys: set[str],
 # Options are out of scope for the lot ledger (their basis lives in the
 # option machinery), but both brokers key option confirms AND option
 # positions by the UNDERLYING's symbol — so without an explicit guard they
-# flow into the underlying's equity lots. Shapes: JPM confirms/positions
-# "CALL TKR 01/17/25 …", Fidelity "PUT (TKR) ISSUER …". Anchored so issuer
+# flow into the underlying's equity lots. Shapes: Harbor confirms/positions
+# "CALL TKR 01/17/25 …", Alpine "PUT (TKR) ISSUER …". Anchored so issuer
 # names beginning with CALL…/PUT… and mid-description event words never
 # match.
 _OPTION_DESC_PAT = re.compile(
@@ -533,7 +533,7 @@ class _Lot:
     source_row: int
     # Bond maturity parsed from the opening row's "MM/DD/YYYY MATURITY"
     # text, NaT otherwise. Lets a redemption row that prints no identifier
-    # at all (JPM bills) find the instrument it redeems by date + face.
+    # at all (Harbor bills) find the instrument it redeems by date + face.
     maturity: pd.Timestamp = pd.NaT
     # True once a printed figure sized a close on this lot — the basis it
     # carries is then the broker's arithmetic, not our reconstruction.
@@ -2037,7 +2037,7 @@ def relief_check(realizations: pd.DataFrame, transactions: pd.DataFrame,
 
     `transactions` must be the SAME frame (same index) that built the ledger —
     realizations reference their source row by that index. Pass the same
-    resolvers the ledger used, or Fidelity rows are labelled by raw cusip here
+    resolvers the ledger used, or Alpine rows are labelled by raw cusip here
     and by resolved symbol in the reconciliation, and the two sections of the
     report name the same instrument differently.
 

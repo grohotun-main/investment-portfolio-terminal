@@ -323,7 +323,7 @@ _METHODOLOGY = (
     "Going-concern ladder: no maturity pro-rating — a maturing rung is assumed "
     "rolled into similar paper.</li>"
     "<li><b>Coverage:</b> any symbol-bearing holding with a fetched history file "
-    "— class labels are not trusted (JPM files SGOV under fixed income; "
+    "— class labels are not trusted (Harbor files SGOV under fixed income; "
     "TLH-account names carry a display class) — plus coupon-priced bonds. "
     "Options, cash and never-fetched tickers are <i>uncovered</i> — excluded from "
     "yield math but counted in NAV, so the coverage tile is honest.</li>"
