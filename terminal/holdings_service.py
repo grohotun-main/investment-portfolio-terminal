@@ -1184,16 +1184,35 @@ def _broker_options(snap_all: pd.DataFrame) -> tuple[list[dict], dict]:
 # SEPARATE helper, used only where a raw broker value must become the prose
 # form shown in a rendered string (the KPI-tape / Performance headline IRR
 # sub's `frames.broker_scope`) rather than an API-facing option list.
-_BROKER_DISPLAY_CASE = {"fidelity": "Fidelity", "jpm": "JPM"}
-
-
 def _broker_display_label(raw: str) -> str:
-    """``"fidelity"`` -> ``"Fidelity"``, ``"jpm"`` -> ``"JPM"``; anything else
-    (including already-cased TEST_BROKER_LABELS like "Fidelity Test") gets a
-    generic Title-case-first-letter fallback, a no-op when already cased."""
-    if raw in _BROKER_DISPLAY_CASE:
-        return _BROKER_DISPLAY_CASE[raw]
-    return raw[:1].upper() + raw[1:] if raw else raw
+    """Prose casing for a raw broker id, derived by rule so no broker name is
+    ever hardcoded: a short all-lower id (<= 3 chars) reads as an initialism
+    (``"jpm"`` -> ``"JPM"``); anything else gets its first letter upper-cased
+    (``"fidelity"`` -> ``"Fidelity"``), a no-op when already cased."""
+    if not raw:
+        return raw
+    if raw.isascii() and raw.isalpha() and raw.islower() and len(raw) <= 3:
+        return raw.upper()
+    return raw[:1].upper() + raw[1:]
+
+
+def data_brokers(frames: "Frames") -> list[str]:
+    """Sorted raw broker ids present in the loaded book (test labels
+    excluded). The empty/degenerate bundle yields ``[]``."""
+    if frames.positions.empty or "broker" not in frames.positions.columns:
+        return []
+    vals = sorted(frames.positions["broker"].dropna().astype(str).unique())
+    return [b for b in vals if b not in TEST_BROKER_LABELS]
+
+
+def canonical_broker_label(frames: "Frames") -> str:
+    """Prose label for the unfiltered book, derived from the data — a
+    ``{fidelity, jpm}`` book renders ``"Fidelity + JPM"``. Every caption or
+    facts block naming the canonical scope MUST use this rather than a
+    literal, so the label follows whatever brokers the data actually holds.
+    ``"Portfolio"`` when no broker column is loaded."""
+    labels = [_broker_display_label(b) for b in data_brokers(frames)]
+    return " + ".join(labels) if labels else "Portfolio"
 
 
 def _history_start_cutoff(history_start: str | None) -> pd.Timestamp | None:

@@ -159,7 +159,7 @@ def _scope_block(frames: hs.Frames, history_start: str,
                  account_label: str | None = None,
                  class_label: str | None = None) -> dict:
     label = (" + ".join(frames.broker_scope) if frames.broker_scope
-             else "Fidelity + JPM")
+             else hs.canonical_broker_label(frames))
     # history_start is threaded from the request — Frames carries no such
     # attribute, so deriving it here would silently lie to the model.
     out = {"broker": label, "history_start": history_start or "all"}

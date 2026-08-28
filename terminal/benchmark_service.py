@@ -49,8 +49,9 @@ CHART_PROVISIONAL = "#E0A030"   # dashed amber tail: the provisional stub period
 # --------------------------------------------------------------------------- #
 def _subset_label(acct_opts: list[dict], class_opts: list[dict],
                   account: str | list[str], asset_class: str | list[str],
-                  broker_scope: tuple[str, ...] | None = None) -> str:
-    base = ("Combined portfolio (Fidelity + JPM)" if not broker_scope
+                  broker_scope: tuple[str, ...] | None = None,
+                  canonical: str = "Portfolio") -> str:
+    base = (f"Combined portfolio ({canonical})" if not broker_scope
             else f"Broker scope: {' + '.join(broker_scope)}")
     bits = []
     acct_ids = hs._normalize_filter_ids(account)
@@ -67,14 +68,15 @@ def _subset_label(acct_opts: list[dict], class_opts: list[dict],
 
 
 def _filter_caption(holdings_filter_active: bool, short: str,
-                    broker_scope: tuple[str, ...] | None = None) -> str:
+                    broker_scope: tuple[str, ...] | None = None,
+                    canonical: str = "Portfolio") -> str:
     if holdings_filter_active:
         return (f"Account / Asset-class filters in the sidebar select the subset "
                 f"compared against {short} total return.")
     if broker_scope:
         return (f"{' + '.join(broker_scope)} only vs {short} total return — "
                 f"use the Account / Asset-class filters to compare a subset.")
-    return (f"Full combined portfolio (Fidelity + JPM) vs {short} total "
+    return (f"Full combined portfolio ({canonical}) vs {short} total "
             f"return — use the Account / Asset-class filters to compare a subset.")
 
 
@@ -426,9 +428,11 @@ def build_benchmark_view(frames: hs.Frames, *, account: str | list[str] = "all",
                       "short": short, "requested": benchmark,
                       "unavailable_fallback": unavailable_fallback},
         "subset_label": _subset_label(acct_opts, class_opts, account, asset_class,
-                                      frames.broker_scope),
+                                      frames.broker_scope,
+                                      canonical=hs.canonical_broker_label(frames)),
         "filter_caption": _filter_caption(holdings_filter_active, short,
-                                          frames.broker_scope),
+                                          frames.broker_scope,
+                                          canonical=hs.canonical_broker_label(frames)),
         "accounts": acct_opts,
         "classes": class_opts,
         "brokers": broker_opts,

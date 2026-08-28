@@ -138,7 +138,7 @@ def _warnings_and_sources(frames: Frames, data_dir: Path,
         f"Positions: {len(positions):,} rows over "
         f"{positions['statement_date'].nunique()} statement-dates, "
         f"{frames.positions_monthly['month'].nunique() if not frames.positions_monthly.empty else 0} normalized months. "
-        f"Transactions: {len(transactions):,} rows (Fidelity + JPM). "
+        f"Transactions: {len(transactions):,} rows ({hs.canonical_broker_label(frames)}). "
         f"Accounts: {positions['bucket'].nunique()} sub-accounts. "
         f"Latest data: positions through "
         f"{positions['statement_date'].max().strftime('%b %d, %Y')}"
@@ -199,7 +199,7 @@ def _footer(frames: Frames) -> str:
         return ("Phase 0 reconciliation: 97% across 167 account-statements. "
                 "Phase 1 transactions: not loaded.")
     return ("Phase 0 reconciliation: 97% across 167 account-statements. "
-            f"Phase 1 transactions: Fidelity + JPM merged, {len(t):,} rows "
+            f"Phase 1 transactions: {hs.canonical_broker_label(frames)} merged, {len(t):,} rows "
             f"({t['settlement_date'].min().strftime('%b %Y')} - "
             f"{t['settlement_date'].max().strftime('%b %Y')}). "
             "SPY and 60/40 SPY/TLT benchmarks integrated (Massive/Polygon). "
