@@ -1,0 +1,3 @@
+account_id,start_date,end_date,window_months,terminal_nav,n_cashflows,total_deposits,total_withdrawals,irr
+TEST-A,2024-01-02,2026-04-30,28,87400.00,1,80000.00,0.00,0.0512
+TEST-B,2024-01-02,2026-04-30,28,43650.00,1,45000.00,0.00,-0.0118

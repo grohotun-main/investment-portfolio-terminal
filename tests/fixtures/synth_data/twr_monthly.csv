@@ -1,0 +1,5 @@
+account_id,month,statement_date,nav,prev_nav,prev_stmt_date,net_external_flow,return_pct,n_flows,is_real_statement
+TEST-A,2026-03,2026-03-31,86000.00,84000.00,2026-02-28,0.00,0.0238,0,True
+TEST-A,2026-04,2026-04-30,87400.00,86000.00,2026-03-31,0.00,0.0163,0,True
+TEST-B,2026-03,2026-03-31,43000.00,42500.00,2026-02-28,0.00,0.0118,0,True
+TEST-B,2026-04,2026-04-30,43650.00,43000.00,2026-03-31,0.00,0.0151,0,True

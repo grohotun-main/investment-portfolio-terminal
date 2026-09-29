@@ -1,0 +1,59 @@
+# Secrets / env — never commit
+.env
+.env.*
+!.env.example
+secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+credentials*
+.netrc
+.pgpass
+config.local.*
+config_local.py
+
+# Data — the working data dir is generated locally, never committed
+data/
+*.csv
+*.xlsx
+*.xls
+*.parquet
+*.pickle
+*.pkl
+*.db
+*.sqlite
+*.sqlite3
+# Exception: committed synthetic fixtures + public-index data are re-included
+# past the broad ignores above. A NEW fixture file must be covered by these
+# negations (or added here) or git silently never tracks it.
+!tests/fixtures/
+!tests/fixtures/**
+!parsers/spx_dividend_yield_monthly.csv
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python
+__pycache__/
+*.pyc
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+venv/
+.venv/
+env/
+
+# Logs / scratch
+*.log
+logs/
+scratch/

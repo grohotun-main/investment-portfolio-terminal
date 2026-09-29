@@ -1,0 +1,177 @@
+{
+  "schema": 1,
+  "kind": "gate",
+  "ticker": "SPY",
+  "registered": "2026-07-18",
+  "config": {
+    "stride": 5,
+    "burn_in_years": 10,
+    "censor": 252,
+    "horizon": 252,
+    "incumbent": {
+      "strong_rr": 0.67,
+      "requires_ci": true
+    },
+    "min_episodes": 5
+  },
+  "evals": {
+    "n": 1128,
+    "first": "2003-01-29",
+    "last": "2025-06-23"
+  },
+  "incumbent": {
+    "primary": {
+      "stat": null,
+      "ci_lo": null,
+      "ci_hi": null,
+      "n_strong_days": 74,
+      "n_strong_episodes": 2,
+      "block_rows": 51,
+      "omega_inf": true,
+      "outcome": "inconclusive"
+    },
+    "descriptive": {
+      "strong": {
+        "n_days": 74,
+        "n_episodes": 2,
+        "med_252": 0.20659622363070096,
+        "med_126": 0.12846636926216337,
+        "med_63": 0.06413125045519874,
+        "med_21": 0.02840311484063429,
+        "hit_252": 1.0,
+        "omega_252": null,
+        "omega_252_inf": true
+      },
+      "residual_neutral": {
+        "n_days": 82,
+        "n_episodes": 6,
+        "med_252": 0.17029277829408818,
+        "med_126": 0.11647429154633737,
+        "med_63": 0.07286407912927384,
+        "med_21": 0.03688639668957494,
+        "hit_252": 0.9634146341463414,
+        "omega_252": 141.51037959504356
+      }
+    }
+  },
+  "candidates": [
+    {
+      "id": "rr0",
+      "strong_rr": 0.0,
+      "requires_ci": true,
+      "preference": 1,
+      "primary": {
+        "stat": null,
+        "ci_lo": null,
+        "ci_hi": null,
+        "n_strong_days": 104,
+        "n_strong_episodes": 3,
+        "block_rows": 51,
+        "omega_inf": true,
+        "outcome": "inconclusive"
+      },
+      "descriptive": {
+        "strong": {
+          "n_days": 104,
+          "n_episodes": 3,
+          "med_252": 0.20277255186429866,
+          "med_126": 0.13257319394399025,
+          "med_63": 0.0687143307660133,
+          "med_21": 0.025358839260309685,
+          "hit_252": 1.0,
+          "omega_252": null,
+          "omega_252_inf": true
+        },
+        "residual_neutral": {
+          "n_days": 52,
+          "n_episodes": 6,
+          "med_252": 0.15502158903147145,
+          "med_126": 0.07663987764512115,
+          "med_63": 0.060366220521892555,
+          "med_21": 0.04123887454969466,
+          "hit_252": 0.9423076923076923,
+          "omega_252": 85.14033796751264
+        }
+      }
+    },
+    {
+      "id": "rr50",
+      "strong_rr": 0.5,
+      "requires_ci": true,
+      "preference": 2,
+      "primary": {
+        "stat": null,
+        "ci_lo": null,
+        "ci_hi": null,
+        "n_strong_days": 104,
+        "n_strong_episodes": 3,
+        "block_rows": 51,
+        "omega_inf": true,
+        "outcome": "inconclusive"
+      },
+      "descriptive": {
+        "strong": {
+          "n_days": 104,
+          "n_episodes": 3,
+          "med_252": 0.20277255186429866,
+          "med_126": 0.13257319394399025,
+          "med_63": 0.0687143307660133,
+          "med_21": 0.025358839260309685,
+          "hit_252": 1.0,
+          "omega_252": null,
+          "omega_252_inf": true
+        },
+        "residual_neutral": {
+          "n_days": 52,
+          "n_episodes": 6,
+          "med_252": 0.15502158903147145,
+          "med_126": 0.07663987764512115,
+          "med_63": 0.060366220521892555,
+          "med_21": 0.04123887454969466,
+          "hit_252": 0.9423076923076923,
+          "omega_252": 85.14033796751264
+        }
+      }
+    },
+    {
+      "id": "pt67",
+      "strong_rr": 0.67,
+      "requires_ci": false,
+      "preference": 3,
+      "primary": {
+        "stat": 259.5418311737646,
+        "ci_lo": 62.731727457741634,
+        "ci_hi": 468.52815017235514,
+        "n_strong_days": 75,
+        "n_strong_episodes": 2,
+        "block_rows": 51,
+        "omega_inf": false,
+        "outcome": "inconclusive"
+      },
+      "descriptive": {
+        "strong": {
+          "n_days": 75,
+          "n_episodes": 2,
+          "med_252": 0.20548687486059025,
+          "med_126": 0.12626112833297598,
+          "med_63": 0.061718979055962686,
+          "med_21": 0.02713933515321365,
+          "hit_252": 0.9866666666666667,
+          "omega_252": 266.05967179581444
+        },
+        "residual_neutral": {
+          "n_days": 81,
+          "n_episodes": 6,
+          "med_252": 0.17288566278426587,
+          "med_126": 0.11915116985674024,
+          "med_63": 0.07397639332234651,
+          "med_21": 0.03691055788901343,
+          "hit_252": 0.9753086419753086,
+          "omega_252": 291.07981438246316
+        }
+      }
+    }
+  ],
+  "selection_rule": "first candidate by preference order whose strong band validates (ci_lo > 0 or omega_inf, >= 5 episodes); none -> incumbent gate stays",
+  "selected": null
+}

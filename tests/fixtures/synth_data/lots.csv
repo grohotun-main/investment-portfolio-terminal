@@ -1,0 +1,8 @@
+account_id,instrument_key,key_source,symbol,open_date,acquired_date,origin,quantity_open,quantity_remaining,basis_open,basis_remaining,source_row,basis_evidence,band
+TEST-A,SPY,symbol,SPY,2024-05-10,2024-05-10,buy,60,60,27000.00,27000.00,1,reconstructed,ok
+TEST-A,SPY,symbol,SPY,2025-11-03,2025-11-03,buy,40,40,21000.00,21000.00,2,reconstructed,ok
+TEST-A,AAA,symbol,AAA,2026-03-31,,opening,200,200,15000.00,15000.00,3,printed,ok
+TEST-B,SPY,symbol,SPY,2023-01-15,2023-01-15,buy,50,50,20000.00,20000.00,4,reconstructed,ok
+TEST-B,BBB,symbol,BBB,2026-01-05,2026-01-05,buy,300,300,15300.00,15300.00,5,reconstructed,watch
+TEST-C,CCC,symbol,CCC,2026-02-10,2026-02-10,buy,40,40,900.00,900.00,6,reconstructed,ok
+TEST-X,SPY,symbol,SPY,2024-01-01,2024-01-01,buy,10,10,4000.00,4000.00,7,reconstructed,ok

@@ -1,0 +1,172 @@
+{
+  "meta": {
+    "mode": "A",
+    "target": 0.1,
+    "mode_label": "A — Cap drawdown",
+    "target_label": "10%",
+    "as_of": "2026-05-01",
+    "defaults": {
+      "mode": "A",
+      "target": 0.1
+    }
+  },
+  "composition": {
+    "portfolio_value": 133550.0,
+    "equity_mv": 105900.0,
+    "equity_pct": 79.29614376637963,
+    "cash_mv": 25150.0,
+    "cash_pct": 18.831898165481093,
+    "options_mv": 2500.0,
+    "options_pct": 1.8719580681392738
+  },
+  "coverage_caption": null,
+  "warnings": [],
+  "chain_error": null,
+  "recommendation": {
+    "mode": "A",
+    "target": 0.1,
+    "current_cap_pct": 0.09560139061510876,
+    "target_cap_pct": 0.1,
+    "combined_cap_pct": 0.05721909378183905,
+    "current_worst_pnl_pct": -0.09560139061510876,
+    "combined_worst_pnl_pct": -0.05721909378183905,
+    "scenarios": [
+      {
+        "portfolio_drawdown": -0.05,
+        "implied_spy_drop": -0.06393174456092104,
+        "unhedged_pnl": -6552.499999999999,
+        "existing_payoff": 0.0,
+        "existing_pnl": -6552.499999999999,
+        "existing_pnl_pct": -0.049999999999999996,
+        "new_payoff": 0.0,
+        "combined_pnl": -6552.499999999999,
+        "combined_pnl_pct": -0.049999999999999996
+      },
+      {
+        "portfolio_drawdown": -0.1,
+        "implied_spy_drop": -0.1278634891218421,
+        "unhedged_pnl": -13104.999999999998,
+        "existing_payoff": 576.4377598899955,
+        "existing_pnl": -12528.562240110003,
+        "existing_pnl_pct": -0.09560139061510876,
+        "new_payoff": 5029.999999999995,
+        "combined_pnl": -7498.562240110007,
+        "combined_pnl_pct": -0.05721909378183905
+      },
+      {
+        "portfolio_drawdown": -0.15,
+        "implied_spy_drop": -0.19179523368276313,
+        "unhedged_pnl": -19657.499999999996,
+        "existing_payoff": 7864.656639834993,
+        "existing_pnl": -11792.843360165003,
+        "existing_pnl_pct": -0.08998735871930563,
+        "new_payoff": 18134.999999999993,
+        "combined_pnl": 6342.15663983499,
+        "combined_pnl_pct": 0.04839493811396406
+      },
+      {
+        "portfolio_drawdown": -0.2,
+        "implied_spy_drop": -0.2557269782436842,
+        "unhedged_pnl": -26209.999999999996,
+        "existing_payoff": 15152.875519779991,
+        "existing_pnl": -11057.124480220005,
+        "existing_pnl_pct": -0.08437332682350251,
+        "new_payoff": 31239.999999999985,
+        "combined_pnl": 20182.87551977998,
+        "combined_pnl_pct": 0.1540089700097671
+      },
+      {
+        "portfolio_drawdown": -0.25,
+        "implied_spy_drop": -0.3196587228046053,
+        "unhedged_pnl": -32762.5,
+        "existing_payoff": 22441.094399725,
+        "existing_pnl": -10321.405600275,
+        "existing_pnl_pct": -0.07875929492769936,
+        "new_payoff": 44345.0,
+        "combined_pnl": 34023.594399725,
+        "combined_pnl_pct": 0.2596230019055704
+      }
+    ],
+    "existing_puts": [
+      {
+        "ticker": "SPY",
+        "strike": 500.0,
+        "expiry": "2026-09-18",
+        "contracts": 2,
+        "cost_basis": 3000.0,
+        "current_value": 2500.0,
+        "worst_case_payoff": 22441.094399725,
+        "roll_by": "2026-06-20",
+        "roll_into": "2026-12-17",
+        "sell_at": 9000.0
+      }
+    ],
+    "new_puts": [
+      {
+        "ticker": "SPY",
+        "role": "Idiosyncratic (excess concentration)",
+        "strike": 513.0,
+        "strike_pct_otm": 0.1,
+        "expiry": "2026-11-28",
+        "contracts": 3,
+        "premium_per_share": 8.5,
+        "position_cost": 2550.0,
+        "annualized_drag_pct": 0.048827510229776515,
+        "sell_at": 7650.0
+      },
+      {
+        "ticker": "AAA",
+        "role": "Idiosyncratic (excess concentration)",
+        "strike": 91.8,
+        "strike_pct_otm": 0.10000000000000003,
+        "expiry": "2026-11-28",
+        "contracts": 4,
+        "premium_per_share": 3.2,
+        "position_cost": 1280.0,
+        "annualized_drag_pct": 0.024509495331025078,
+        "sell_at": 3840.0
+      }
+    ],
+    "total_new_premium": 3830.0,
+    "total_new_drag_pct": 0.0733370055608016,
+    "total_combined_drag_pct": 0.13078113524289162,
+    "cap_precision_note": "After the recommended puts, worst-case loss is capped at 5.7% — inside the 10% target. The basket over-covers because single-name puts are sized to neutralize your concentrated names in full, not trimmed to the cap.",
+    "diagnostics": {
+      "scenario_excluded_no_history": []
+    },
+    "headline": {
+      "level": "note",
+      "html": "<p><strong>With your existing puts, the worst of the 5 scenarios is a loss of 9.6%</strong> of the portfolio</p><p><strong>Your target cap:</strong> a max loss of 10.0%</p><p><strong>After buying the recommended new puts, the worst of the 5 scenarios is a loss of 5.7%</strong></p><p>The new puts take you <strong>past</strong> the cap on purpose: single-name puts are sized to neutralize your concentrated (excess-MCR) names in full, not trimmed to the cap — so the basket over-covers, and the worst modeled scenario can even turn convex-positive (a net gain).</p>"
+    },
+    "scenario_notes": [
+      "After the recommended puts, worst-case loss is capped at 5.7% — inside the 10% target. The basket over-covers because single-name puts are sized to neutralize your concentrated names in full, not trimmed to the cap."
+    ]
+  },
+  "hedge_signals": {
+    "level": "amber",
+    "headline": "Nothing cheap right now (cheapest: AAA, 54th pct)",
+    "rows": [
+      {
+        "Name": "AAA",
+        "IV %ile": "54",
+        "Signal": "—",
+        "MCR share": "8%",
+        "Quality": ""
+      },
+      {
+        "Name": "SPY",
+        "IV %ile": "54",
+        "Signal": "—",
+        "MCR share": "91%",
+        "Quality": ""
+      },
+      {
+        "Name": "BBB",
+        "IV %ile": "—",
+        "Signal": "no IV data",
+        "MCR share": "1%",
+        "Quality": ""
+      }
+    ]
+  }
+}
